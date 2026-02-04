@@ -1,0 +1,6 @@
+---
+- name: Restart tang socket
+  systemd:
+    name: tangd.socket
+    state: restarted
+    enabled: yes

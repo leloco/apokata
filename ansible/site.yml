@@ -1,0 +1,11 @@
+---
+- name: Setup lxc "ops"
+  hosts: ops
+  become: yes
+  roles:
+    - { role: docker, tags: ['docker'] }
+- name: Setup lxc "tang"
+  hosts: tang
+  become: yes
+  roles:
+    - { role: tang,   tags: ['tang'] }
