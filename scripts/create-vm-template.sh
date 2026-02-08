@@ -16,8 +16,6 @@ if [ ! -f "$IMAGE_NAME" ]; then
     wget $IMAGE_URL
 fi
 
-virt-customize -a $IMAGE_NAME --install qemu-guest-agent
-
 # create the vm
 qm create $VM_ID --name $VM_NAME --memory 2048 --net0 virtio,bridge=vmbr0
 
