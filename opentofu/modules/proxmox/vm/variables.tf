@@ -1,0 +1,11 @@
+variable "vm_name"    { type = string }
+variable "ipv4_address" { type = string }
+variable "gateway"    { type = string }
+variable "cpu_cores"  { type = number }
+variable "pve_node"   { type = string }
+variable "template_id"{ type = number }
+variable "memory"     { type = number }
+variable "username"     { type = string }
+variable "hostname"     { type = string }
+variable "public_ssh_key" { type = string }
+variable "os" { type = string }

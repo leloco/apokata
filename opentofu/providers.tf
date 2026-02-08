@@ -9,12 +9,13 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint = var.virtual_environment_endpoint
-  api_token = var.virtual_environment_api_token
+  endpoint = var.shared_virtual_environment_endpoint
+  api_token = var.shared_virtual_environment_api_token
 
   insecure = true 
   
   ssh {
+    username = "root"
     agent = true
   }
 }
