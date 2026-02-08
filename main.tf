@@ -1,3 +1,7 @@
+locals {
+  proxmox_host_ip = split(":", split("/", var.virtual_environment_endpoint)[2])[0]
+}
+
 resource "local_file" "ansible_inventory" {
   filename = "./ansible/inventory.ini"
   content  = <<EOT
@@ -88,12 +92,22 @@ resource "proxmox_virtual_environment_container" "ops" {
     backup  = true 
   }
 
-  features {
-    nesting = true
-  }
-
   start_on_boot = true
   started = true
+}
+
+resource "null_resource" "lxc_feature_fix" {
+  triggers = {
+    container_id = proxmox_virtual_environment_container.ops.id
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${local.proxmox_host_ip} "pct set ${proxmox_virtual_environment_container.ops.id} -features keyctl=1,nesting=1 && pct stop ${proxmox_virtual_environment_container.ops.id} && pct start ${proxmox_virtual_environment_container.ops.id}"
+    EOT
+  }
+
+  depends_on = [proxmox_virtual_environment_container.ops]
 }
 
 resource "proxmox_virtual_environment_container" "tang" {

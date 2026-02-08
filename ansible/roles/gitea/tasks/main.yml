@@ -1,0 +1,31 @@
+---
+- name: Load encrypted secrets 
+  include_vars:
+    file: secrets.yml
+
+- name: Ensure gitea bind mount directories exists on ZFS mount
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: '0750'
+  loop:
+    - /mnt/tank/gitea/db/data
+    - /mnt/tank/gitea/app/data
+
+- name: Create docker-compose directory
+  file:
+    path: /opt/gitea
+    state: directory
+    mode: '0755'
+
+- name: Deploy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/gitea/docker-compose.yml
+
+- name: Start Gitea
+  community.docker.docker_compose_v2: 
+    project_src: /opt/gitea
+    state: present

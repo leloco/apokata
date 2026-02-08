@@ -4,6 +4,8 @@
   become: yes
   roles:
     - { role: docker, tags: ['docker'] }
+    - { role: gitea, tags: ['gitea'] }
+
 - name: Setup lxc "tang"
   hosts: tang
   become: yes
