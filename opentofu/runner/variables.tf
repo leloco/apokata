@@ -3,6 +3,11 @@ variable "runner_name" {
   description = "The name of the virtual machine as it appears in the Proxmox UI."
 }
 
+variable "runner_vm_id" {
+  type        = number
+  description = "The VMID of the runner."
+}
+
 variable "runner_ip" {
   type        = string
   description = "The static IPv4 address for the runner, including the CIDR prefix (e.g., 192.168.1.50/24)."
@@ -20,9 +25,20 @@ variable "runner_cpu_cores" {
   description = "The number of CPU cores allocated to the virtual machine."
 }
 
+variable "runner_storage" {
+  type        = string
+  description = "The storage id for the root disk."
+}
+
+variable "runner_size" {
+  type        = number
+  description = "The storage size in GB."
+}
+
 variable "runner_username" {
   type        = string 
   description = "The username on the runner instance."
+  sensitive = true
 }
 
 variable "runner_hostname" {

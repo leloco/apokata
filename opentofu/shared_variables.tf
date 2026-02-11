@@ -45,12 +45,6 @@ variable "shared_lxc_template_file_id" {
   default     = "local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst"
 }
 
-variable "shared_datastore_zfs" {
-  description = "The default ZFS datastore"
-  type        = string
-  default     = "wd-red-plus-1"
-}
-
 variable "shared_vm_template_id" {
   description = "The id for vm templates"
   type        = number

@@ -1,4 +1,5 @@
 variable "vm_name"    { type = string }
+variable "vm_id"    { type = number }
 variable "ipv4_address" { type = string }
 variable "gateway"    { type = string }
 variable "cpu_cores"  { type = number }
@@ -9,3 +10,5 @@ variable "username"     { type = string }
 variable "hostname"     { type = string }
 variable "public_ssh_key" { type = string }
 variable "os" { type = string }
+variable "size" { type = number }
+variable "storage" { type = string }

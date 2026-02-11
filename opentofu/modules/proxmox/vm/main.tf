@@ -2,14 +2,14 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = ">= 0.90.0" 
+      version = ">= 0.90.0"
     }
   }
 }
 
 resource "proxmox_virtual_environment_file" "user_data" {
   content_type = "snippets"
-  datastore_id = "local" 
+  datastore_id = "local"
   node_name    = var.pve_node
 
   source_raw {
@@ -32,31 +32,40 @@ EOF
 }
 
 resource "proxmox_virtual_environment_vm" "vm" {
-  name        = var.vm_name    
-  node_name   = var.pve_node  
+  name      = var.vm_name
+  node_name = var.pve_node
+  vm_id     = var.vm_id
+
+  scsi_hardware = "virtio-scsi-single"
 
   operating_system {
-    type = var.os
+    type = "l26"
   }
 
   cpu {
-    cores = var.cpu_cores 
+    cores = var.cpu_cores
   }
 
   memory {
     dedicated = var.memory
   }
-  
+
+  disk {
+    datastore_id = var.storage
+    interface    = "scsi0"
+    size         = var.size
+    discard      = "on"
+  }
+
   network_device {
     bridge = "vmbr0"
   }
-  
 
   agent {
     enabled = true
     timeout = "0s"
   }
-  
+
   initialization {
     user_data_file_id = proxmox_virtual_environment_file.user_data.id
     ip_config {
@@ -69,8 +78,8 @@ resource "proxmox_virtual_environment_vm" "vm" {
       }
     }
   }
+
   clone {
     vm_id = var.template_id
   }
-  
-  }
+}
