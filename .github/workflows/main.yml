@@ -1,0 +1,118 @@
+name: "Infrastructure Deployment"
+env:
+  OPENTOFU_WORKING_DIR: "./opentofu/infra"
+  ANSIBLE_WORKING_DIR: "./ansible"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: terraform-state
+  cancel-in-progress: false
+
+jobs:
+  test-and-plan:
+    name: "Configure OpenTofu and Ansible"
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.6.0
+
+      - name: Cache Pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-ansible
+
+      - name: Install Ansible-Lint
+        run: pip install --break-system-packages ansible-lint ansible-core
+
+      - name: Lint Ansible Infra Playbook
+        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
+        run: ansible-lint . --force-color --praise
+
+      - name: OpenTofu Init
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu init
+
+      - name: OpenTofu Plan
+        id: plan
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu plan -no-color -out=main.tfplan
+        
+      - name: Upload Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tf-plan-${{ github.run_id }}
+          path: ${{ env.OPENTOFU_WORKING_DIR }}/main.tfplan
+          retention-days: 1
+  deploy:
+    name: "Deploy infra with OpenTofu and run Ansible playbooks"
+    needs: test-and-plan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+      
+      - name: Cache Pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-ansible
+
+      - name: Install Ansible
+        run: pip install --break-system-packages ansible
+
+      - name: Download Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tf-plan-${{ github.run_id }}
+          path: ${{ env.OPENTOFU_WORKING_DIR }}
+          # avoid subfolder creation 
+          merge-multiple: true
+
+      - name: OpenTofu Init
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu init
+
+      - name: OpenTofu Apply
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        # -lock=false is necessary for R2 because it can't manage state locking (Feb. 2026)
+        run: tofu apply -auto-approve -lock=false main.tfplan
+      
+      - name: Install SSH Key
+		uses: shimataro/ssh-key-action@v2
+		with:
+		  key: ${{ secrets.SSH_PRIVATE_KEY }}
+		  known_hosts: "unnecessary" 
+		  if_key_exists: fail
+
+	  - name: Run Ansible Playbook
+        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
+		run: |
+		  export ANSIBLE_HOST_KEY_CHECKING=False
+		  ansible-playbook -i inventory.ini infra_playbook.yml
+		env:
+		  ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
