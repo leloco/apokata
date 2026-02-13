@@ -1,0 +1,10 @@
+---
+- name: Setup lxc "tang"
+  hosts: tang
+  become: yes
+  roles:
+    - { role: update,   tags: ['update'] }
+    - { role: ufw_base,   tags: ['ufw'] }
+    - { role: ufw_tang,   tags: ['ufw'] }
+    - { role: ufw_enable,   tags: ['ufw'] }
+    - { role: tang,   tags: ['tang'] }

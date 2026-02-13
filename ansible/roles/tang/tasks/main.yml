@@ -39,29 +39,3 @@
     group: _tang
     mode: '0440'
   notify: Restart tang socket
-
-- name: Install ufw package
-  apt:
-    name: ufw
-    state: present
-
-- name: Allow SSH
-  ufw:
-    rule: allow
-    src: '{{ tang_subnet }}'
-    port: '22'
-    proto: tcp
-    comment: 'Allow access only from specific subnet'
-
-- name: Allow HTTP
-  ufw:
-    rule: allow
-    src: "192.168.13.205"
-    port: '80'
-    proto: tcp
-    comment: 'Tang Network Binding'
-
-- name: Activate firewall
-  ufw:
-    state: enabled
-    policy: deny

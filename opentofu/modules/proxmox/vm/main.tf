@@ -68,6 +68,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   initialization {
     user_data_file_id = proxmox_virtual_environment_file.user_data.id
+    interface = "scsi1"
     ip_config {
       ipv4 {
         address = var.ipv4_address

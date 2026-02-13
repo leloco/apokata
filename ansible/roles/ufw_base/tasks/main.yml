@@ -1,0 +1,47 @@
+---
+- name: Install UFW
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes
+# deny everything what is not explicitly allowed
+- name: Deny ALL (incoming & outgoing)
+  community.general.ufw:
+    policy: deny
+    direction: "{{ item }}"
+  loop:
+    - incoming
+    - outgoing
+- name: Allow SSH from ironhide
+  community.general.ufw:
+    rule: allow
+    src: "{{ ironhide }}"
+    port: 22
+- name: Allow DNS to pihole_ninja
+  community.general.ufw:
+    rule: allow
+    direction: out
+    dest: "{{ pihole_ninja }}"
+    port: 53
+- name: Allow NTP (Time Sync)
+  community.general.ufw:
+    rule: allow
+    direction: out
+    port: 123
+    proto: udp
+# the wall: disallow internal communication (except rules above that are definied above)
+- name: BLOCK all other internal outgoing traffic
+  community.general.ufw:
+    rule: deny
+    direction: out
+    dest: 192.168.13.0/24
+# the internet: allow everything thas is not 192.168.13.x
+- name: Allow HTTP/HTTPS to anywhere (Internet only due to rule order)
+  community.general.ufw:
+    rule: allow
+    direction: out
+    proto: tcp
+    port: "{{ item }}"
+  loop:
+    - 80
+    - 443
