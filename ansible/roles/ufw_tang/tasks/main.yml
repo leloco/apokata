@@ -1,0 +1,21 @@
+---
+- name: Allow SSH only from ironhide and runners
+  community.general.ufw: 
+    rule: allow
+    src: "{{ item }}"
+    port: 22
+    proto: tcp
+    insert: 1
+    comment: 'Allow access only from ironhide and runners'
+  loop: 
+    - "{{ ironhide }}"
+    - "{{ hostvars['runner_alpha']['ansible_host'] }}"
+
+- name: Allow HTTP only from sentinel
+  community.general.ufw:
+    rule: allow
+    src: "{{ sentinel }}"
+    port: 80
+    proto: tcp
+    insert: 1
+    comment: 'Tang Network Binding'

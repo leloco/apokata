@@ -1,0 +1,27 @@
+---
+- name: Load secret variables
+  include_vars:
+    file: secrets.yml
+
+- name: Ensure runner work directory exists
+  file:
+    path: /opt/actions-runner
+    state: directory
+    mode: '0755'
+
+- name: Start GitHub Runner Container
+  community.docker.docker_container:
+    name: "github-runner-alpha"
+    image: myoung34/github-runner:latest
+    state: started
+    restart_policy: always
+    recreate: yes
+    stop_timeout: 30
+    env:
+      REPO_URL: "{{ github_repo_url }}"
+      ACCESS_TOKEN: "{{ github_access_token }}"
+      RUNNER_NAME: "runner-alpha"
+      RUNNER_OPTIMIZE_REPOSITORY_CACHE: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/actions-runner:/tmp/runner

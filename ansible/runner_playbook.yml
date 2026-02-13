@@ -1,0 +1,11 @@
+---
+- name: Setup lxc "runner-alpha"
+  hosts: runner_group
+  become: yes
+  roles:
+    - { role: update, tags: ['update'] }
+    - { role: ufw_base, tags: ['ufw'] }
+    - { role: ufw_runner, tags: ['ufw'] }
+    - { role: ufw_enable, tags: ['ufw'] }
+    - { role: docker, tags: ['docker'] }
+    - { role: github_runner, tags: ['runner'] }
