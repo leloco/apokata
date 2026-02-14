@@ -8,4 +8,7 @@ terraform.tfvars
 ansible/inventory.ini
 **/*.jwk
 ansible/files/tang-keys/
+**/*.tfplan
+*.tfplan
 **/*.plan
+*.plan

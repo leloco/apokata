@@ -12,5 +12,6 @@ terraform {
     skip_metadata_api_check     = true
     
     use_path_style              = true 
+    use_lockfile = false
   }
 }
