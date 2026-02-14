@@ -1,0 +1,24 @@
+#!/bin/bash
+
+INFRA_DIR="opentofu/infra"
+
+for file in $INFRA_DIR/*.tfvars; do
+    filename=$(basename "$file")
+
+    if [[ "$filename" == enc.* ]]; then
+        continue
+    fi
+
+    if [ -f "$file" ]; then
+        echo "Encrypt $file with SOPS..."
+        sops --encrypt --input-type dotenv --output-type dotenv "$file" > "$INFRA_DIR/enc.$filename"
+        git add "$INFRA_DIR/enc.$filename"
+    fi
+done
+
+# prevent commit of unencrypted .tfvars
+if git diff --cached --name-only | grep -E "\.tfvars$" | grep -v "enc\."; then
+    echo "ERROR: You are trying to commit at least one unencrypted .tfvars file. Due to security reasons this is not permitted."
+    echo "Remove the file(s) from staging (git restore --staged)."
+    exit 1
+fi
