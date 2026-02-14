@@ -2,6 +2,7 @@ name: "Infrastructure Deployment"
 env:
   OPENTOFU_WORKING_DIR: "./opentofu/infra"
   ANSIBLE_WORKING_DIR: "./ansible"
+  OPENTOFU_VERSION: 1.10.7
 
 on:
   push:
@@ -30,16 +31,16 @@ jobs:
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
         with:
-          tofu_version: 1.6.0
+          tofu_version: ${{ env.OPENTOFU_VERSION }}
 
       - name: Cache Pip packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-ansible
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install Ansible-Lint
-        run: pip install --break-system-packages ansible-lint ansible-core
+        run: pip install --break-system-packages -r requirements.txt
 
       - name: Lint Ansible Infra Playbook
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
@@ -75,15 +76,17 @@ jobs:
 
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
-      
+        with:
+          tofu_version: ${{ env.OPENTOFU_VERSION }}
+          
       - name: Cache Pip packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-ansible
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install Ansible
-        run: pip install --break-system-packages ansible
+        run: pip install --break-system-packages -r requirements.txt
 
       - name: Download Plan
         uses: actions/download-artifact@v4
@@ -103,16 +106,15 @@ jobs:
         run: tofu apply -auto-approve -lock=false main.tfplan
       
       - name: Install SSH Key
-		uses: shimataro/ssh-key-action@v2
-		with:
-		  key: ${{ secrets.SSH_PRIVATE_KEY }}
-		  known_hosts: "unnecessary" 
-		  if_key_exists: fail
-
-	  - name: Run Ansible Playbook
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "unnecessary" 
+          if_key_exists: fail
+      - name: Run Ansible Playbook
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
-		run: |
-		  export ANSIBLE_HOST_KEY_CHECKING=False
-		  ansible-playbook -i inventory.ini infra_playbook.yml
-		env:
-		  ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i inventory.ini infra_playbook.yml
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
