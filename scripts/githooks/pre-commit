@@ -1,8 +1,8 @@
 #!/bin/bash
 
 INFRA_DIR="opentofu/infra"
-
-for file in $INFRA_DIR/*.tfvars; do
+cd $INFRA_DIR
+for file in ./*.tfvars; do
     filename=$(basename "$file")
 
     if [[ "$filename" == enc.* ]]; then
@@ -11,8 +11,8 @@ for file in $INFRA_DIR/*.tfvars; do
 
     if [ -f "$file" ]; then
         echo "Encrypt $file with SOPS..."
-        sops --encrypt --input-type dotenv --output-type dotenv "$file" > "$INFRA_DIR/enc.$filename"
-        git add "$INFRA_DIR/enc.$filename"
+        sops --encrypt --input-type dotenv --output-type dotenv "$file" > "enc.$filename"
+        git add "enc.$filename"
     fi
 done
 
