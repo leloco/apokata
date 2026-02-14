@@ -50,6 +50,10 @@ jobs:
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
         run: tofu init
 
+      - name: Debug Pause
+        run: |
+          sleep 1200 
+
       - name: OpenTofu Plan
         id: plan
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
