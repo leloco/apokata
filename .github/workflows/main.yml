@@ -30,7 +30,9 @@ jobs:
 
       - name: Install GPG
         uses: ./.github/actions/install-gpg
-
+        with:
+          gpg_key: ${{ secrets.GPG_KEY }}
+          
       - name: Install SOPS
         uses: ./.github/actions/install-sops
 
@@ -87,7 +89,9 @@ jobs:
 
       - name: Install GPG
         uses: ./.github/actions/install-gpg
-      
+        with:
+          gpg_key: ${{ secrets.GPG_KEY }} 
+          
       - name: Install SOPS
         uses: ./.github/actions/install-sops
         
