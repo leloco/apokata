@@ -63,9 +63,6 @@ jobs:
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
         run: tofu init
         
-      - name: Live Debugging Window
-        run: sleep 10m
-
       - name: OpenTofu Plan
         id: plan
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
