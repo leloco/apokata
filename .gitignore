@@ -3,7 +3,7 @@
 *.tfstate.backup
 *.tfvars
 *.auto.tfvars
-!enc.*.tfvars
+!*.tfvars.enc
 terraform.tfvars
 .api_url
 ansible/inventory.ini

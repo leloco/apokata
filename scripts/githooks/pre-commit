@@ -5,19 +5,19 @@ cd $INFRA_DIR
 for file in ./*.tfvars; do
     filename=$(basename "$file")
 
-    if [[ "$filename" == enc.* ]]; then
+    if [[ "$filename" == *.enc ]]; then
         continue
     fi
 
     if [ -f "$file" ]; then
         echo "Encrypt $file with SOPS..."
-        sops --encrypt --input-type dotenv --output-type dotenv "$file" > "enc.$filename"
-        git add "enc.$filename"
+        sops --encrypt --input-type dotenv --output-type dotenv "$file" > "$filename.enc"
+        git add "$file.enc"
     fi
 done
 
 # prevent commit of unencrypted .tfvars
-if git diff --cached --name-only | grep -E "\.tfvars$" | grep -v "enc\."; then
+if git diff --cached --name-only --diff-filter=d | grep "\.tfvars" | grep -v "\.enc$"; then
     echo "ERROR: You are trying to commit at least one unencrypted .tfvars file. Due to security reasons this is not permitted."
     echo "Remove the file(s) from staging (git restore --staged)."
     exit 1

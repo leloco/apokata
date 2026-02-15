@@ -13,9 +13,9 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working_directory }}
       run: |
-        if ls enc.*.tfvars 1> /dev/null 2>&1; then
-          for f in enc.*.tfvars; do
-            sops --decrypt --input-type dotenv --output-type dotenv "$f" > "${f#enc.}"
+        if ls *.tfvars.enc 1> /dev/null 2>&1; then
+          for f in *.tfvars.enc; do
+            sops --decrypt --input-type dotenv --output-type dotenv "$f" > "${f%.enc}"
           done
         else
           echo "Error: No encrypted .tfvars files found in ${{ inputs.working_directory }}!"
