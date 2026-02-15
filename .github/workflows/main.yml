@@ -28,6 +28,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install GPG
+        uses: ./.github/actions/install-gpg
+
+      - name: Install SOPS
+        uses: ./.github/actions/install-sops
+
+      - name: Decrypt tfvars 
+        uses: ./.github/actions/decrypt-tfvars
+        with:
+          working_directory: ${{ env.OPENTOFU_WORKING_DIR }} 
+
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
         with:
@@ -74,6 +85,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install GPG
+        uses: ./.github/actions/install-gpg
+      
+      - name: Install SOPS
+        uses: ./.github/actions/install-sops
+        
+      - name: Decrypt tfvars
+        uses: ./.github/actions/decrypt-tfvars
+        with: 
+          working_directory: ${{ env.OPENTOFU_WORKING_DIR }} 
+        
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
         with:
@@ -111,6 +133,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: "unnecessary" 
           if_key_exists: fail
+          
       - name: Run Ansible Playbook
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
         run: |

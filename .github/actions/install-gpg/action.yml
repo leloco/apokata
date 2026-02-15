@@ -1,0 +1,11 @@
+name: 'Install GPG'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Import GPG Key
+      shell: bash
+      run: |
+        echo "${{ secrets.GPG_KEY }}" | gpg --batch --import
+        KEY_FP=$(gpg --list-secret-keys --with-colons | grep "^fpr" | cut -d: -f10 | head -n 1)
+        echo "${KEY_FP}:6:" | gpg --batch --import-ownertrust
