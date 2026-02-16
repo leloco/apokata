@@ -1,39 +1,39 @@
 ---
 - name: Update apt cache
-  apt:
-    update_cache: yes
-    cache_valid_time: 3600 
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
 
 - name: Ensure group "_tang" exists
-  group:
+  ansible.builtin.group:
     name: _tang
     state: present
 
 - name: Ensure user "_tang" exists
-  user:
+  ansible.builtin.user:
     name: _tang
     group: _tang
-    system: yes
+    system: true
     shell: /usr/sbin/nologin
-    create_home: no
+    create_home: false
     state: present
 
 - name: Install tang package
-  apt:
+  ansible.builtin.apt:
     name: tang
     state: present
 
-- name: Verify key store settings 
-  file:
+- name: Verify key store settings
+  ansible.builtin.file:
     path: /var/lib/tang
     state: directory
     owner: _tang
     group: _tang
     mode: '0700'
 
-- name: Restore active keys 
-  copy:
-    src: tang-keys/ 
+- name: Restore active keys
+  ansible.builtin.copy:
+    src: tang-keys/
     dest: /var/lib/tang/
     owner: _tang
     group: _tang

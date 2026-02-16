@@ -1,9 +1,9 @@
 ---
 - name: Install UFW
-  apt:
+  ansible.builtin.apt:
     name: ufw
     state: present
-    update_cache: yes
+    update_cache: true
 # deny everything what is not explicitly allowed
 - name: Deny ALL (incoming & outgoing)
   community.general.ufw:
@@ -15,8 +15,11 @@
 - name: Allow SSH from ironhide
   community.general.ufw:
     rule: allow
-    src: "{{ ironhide }}"
+    src: "{{ item }}"
     port: 22
+  loop:
+    - "{{ ironhide }}"
+    - "{{ ironhide_wifi }}"
 - name: Allow DNS to pihole_ninja
   community.general.ufw:
     rule: allow

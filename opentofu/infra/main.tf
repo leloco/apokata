@@ -38,6 +38,7 @@ ansible_user=root
 ansible_ssh_private_key_file=""
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ironhide = 192.168.13.117
+ironhide_wifi = 192.168.13.118
 sentinel = 192.168.13.205
 pihole_ninja = 192.168.13.10
 pve_ip = ${local.proxmox_host_ip}

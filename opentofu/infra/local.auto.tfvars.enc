@@ -1,0 +1,12 @@
+tang_hostname =ENC[AES256_GCM,data:M94QpwjnBQ==,iv:DJfdbJAKfhq2CnL/MyjPptcvHjDUNIjH/bLPkZwaNXs=,tag:s5ngqIqSQM8F85c+oa39Fg==,type:str]
+tang_ipv4_address =ENC[AES256_GCM,data:Tjcob3Ac/4aQekzwwkjA2j5gsjM=,iv:vm3AGs4m+KBzK4405CN6wHvf1beGG3Jl00xQI4CIXDU=,tag:EAGauqLwpeQNqKPOsOKg1A==,type:str]
+tang_datastore_id =ENC[AES256_GCM,data:GZjnDTX450wCpUR/,iv:8ik1YtqjdOQaTmmolgFHdFvwFroJYC+BBY5PR2jQUcE=,tag:pgahb1xrqZIaY8/VICnfXQ==,type:str]
+tang_datastore_size =ENC[AES256_GCM,data:h5k=,iv:f+rSUECKCbFOOFzAJsimvKCbKKo8gozTejKu+vo9oPM=,tag:VptBcBVuldwzAuHkCScORg==,type:str]
+tang_vm_id =ENC[AES256_GCM,data:efPafQ==,iv:Pl0Ug4nAYr0hCvzzBA30vrt/+T1ki8UNL6F7yYvZrVI=,tag:i1ITvjKq/Nh+EpP/13Bmkw==,type:str]
+sops_lastmodified=2026-02-16T22:46:56Z
+sops_mac=ENC[AES256_GCM,data:BUlTk2XfOfAqyODb8zf8fqiVYBxU6YpcqkW9ySeqJyHPLUNsad8MLyuzpzeyyM1Fken2Xm9XsTevqZPGxjz6vBHuxOs73j0fHDOKoSuMkt/etRvJHrFpbhng55TFVWf/jiSl00fUEyxmedjiqxO17p4daeM5yQVHiozymQvmsko=,iv:ZSOEwlf0roiKD5dEY5bbHqiXcc7t5ICKpUMlY5R3pgM=,tag:RbdrNCdu4BopEFaSsFiUvQ==,type:str]
+sops_pgp__list_0__map_created_at=2026-02-16T22:46:56Z
+sops_pgp__list_0__map_enc=-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdA3EBu3X+vCnXzolyuUWp/bqQ84ClA38mJtVh5LtJ5vHow\ntt53/9Ps1c4AJI20e6TnjziUQr4CsFPzTqgiYEbo+VcXYJbOAGsP6cWr4TdpM3l4\n0lgBWe9VxkiIP22WctNzA5h81PBbjV8k8UYNbYZaLLRJWxQRvcIgKdBypmPbM5wQ\n0QE/Ge0u4MKLa1hMekjJKSHMiqN2SqZwsYS/FzwQVEZ5DKLf4webSy3W\n=Chik\n-----END PGP MESSAGE-----
+sops_pgp__list_0__map_fp=640170DE796E3CC2C1EA7E9D4DA395A9634B5E40
+sops_unencrypted_suffix=_unencrypted
+sops_version=3.9.0

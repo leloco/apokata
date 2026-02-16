@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: .*\.tfvars$
+    pgp: "640170DE796E3CC2C1EA7E9D4DA395A9634B5E40" 

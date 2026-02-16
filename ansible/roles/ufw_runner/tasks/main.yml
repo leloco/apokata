@@ -6,6 +6,7 @@
     dest: "{{ pve_ip }}"
     port: 8006
     proto: tcp
+    insert: 1
 - name: Allow Runner to SSH into restricted hosts
   community.general.ufw:
     rule: allow
@@ -13,6 +14,8 @@
     dest: "{{ item }}"
     port: 22
     proto: tcp
+    insert: 1
     comment: "Runner management access specific hosts"
   loop:
     - "{{ hostvars['tang']['ansible_host'] }}"
+    - "{{ pve_ip }}"

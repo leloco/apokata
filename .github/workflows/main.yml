@@ -1,0 +1,79 @@
+name: "Infrastructure Deployment"
+
+env:
+  OPENTOFU_WORKING_DIR: "./opentofu/infra"
+  ANSIBLE_WORKING_DIR: "./ansible"
+  OPENTOFU_VERSION: 1.10.7
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: terraform-state
+  cancel-in-progress: false
+
+jobs:
+  validate_deploy:
+    name: "Validate & Deploy Infrastructure"
+    runs-on: [self-hosted, linux]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Ansible Tools
+        uses: ./.github/actions/install-ansible
+        with:
+          ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          
+      - name: Setup OpenTofu Tools
+        uses: ./.github/actions/opentofu-prep
+        with:
+          gpg_key: ${{ secrets.GPG_KEY }}
+          working_directory: ${{ env.OPENTOFU_WORKING_DIR }}
+          ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+
+      - name: Install OpenTofu CLI
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.OPENTOFU_VERSION }}
+
+      - name: Lint Ansible
+        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
+        run: ansible-lint infra_playbook.yml --force-color
+
+      - name: OpenTofu Init
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu init
+
+      - name: OpenTofu Plan
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu plan -no-color -out=main.tfplan
+
+      # --- DEPLOY (Only when push event on main happens) ---
+
+      - name: OpenTofu Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu apply -auto-approve -lock=false main.tfplan
+
+      - name: Install SSH Private Key
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "unnecessary"
+          if_key_exists: fail
+
+      - name: Run Ansible Playbook
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i inventory.ini infra_playbook.yml

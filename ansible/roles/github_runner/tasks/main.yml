@@ -12,7 +12,9 @@
 - name: Start GitHub Runner Container
   community.docker.docker_container:
     name: "github-runner-alpha"
-    image: myoung34/github-runner:latest
+    image: myoung34/github-runner:ubuntu-noble
+    network_mode: "host"
+    image_name_mismatch: recreate
     state: started
     restart_policy: always
     recreate: yes
@@ -22,6 +24,7 @@
       ACCESS_TOKEN: "{{ github_access_token }}"
       RUNNER_NAME: "runner-alpha"
       RUNNER_OPTIMIZE_REPOSITORY_CACHE: "true"
+      EPHEMERAL: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/actions-runner:/tmp/runner

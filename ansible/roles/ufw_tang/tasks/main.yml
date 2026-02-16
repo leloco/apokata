@@ -1,13 +1,13 @@
 ---
 - name: Allow SSH only from ironhide and runners
-  community.general.ufw: 
+  community.general.ufw:
     rule: allow
     src: "{{ item }}"
     port: 22
     proto: tcp
     insert: 1
     comment: 'Allow access only from ironhide and runners'
-  loop: 
+  loop:
     - "{{ ironhide }}"
     - "{{ hostvars['runner_alpha']['ansible_host'] }}"
 

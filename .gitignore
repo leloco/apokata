@@ -3,9 +3,13 @@
 *.tfstate.backup
 *.tfvars
 *.auto.tfvars
+!*.tfvars.enc
 terraform.tfvars
 .api_url
 ansible/inventory.ini
 **/*.jwk
 ansible/files/tang-keys/
+**/*.tfplan
+*.tfplan
 **/*.plan
+*.plan

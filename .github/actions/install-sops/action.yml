@@ -1,0 +1,13 @@
+name: 'Install SOPS'
+description: 'Install Secrets Operations from Mozilla'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install SOPS
+      shell: bash
+      run: |
+        if ! command -v sops &> /dev/null; then
+          curl -LO https://github.com/getsops/sops/releases/download/v3.9.0/sops-v3.9.0.linux.amd64
+          sudo install -m 0755 sops-v3.9.0.linux.amd64 /usr/local/bin/sops
+        fi

@@ -1,0 +1,24 @@
+name: 'Decrypt'
+description: 'Decrypts .tfvars files with SOPS for using them with OpenTofu'
+
+inputs:
+  working_directory:
+    description: 'Path to the directory containing .tfvars files'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Decrypt .tfvars
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        if ls *.tfvars.enc 1> /dev/null 2>&1; then
+          for f in *.tfvars.enc; do
+            sops --decrypt --input-type dotenv --output-type dotenv "$f" > "${f%.enc}"
+          done
+        else
+          echo "Error: No encrypted .tfvars files found in ${{ inputs.working_directory }}!"
+          echo "Aborting workflow to prevent running OPenTofu without .tfvars"
+          exit 1
+        fi

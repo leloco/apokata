@@ -34,7 +34,7 @@ variable "shared_network_subnet" {
 }
 
 variable "shared_ssh_public_key_file" {
-  description = "Path to public key file on host system"
+  description = "Public key file."
   type        = string
   default     = "~/.ssh/id_rsa.pub"
 }
