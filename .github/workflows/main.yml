@@ -53,9 +53,7 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install Ansible-Lint
-        run: |
-         python3 -m pip install --upgrade pip --break-system-packages
-         pip install --break-system-packages -r requirements.txt
+        run: pip install --break-system-packages -r requirements.txt
 
       - name: Lint Ansible Infra Playbook
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
@@ -114,9 +112,7 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install Ansible
-        run: |
-          python3 -m pip install --upgrade pip --break-system-packages
-          pip install --break-system-packages -r requirements.txt
+        run: pip install --break-system-packages -r requirements.txt
 
       - name: Download Plan
         uses: actions/download-artifact@v4
