@@ -12,8 +12,9 @@
 - name: Start GitHub Runner Container
   community.docker.docker_container:
     name: "github-runner-alpha"
-    image: myoung34/github-runner:latest
+    image: myoung34/github-runner:ubuntu-noble
     network_mode: "host"
+    image_name_mismatch: recreate
     state: started
     restart_policy: always
     recreate: yes
