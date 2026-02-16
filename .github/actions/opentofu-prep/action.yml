@@ -1,4 +1,5 @@
 name: 'Setup OpenTofu'
+description: 'Imports GPG, installs SOPS and decrypts tfvars'
 inputs:
   gpg_key:
     required: true
@@ -6,13 +7,14 @@ inputs:
     required: true
   ssh_public_key:
     required: true
+
 runs:
   using: "composite"
   steps:
     - name: Import GPG Key
       shell: bash
       run: |
-        echo "${{ inputs.GPG_KEY }}" | gpg --batch --import
+        echo "${{ inputs.gpg_key }}" | gpg --batch --import
         KEY_FP=$(gpg --list-secret-keys --with-colons | grep "^fpr" | cut -d: -f10 | head -n 1)
         echo "${KEY_FP}:6:" | gpg --batch --import-ownertrust
       
@@ -34,14 +36,12 @@ runs:
           done
         else
           echo "Error: No encrypted .tfvars files found in ${{ inputs.working_directory }}!"
-          echo "Aborting workflow to prevent running OPenTofu without .tfvars"
+          echo "Aborting workflow to prevent running OpenTofu without .tfvars"
           exit 1
         fi
+
     - name: Create SSH Key File
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ inputs.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
-    
-
-
-      
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ inputs.ssh_public_key }}" > ~/.ssh/id_rsa.pub
