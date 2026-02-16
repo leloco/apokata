@@ -32,9 +32,8 @@ jobs:
         run: pip install --break-system-packages -r requirements.txt
 
       - name: Cache Ansible collections
-        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
-        id: cache-ansible
         uses: actions/cache@v4
+        id: cache-ansible
         with:
           path: ~/.ansible/collections
           key: ${{ runner.os }}-ansible-${{ hashFiles('ansible/requirements.yml') }}
