@@ -1,25 +1,25 @@
 ---
 - name: Update apt cache and upgrade all packages
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     upgrade: dist
-    force_apt_get: yes
+    force_apt_get: true
 
 - name: Remove unused dependency packages (autoremove)
-  apt:
-    autoremove: yes
-    purge: yes
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
 
 - name: Clean up local repository (autoclean)
-  apt:
-    autoclean: yes
+  ansible.builtin.apt:
+    autoclean: true
 
 - name: Check if a reboot is required
-  stat:
+  ansible.builtin.stat:
     path: /var/run/reboot-required
-  register: reboot_required_file
+  register: update_reboot_required_file
 
 - name: Reboot the server if kernel was updated
-  reboot:
+  ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible"
-  when: reboot_required_file.stat.exists
+  when: update_reboot_required_file.stat.exists

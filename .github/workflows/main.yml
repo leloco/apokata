@@ -28,6 +28,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Ansible-Lint
+        run: pip install --break-system-packages -r requirements.txt
+
+      - name: Cache Ansible collections
+        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
+        id: cache-ansible
+        uses: actions/cache@v4
+        with:
+          path: ~/.ansible/collections
+          key: ${{ runner.os }}-ansible-${{ hashFiles('ansible/requirements.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-ansible-
+
+      - name: Install Ansible Collections
+        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
+        run: ansible-galaxy collection install -r requirements.yml
+
       - name: Install GPG
         uses: ./.github/actions/install-gpg
         with:
@@ -57,8 +74,6 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
-      - name: Install Ansible-Lint
-        run: pip install --break-system-packages -r requirements.txt
 
       - name: Create Ansible Vault Pass File
         run: |

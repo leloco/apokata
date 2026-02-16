@@ -1,6 +1,6 @@
 ---
 - name: Restart tang socket
-  systemd:
+  ansible.builtin.systemd:
     name: tangd.socket
     state: restarted
-    enabled: yes
+    enabled: true
