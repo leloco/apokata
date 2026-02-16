@@ -62,7 +62,7 @@ jobs:
 
       - name: Lint Ansible Infra Playbook
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
-        run: ansible-lint . --force-color 
+        run: ansible-lint infra_playbook.yml --force-color 
 
       - name: OpenTofu Init
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
@@ -71,14 +71,7 @@ jobs:
       - name: OpenTofu Plan
         id: plan
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
-        run: tofu plan -no-color -out=main.tfplan
-        
-      - name: Upload Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tf-plan-${{ github.run_id }}
-          path: ${{ env.OPENTOFU_WORKING_DIR }}/main.tfplan
-          retention-days: 1
+        run: tofu plan -no-color
   deploy:
     name: "Deploy infra with OpenTofu and run Ansible playbooks"
     needs: test-and-plan
@@ -124,17 +117,13 @@ jobs:
       - name: Install Ansible
         run: pip install --break-system-packages -r requirements.txt
 
-      - name: Download Plan
-        uses: actions/download-artifact@v4
-        with:
-          name: tf-plan-${{ github.run_id }}
-          path: ${{ env.OPENTOFU_WORKING_DIR }}
-          # avoid subfolder creation 
-          merge-multiple: true
-
       - name: OpenTofu Init
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
         run: tofu init
+      
+      - name: OpenTofu Plan
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu plan -no-color -out=main.tfplan
 
       - name: OpenTofu Apply
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
