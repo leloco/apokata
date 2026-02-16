@@ -62,8 +62,8 @@ jobs:
 
       - name: Create Ansible Vault Pass File
         run: |
-          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /root/.ansible_vault_password
-          chmod 600 /root/.ansible_vault_password
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /root/.ansible_vault_pass
+          chmod 600 /root/.ansible_vault_pass
           
       - name: Lint Ansible Infra Playbook
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
@@ -144,8 +144,8 @@ jobs:
 
       - name: Create Ansible Vault Pass File
         run: |
-          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /root/.ansible_vault_password
-          chmod 600 /root/.ansible_vault_password
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /root/.ansible_vault_pass
+          chmod 600 /root/.ansible_vault_pass
           
       - name: Run Ansible Playbook
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
