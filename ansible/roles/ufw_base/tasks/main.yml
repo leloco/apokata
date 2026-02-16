@@ -1,9 +1,9 @@
 ---
 - name: Install UFW
-  apt:
+  ansible.builtin.apt:
     name: ufw
     state: present
-    update_cache: yes
+    update_cache: true
 # deny everything what is not explicitly allowed
 - name: Deny ALL (incoming & outgoing)
   community.general.ufw:
