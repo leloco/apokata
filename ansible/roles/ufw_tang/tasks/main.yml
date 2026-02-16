@@ -1,4 +1,12 @@
 ---
+- name: Allow SSH for current connection
+  community.general.ufw:
+    rule: allow
+    src: "{{ ansible_env.SSH_CONNECTION.split(' ')[0] }}"
+    port: 22
+    proto: tcp
+    insert: 1
+
 - name: Allow SSH only from ironhide and runners
   community.general.ufw:
     rule: allow
