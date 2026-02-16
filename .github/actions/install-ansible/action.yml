@@ -1,0 +1,34 @@
+name: 'Install Ansible'
+inputs:
+  ansible_vault_password:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Ansible Pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('./ansible/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install Ansible Pip packages
+        run: pip install --break-system-packages -r ./ansible/requirements.txt
+
+    - name: Cache Ansible collections
+        uses: actions/cache@v4
+        id: cache-ansible
+        with:
+          path: ~/.ansible/collections
+          key: ${{ runner.os }}-ansible-${{ hashFiles('./ansible/requirements.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-ansible-
+
+      - name: Install Ansible Collections
+        run: ansible-galaxy collection install -r ./ansible/requirements.yml
+      
+      - name: Create Ansible Vault Pass File
+        run: |
+          echo "${{ inputs.ANSIBLE_VAULT_PASSWORD }}" > /root/.ansible_vault_pass
+          chmod 600 /root/.ansible_vault_pass
