@@ -1,24 +1,37 @@
 #!/bin/bash
 
 INFRA_DIR="opentofu/infra"
-cd $INFRA_DIR
-for file in ./*.tfvars; do
-    filename=$(basename "$file")
+TANG_DIR="ansible/roles/tang/files/tang-keys"
 
-    if [[ "$filename" == *.enc ]]; then
-        continue
+encrypt_files() {
+    local dir=$1
+    local extension=$2
+    local sops_type=$3
+
+    if [ -d "$dir" ]; then
+        cd "$dir"
+        for file in ./*."$extension"; do
+            filename=$(basename "$file")
+
+            if [[ "$filename" == *.enc ]] || [ ! -f "$file" ]; then
+                continue
+            fi
+
+            echo "Encrypt $file with SOPS (Type: $sops_type)..."
+            sops --encrypt --input-type "$sops_type" --output-type "$sops_type" "$file" > "$filename.enc"
+            git add "$filename.enc"
+        done
+        cd - > /dev/null
     fi
+}
 
-    if [ -f "$file" ]; then
-        echo "Encrypt $file with SOPS..."
-        sops --encrypt --input-type dotenv --output-type dotenv "$file" > "$filename.enc"
-        git add "$file.enc"
-    fi
-done
+encrypt_files "$INFRA_DIR" "tfvars" "dotenv"
 
-# prevent commit of unencrypted .tfvars
-if git diff --cached --name-only --diff-filter=d | grep "\.tfvars" | grep -v "\.enc$"; then
-    echo "ERROR: You are trying to commit at least one unencrypted .tfvars file. Due to security reasons this is not permitted."
-    echo "Remove the file(s) from staging (git restore --staged)."
+encrypt_files "$TANG_DIR" "jwk" "json"
+
+if git diff --cached --name-only --diff-filter=d | grep -E "\.(tfvars|jwk)$" | grep -v "\.enc$"; then
+    echo "ERROR: You are trying to commit at least one unencrypted .tfvars or .jwk file."
+    echo "Due to security reasons this is not permitted."
+    echo "Remove the file(s) from staging (git restore --staged <file>)."
     exit 1
 fi
