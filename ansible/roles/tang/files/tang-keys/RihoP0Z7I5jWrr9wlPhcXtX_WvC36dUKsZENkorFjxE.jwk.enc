@@ -1,0 +1,30 @@
+{
+	"alg": "ENC[AES256_GCM,data:Dobzesk=,iv:9rapbnSPt0yWSHw93m/jgA4QsJ0M0X1GSHFISBxvL+U=,tag:T17cChJ6cnjsdbt5gQCEsQ==,type:str]",
+	"kty": "ENC[AES256_GCM,data:Ky0=,iv:EAyJYlI1R5deyC5tvz54SiOL3AFxEAZ3HpasAY2j0I0=,tag:25gP2P7enX8zguw45cFbuQ==,type:str]",
+	"crv": "ENC[AES256_GCM,data:CRnjWuI=,iv:0k8bIZx5afRmAwQvdMiw0OW8Cf9QykBPxzU842LEh2s=,tag:CqSF4LdmZ02+Nw6YF3KR0g==,type:str]",
+	"x": "ENC[AES256_GCM,data:nziZTGM5QFz/LFUDGpLobnXumzivm52yA/qXCq8W1bED7tQgE+//+gf4Qp8W0Uh40I4/v3Xte4N7Z3613tvV46sa7sKyeEywAXFhj4TW/hOiUnPbeZ6tcg==,iv:5AarE4O2hTrWfJZNVIDu/fu77dz97ncerCgVEAbPvos=,tag:ce22Tq4Wjiejk86hbvEMsQ==,type:str]",
+	"y": "ENC[AES256_GCM,data:eOg7vTeH+u9NA7EVUqbv0giEGa8VKZt9bnS/P2Z27GnwlaQuS14qBcZe3JfVY2QYqS2VIJNFrzPRiKkPA/ZzztPadvggelUktAZ03PD6H7NarAjYZjWUPA==,iv:iqj7ZaGxBFcx3nx9APkF3Q1y/lX+LF9MfOWe8z0g5tc=,tag:39gRSjctsGlw4CWe9OB2Fw==,type:str]",
+	"d": "ENC[AES256_GCM,data:v/abeksg61j/X4lvZlAsr1w7PccVCAPhFP6ZeCETraWq3D0yv+SOwfNUEisoPG3TA0W89k7XdpKNDm4SNqijZuR45sXZ7LswRdVoomiWUNqmXSJciLY45w==,iv:O0ofe6mcOsCWO/ja0sSaq/xs37hq1NiS3BYz9OZQX4Y=,tag:a+Enbb934IMyK9W3yZKf6Q==,type:str]",
+	"key_ops": [
+		"ENC[AES256_GCM,data:0vUfGQ==,iv:gzKJYa/sek8DI5PJHrk5Gaf4oSinDl4pyUMtqSWupXM=,tag:xw+ooM3DUB8qC3GkFvhUqw==,type:str]",
+		"ENC[AES256_GCM,data:fsO4zas5,iv:/WOqKUvWVWni88M3l6KqAw8drI3Rbbpi452b+ei1t+A=,tag:/WTPxSol4OONlkaxrKXszw==,type:str]"
+	],
+	"sops": {
+		"kms": null,
+		"gcp_kms": null,
+		"azure_kv": null,
+		"hc_vault": null,
+		"age": null,
+		"lastmodified": "2026-02-17T00:22:39Z",
+		"mac": "ENC[AES256_GCM,data:bqLPu+U8Dj+8Kc0zTq/jKwBODUKVssmfo+0QPlAc84I1ESBUl3esjpp2K3JXHLL/4gzfaei/g4x/wZhPPorjWtFduAIe2xtrXMA4XVRQr5d7ldfUuR3EW2vc2etZmEvbtANSCjGj+YOEH6c1mK4bowlln+uqpIHHys0MWNdAE7M=,iv:gTiAZuWw5nGSYzvL7p73Fylcd15AMvlQijxWBqls9II=,tag:SHX28qMu11LqrDTt5GvwIQ==,type:str]",
+		"pgp": [
+			{
+				"created_at": "2026-02-17T00:22:39Z",
+				"enc": "-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdA4IEGhr4cx4nrrHn/gcxMN0zYvS7Z6DcjIj233mTTbxww\nR2BEegc/WhfwEYmkAOk2G9Zgtj/e4hMgNJ4JBkqfhGdeAYl84rluk7LQZ5OA192M\n0lgBsEt83iCgAJQp2ttXN9/vdqgT/tTSgUR+R4verz2382+sOVGRLErrvWNRnGa2\ng20Gb/X3UiLoQJuYWOslT1Cig7ia7mIdiDMb33FGK1CpRYlVTpmsrqF9\n=b1tD\n-----END PGP MESSAGE-----",
+				"fp": "640170DE796E3CC2C1EA7E9D4DA395A9634B5E40"
+			}
+		],
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.9.0"
+	}
+}

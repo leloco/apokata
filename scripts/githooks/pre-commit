@@ -1,37 +1,60 @@
 #!/bin/bash
 
-INFRA_DIR="opentofu/infra"
-TANG_DIR="ansible/roles/tang/files/tang-keys"
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+CONFIG_PATH="$PROJECT_ROOT/.sops.yaml"
 
 encrypt_files() {
-    local dir=$1
-    local extension=$2
-    local sops_type=$3
+    local rel_dir=$1      # Relative path from project root
+    local extension=$2    # File extension (e.g., tfvars or jwk)
+    local sops_type=$3     # SOPS data type (e.g., dotenv or json)
 
-    if [ -d "$dir" ]; then
-        cd "$dir"
-        for file in ./*."$extension"; do
-            filename=$(basename "$file")
-
-            if [[ "$filename" == *.enc ]] || [ ! -f "$file" ]; then
-                continue
-            fi
-
-            echo "Encrypt $file with SOPS (Type: $sops_type)..."
-            sops --encrypt --input-type "$sops_type" --output-type "$sops_type" "$file" > "$filename.enc"
-            git add "$filename.enc"
-        done
-        cd - > /dev/null
+    if [ ! -d "$PROJECT_ROOT/$rel_dir" ]; then
+        echo "Info: Directory $rel_dir does not exist. Skipping..."
+        return
     fi
+
+    for file in "$PROJECT_ROOT/$rel_dir"/*."$extension"; do
+        [ -e "$file" ] || continue
+        
+        filename=$(basename "$file")
+        
+        # Skip files that are already encrypted
+        if [[ "$filename" == *.enc ]]; then
+            continue
+        fi
+
+        echo "Protecting file: $rel_dir/$filename (Type: $sops_type)"
+        
+        sops --encrypt \
+             --config "$CONFIG_PATH" \
+             --input-type "$sops_type" \
+             --output-type "$sops_type" \
+             "$file" > "$PROJECT_ROOT/$rel_dir/$filename.enc"
+        
+        git add "$PROJECT_ROOT/$rel_dir/$filename.enc"
+    done
 }
 
-encrypt_files "$INFRA_DIR" "tfvars" "dotenv"
+encrypt_files "opentofu/infra" "tfvars" "dotenv"
+encrypt_files "ansible/roles/tang/files/tang-keys" "jwk" "json"
 
-encrypt_files "$TANG_DIR" "jwk" "json"
 
-if git diff --cached --name-only --diff-filter=d | grep -E "\.(tfvars|jwk)$" | grep -v "\.enc$"; then
-    echo "ERROR: You are trying to commit at least one unencrypted .tfvars or .jwk file."
-    echo "Due to security reasons this is not permitted."
-    echo "Remove the file(s) from staging (git restore --staged <file>)."
+echo "Starting security check for unencrypted secrets..."
+
+UNENCRYPTED_FILES=$(git diff --cached --name-only --diff-filter=d | grep -E "\.(tfvars|jwk)$" | grep -v "\.enc$")
+
+if [ -n "$UNENCRYPTED_FILES" ]; then
+    echo "######################################################################"
+    echo "ATTENTION: SECURITY RISK DETECTED!"
+    echo "The following files are unencrypted in the staging area:"
+    echo "$UNENCRYPTED_FILES"
+    echo "----------------------------------------------------------------------"
+    echo "Committing these files is NOT permitted."
+    echo "Please remove them with: git restore --staged <file>"
+    echo "######################################################################"
     exit 1
+else
+    echo "Check passed: No unencrypted secrets found."
 fi
+
+exit 0
