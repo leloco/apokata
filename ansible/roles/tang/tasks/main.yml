@@ -38,4 +38,6 @@
     owner: _tang
     group: _tang
     mode: '0440'
+  with_fileglob:
+    - "tang-keys/*.jwk"
   notify: Restart tang socket

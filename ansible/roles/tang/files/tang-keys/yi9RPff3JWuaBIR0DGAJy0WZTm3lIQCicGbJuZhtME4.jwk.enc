@@ -1,0 +1,29 @@
+{
+	"alg": "ENC[AES256_GCM,data:V3cehQ==,iv:17SvnzbNI3wH93t9qqUu6ODpZjnN4HGRmtX0E7zlLhw=,tag:OyuKWcpPExYNRg+HSbmwMA==,type:str]",
+	"kty": "ENC[AES256_GCM,data:ei4=,iv:J2aGb2EkeGi/xrpP3XKF5TgwMN6ViETi7l113/nmShs=,tag:pGSr2uO3nleVUXb7SAhs/w==,type:str]",
+	"crv": "ENC[AES256_GCM,data:WBo4zLI=,iv:YwJHHfNDfCf3QKFARk4b65y/FSqyEp7OGwDw6zOAeQM=,tag:Gj4moGv5WE+Vpk12u11PYQ==,type:str]",
+	"x": "ENC[AES256_GCM,data:PboY8Kyj/Vi/XI17auh8Su04XEQ4dolfxy3hczpYxrEXVboZxiHug+L7iFg4e5KFuSF2f27lBPLlOUPYbODrzNhvXgME1TNa3CC5T2idmTae0I08DdCwgg==,iv:ZE9sT2vpqq1OLHtPzvqZF8lkaVAsKXx3tq9qdKag/jo=,tag:eI5km7ueaQfmf2zlLnAy6Q==,type:str]",
+	"y": "ENC[AES256_GCM,data:pY+DoZG8Cwf0DTAFOfuAXVELlp/limLMJa9L8Wm660Tou62MiYBodO9VvDzMAQdPWA6YlkAfK9SBxxUBZmlsKqHselCg+wV5bAi8s/sJWtDtvBF4KdNzqg==,iv:Pr1Fk0i3nqfb6yR/d0DQdRSnZB04odc4pPNXpyg3yxI=,tag:HfDW1BGFPqhWAKdxoeRv4Q==,type:str]",
+	"d": "ENC[AES256_GCM,data:roFnVKnx/u8zfMH1xMu0EI+7F0LXlmt9ocfUUur55VnB75XxBndjVeZD49hAkUliySOHTM9X/4/1dXfW7Z1KEfmzcTVGh73QPkWGEMx/O0q5qmni9Pz0sA==,iv:yvTjwpUi415OxR3u47SInjU2HZRv4G9FMU8STv5ALns=,tag:8cMopCwi4sYoLYRKKusbvQ==,type:str]",
+	"key_ops": [
+		"ENC[AES256_GCM,data:STQSMbCvUXFd,iv:bjMMTdyGihrE9IPCvVHTzn/CUhdLdS5QB1uPVYj4pBQ=,tag:u3A6XZrADsqM5GvTAYmduA==,type:str]"
+	],
+	"sops": {
+		"kms": null,
+		"gcp_kms": null,
+		"azure_kv": null,
+		"hc_vault": null,
+		"age": null,
+		"lastmodified": "2026-02-17T00:43:07Z",
+		"mac": "ENC[AES256_GCM,data:FwycYEIth5faW8qwXMdqMVhdstFBf03Dst5tAF2WXajCJLdlCPEWpoR9UqQgO3kknrypzDWVRCwpJ4oB00hkXQhAhbO/U+ck3mGYTVPPd8jzo+ir8P6mUdEPmEa2EKnjtz4tywGs+wfYBe3HKVeENamaHbqhSHg01mEAEkad5N8=,iv:uSxVKPuUg49JdtHvjZzqxcPi90tU54UEZHWPrbdg+J0=,tag:N0XJQAJYT4ykFPT4SI0bWA==,type:str]",
+		"pgp": [
+			{
+				"created_at": "2026-02-17T00:43:07Z",
+				"enc": "-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdAByBisb0EY6MWw5qygjNjroIsDOKZlIwD6sVu2o/S7W8w\nVgxjjlWlQ35A6YW/q/nlu2yauL7idZ/DoQ1hd8VpNJ5kXMbmTRDqtfzTti2K3fEs\n0lgBQ+gsvmVOkUMmPUgISy57dQOodbhdPfidR4cG5y8AV5GQEJkooydGFabi8GJw\nP/p654MJzKHv1ZT/xZN1XrjHY4GHdQUlq0Tk1/67V4uBfvkmC2JbRa0K\n=FyLL\n-----END PGP MESSAGE-----",
+				"fp": "640170DE796E3CC2C1EA7E9D4DA395A9634B5E40"
+			}
+		],
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.9.0"
+	}
+}

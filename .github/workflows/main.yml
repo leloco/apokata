@@ -27,6 +27,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
+      - name: Decrypt Secrets
+        uses: ./.github/actions/decrypt-secrets
+        with:
+          gpg_key: ${{ secrets.GPG_KEY }}
+
       - name: Setup Ansible Tools
         uses: ./.github/actions/install-ansible
         with:
@@ -35,8 +40,6 @@ jobs:
       - name: Setup OpenTofu Tools
         uses: ./.github/actions/opentofu-prep
         with:
-          gpg_key: ${{ secrets.GPG_KEY }}
-          working_directory: ${{ env.OPENTOFU_WORKING_DIR }}
           ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
 
       - name: Install OpenTofu CLI

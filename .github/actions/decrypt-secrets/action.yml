@@ -1,0 +1,49 @@
+name: 'Decrypt secrets'
+description: 'Imports GPG, installs SOPS and decrypt secrets'
+inputs:
+  gpg_key:
+    description: 'The GPG private key to import'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Import GPG Key
+      shell: bash
+      run: |
+        echo "${{ inputs.gpg_key }}" | gpg --batch --import
+        KEY_FP=$(gpg --list-secret-keys --with-colons | grep "^fpr" | cut -d: -f10 | head -n 1)
+        echo "${KEY_FP}:6:" | gpg --batch --import-ownertrust
+
+    - name: Install SOPS
+      shell: bash
+      run: |
+        if ! command -v sops &> /dev/null; then
+          curl -LO https://github.com/getsops/sops/releases/download/v3.9.0/sops-v3.9.0.linux.amd64
+          sudo install -m 0755 sops-v3.9.0.linux.amd64 /usr/local/bin/sops
+        fi
+
+    - name: Decrypt
+      shell: bash
+      run: |
+        echo "Starting decryption of secrets..."
+
+        TF_FILES=$(find . -name "*.tfvars.enc")
+        if [ -n "$TF_FILES" ]; then
+          for f in $TF_FILES; do
+            echo "Decrypting OpenTofu file: $f"
+            sops --decrypt --input-type dotenv --output-type dotenv "$f" > "${f%.enc}"
+          done
+        else
+          echo "Warning: No .tfvars.enc files found."
+        fi
+
+        JWK_FILES=$(find . -name "*.jwk.enc")
+        if [ -n "$JWK_FILES" ]; then
+          for f in $JWK_FILES; do
+            echo "Decrypting Tang key: $f"
+            sops --decrypt --input-type json --output-type json "$f" > "${f%.enc}"
+          done
+        else
+          echo "Warning: No .jwk.enc files found."
+        fi

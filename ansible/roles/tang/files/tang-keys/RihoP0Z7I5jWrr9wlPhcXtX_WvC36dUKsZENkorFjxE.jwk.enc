@@ -1,0 +1,30 @@
+{
+	"alg": "ENC[AES256_GCM,data:0Tp9Nyo=,iv:TWnkB162F+XG3/OjDNYXIt+lALFfaJ5HYbxfTcSMHYw=,tag:7E+BqriN5HVzR4v1La5Biw==,type:str]",
+	"kty": "ENC[AES256_GCM,data:eYQ=,iv:DOduTqFh0917c6wfsM8LdQaVfRSnk7x/VvpAIQx88BI=,tag:T8iW9LnTNlLjD6mHR5BHEg==,type:str]",
+	"crv": "ENC[AES256_GCM,data:VXHY+D4=,iv:VSpKoOOq6uQrNmWwuqO347uRfpHXcxTFfZ2rDrylwfQ=,tag:oiYxKBEOXh+WwkutWSSOpQ==,type:str]",
+	"x": "ENC[AES256_GCM,data:5pQFfEdFlfHB/7Kmj6Viw/1jTXTXJ3glgVvUUSMy7iRLkQLMsxGXxcfz8/Mmo6fKf+bs5ZHX8ba02Uw+/zaoWgjZQAz5bFv1XlXFiLJWDBEtjhjpm97a+w==,iv:buX/5LEmsUaKIG8HtkPe0rrfMBXNQHWM/nIrAcmrfvs=,tag:/0Av/XbiieXNCc9/4d+iuQ==,type:str]",
+	"y": "ENC[AES256_GCM,data:Bq/jH0ttPXNXE8i3LsJJ2BS7twxCW2v8Jn/iiQ/ASiNT3vALfd3CdcRr5hKA7I01VsdNbKobW9XC7aEH/CgIE5YNDdD6YMCt3/2x6zw/Vl7f/RitxSW5Ww==,iv:pv3NkreYJcKfz78/3zhOrl9SaEDUXvaxi6dwVXOO3Zg=,tag:/KC8/76Oi8aoDnDWCTD7Eg==,type:str]",
+	"d": "ENC[AES256_GCM,data:vzHOe7gJ18Fq4O4hZDeVJur3D4E520MpMQIoqm78evIp3kknmowbyJW/Q//KmjH+kLVKTysfJXL5mirVpkiYdhbUuqnRrCcBIG3JhWdAEsGkXCRIeNFFIQ==,iv:fn/GJQn29TYq72Z4l3+/Mmztzod1PLvkskGH4V0yN6M=,tag:rGKCnTdUXDTPWWCO5+GPVA==,type:str]",
+	"key_ops": [
+		"ENC[AES256_GCM,data:Cr5cJA==,iv:TwZYdX7nt7vRgDXEXv5vLugoehYNyu1eF3M9OZLlRgI=,tag:xm/Z9yEaIBEdcwy79fUXYQ==,type:str]",
+		"ENC[AES256_GCM,data:zpWQojr5,iv:qiScy5NDL+JO2B1mREjNcQ+41tLwSy30TzaA4sSehr4=,tag:dQ7qZoN/3HohnoWqXBgSqQ==,type:str]"
+	],
+	"sops": {
+		"kms": null,
+		"gcp_kms": null,
+		"azure_kv": null,
+		"hc_vault": null,
+		"age": null,
+		"lastmodified": "2026-02-17T00:43:07Z",
+		"mac": "ENC[AES256_GCM,data:cJkiivxQt1aMV0odFxvSrgyeC/G1/KnT7UWjuhhLBYRa3SEL1uaoKqNX880+ybYpOlLz4GpjUnkt/axdw/Ha+8LR4ZiCuyCsxnHUdLBvpT2UBuoaE/qzkStBC1vxN2J4VQUx0+WnKpIga3aTg2qcZFG9zSxNfOQAdQ+DZB9uE58=,iv:4l7+fO4HVenGxJtOyCApOOyuv3cx0GGF7UEJKxTvoQQ=,tag:kLZsIlH+D7tWg2/ln2t/IA==,type:str]",
+		"pgp": [
+			{
+				"created_at": "2026-02-17T00:43:07Z",
+				"enc": "-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdADW42fDOK7gFweq0/aWEZqzqvhm6+Jwm11+pRXYFc/gAw\n6ge5ADDX7w9oMa41CPmEHXHSrzaayBhZOBOuMyMgWf6H8Gr0Sygl9RSrjAV3RBrA\n0lgB3WvyBCWBOwuSU3kX0H2opGUbvtwcxqrCozJilXOCfccm84Dbkqfufga+mHmw\nl2XbIpXgej1pTxeTAg5lYTHOMs+YfS8a1qbiGomq9LYrn2n6ACU8iMCV\n=Ih7P\n-----END PGP MESSAGE-----",
+				"fp": "640170DE796E3CC2C1EA7E9D4DA395A9634B5E40"
+			}
+		],
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.9.0"
+	}
+}
