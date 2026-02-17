@@ -8,7 +8,7 @@ terraform.tfvars
 .api_url
 ansible/inventory.ini
 **/*.jwk
-**/*.jwk.enc
+!**/*.jwk.enc
 **/*.tfplan
 *.tfplan
 **/*.plan
