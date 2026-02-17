@@ -33,11 +33,11 @@
 
 - name: Restore active keys
   ansible.builtin.copy:
-    src: tang-keys/
+    src: "{{ item }}"
     dest: /var/lib/tang/
     owner: _tang
     group: _tang
-    mode: '0440'
+    mode: '0600'
   with_fileglob:
     - "tang-keys/*.jwk"
   notify: Restart tang socket
