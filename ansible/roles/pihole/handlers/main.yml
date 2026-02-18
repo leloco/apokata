@@ -1,9 +1,9 @@
 - name: Restart Unbound
-  service:
+  ansible.builtin.service:
     name: unbound
     state: restarted
 
 - name: Restart Pihole-FTL
-  service:
+  ansible.builtin.service:
     name: pihole-FTL
     state: restarted

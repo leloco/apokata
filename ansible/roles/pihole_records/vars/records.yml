@@ -1,4 +1,4 @@
-local_domains:
+pihole_records_local:
   - name: "im.x3dh.de"
     ip: "192.168.13.70"
 

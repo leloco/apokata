@@ -1,10 +1,10 @@
 ---
 - name: "Inject Local DNS Records into /etc/hosts"
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/hosts
     marker: "# {mark} ANSIBLE MANAGED DOMAINS"
     block: |
-      {% for item in local_dns_records %}
+      {% for item in pihole_records_local %}
       {{ item.ip }} {{ item.name }}
       {% endfor %}
   notify: Restart Pihole-DNS

@@ -1,26 +1,29 @@
 ---
-- name: Load encrypted secrets 
-  include_vars:
+- name: Load encrypted secrets
+  ansible.builtin.include_vars:
     file: secrets.yml
 
 - name: "Disable systemd-resolved"
-  service:
+  ansible.builtin.service:
     name: systemd-resolved
     state: stopped
-    enabled: no
-  ignore_errors: yes
-
+    enabled: false
+  register: resolved_status
+  failed_when:
+    - resolved_status.failed
+    - "'Could not find the requested service' not in resolved_status.msg"
+  
 - name: "Set temporary DNS (Quad9) for installation"
   copy:
     dest: /etc/resolv.conf
     content: "nameserver 9.9.9.9"
-    force: yes
+    force: true
 
 - name: "Install Unbound"
-  apt:
+  ansible.builtin.apt:
     name: unbound
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: "Download Root Hints"
   get_url:
@@ -45,18 +48,18 @@
     notify: Restart Unbound
     
 - name: "Restart and Enable Unbound immediately"
-  service:
+  ansible.builtinservice:
     name: unbound
     state: restarted
-    enabled: yes
+    enabled: true
     
 - name: "Create Pi-hole config dir"
-  file:
+  ansible.builtin.file:
     path: /etc/pihole
     state: directory
 
 - name: "Pre-seed setupVars.conf"
-  template:
+  ansible.builtin.template:
     dest: /etc/pihole/setupVars.conf
     content: |
       PIHOLE_INTERFACE={{ vault_pihole_interface }}
@@ -69,26 +72,26 @@
       QUERY_LOGGING=true
 
 - name: "Download Installer"
-  get_url:
+  ansible.builtin.get_url:
     url: https://install.pi-hole.net
     dest: /tmp/install-pihole.sh
     mode: '0744'
 
 - name: "Run Installer"
-  shell: "/tmp/install-pihole.sh --unattended"
+  ansible.builtin.shell: "/tmp/install-pihole.sh --unattended"
   args:
     creates: /usr/local/bin/pihole
   register: pihole_install_result  
   
 - name: "Set Pi-hole Web Interface Password"
-  shell: "pihole -a -p {{ vault_pihole_web_password }}"
+  ansible.builtin.shell: "pihole -a -p {{ vault_pihole_web_password }}"
   when: pihole_install_result.changed
 
 - name: "Set local DNS to localhost (Pi uses itself now)"
-  copy:
+  ansible.builtin.copy:
     dest: /etc/resolv.conf
     content: "nameserver 127.0.0.1"
 
 - name: "Initial Gravity update to activate default blacklist"
-  shell: "pihole -g"
+  ansible.builtin.shell: "pihole -g"
   when: pihole_install_result.changed
