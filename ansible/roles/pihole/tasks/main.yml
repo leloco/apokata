@@ -1,6 +1,6 @@
 ---
 - name: Load secret variables
-  include_vars:
+  ansible.builtin.include_vars:
     file: secrets.yml
 
 - name: "Disable systemd-resolved"
@@ -52,13 +52,13 @@
     group: root
     mode: '0644'
     notify: Restart Unbound
-    
+
 - name: "Restart and Enable Unbound immediately"
   ansible.builtin.service:
     name: unbound
     state: restarted
     enabled: true
-    
+
 - name: "Create Pi-hole config dir"
   ansible.builtin.file:
     path: /etc/pihole
@@ -95,11 +95,10 @@
     creates: /usr/local/bin/pihole
   register: pihole_install_result
   notify: "Update Pi-hole gravity"
-  
+
 - name: "Set Pi-hole Web Interface Password"
   ansible.builtin.command: "pihole -a -p {{ vault_pihole_web_password }}"
   when: pihole_install_result.changed
-  changed_when: false
 
 - name: "Set local DNS to localhost (Pi uses itself now)"
   ansible.builtin.copy:
