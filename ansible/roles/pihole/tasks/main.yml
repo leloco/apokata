@@ -48,7 +48,7 @@
     notify: Restart Unbound
     
 - name: "Restart and Enable Unbound immediately"
-  ansible.builtinservice:
+  ansible.builtin.service:
     name: unbound
     state: restarted
     enabled: true
