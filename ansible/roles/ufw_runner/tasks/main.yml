@@ -17,5 +17,6 @@
     insert: 1
     comment: "Runner management access specific hosts"
   loop:
+    - "{{ hostvars['shadow']['ansible_host'] }}"
     - "{{ hostvars['tang']['ansible_host'] }}"
     - "{{ pve_ip }}"
