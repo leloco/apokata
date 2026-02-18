@@ -7,3 +7,7 @@
   ansible.builtin.service:
     name: pihole-FTL
     state: restarted
+
+- name: "Update Pi-hole gravity"
+  ansible.builtin.command: "pihole -g"
+  changed_when: true
