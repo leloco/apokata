@@ -32,6 +32,9 @@
   ansible.builtin.get_url:
     url: https://www.internic.net/domain/named.root
     dest: /var/lib/unbound/root.hints
+    owner: root
+    group: root
+    mode: '0644'
 
 - name: "Configure Unbound"
   ansible.builtin.copy:
@@ -93,13 +96,10 @@
   ansible.builtin.command: "/tmp/install-pihole.sh --unattended"
   args:
     creates: /usr/local/bin/pihole
-  register: pihole_install_result
-  notify: "Update Pi-hole gravity"
-
-- name: "Set Pi-hole Web Interface Password"
-  ansible.builtin.command: "pihole -a -p {{ vault_pihole_web_password }}"
-  when: pihole_install_result.changed
-
+  notify:
+    - "Update Pi-hole gravity"
+    - "Set Pi-hole Web Interface Password"
+    
 - name: "Set local DNS to localhost (Pi uses itself now)"
   ansible.builtin.copy:
     dest: /etc/resolv.conf
