@@ -54,13 +54,10 @@
     owner: root
     group: root
     mode: '0644'
-    notify: Restart Unbound
+  notify: Restart Unbound
 
-- name: "Restart and Enable Unbound immediately"
-  ansible.builtin.service:
-    name: unbound
-    state: restarted
-    enabled: true
+- name: "Ensure Unbound is running NOW with new config"
+  ansible.builtin.meta: flush_handlers
 
 - name: "Create Pi-hole config dir"
   ansible.builtin.file:
@@ -71,7 +68,7 @@
     mode: '0755'
 
 - name: "Pre-seed setupVars.conf"
-  ansible.builtin.template:
+  ansible.builtin.copy:
     dest: /etc/pihole/setupVars.conf
     content: |
       PIHOLE_INTERFACE={{ vault_pihole_interface }}
