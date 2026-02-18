@@ -99,7 +99,7 @@
   notify:
     - "Update Pi-hole gravity"
     - "Set Pi-hole Web Interface Password"
-    
+
 - name: "Set local DNS to localhost (Pi uses itself now)"
   ansible.builtin.copy:
     dest: /etc/resolv.conf

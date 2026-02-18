@@ -15,4 +15,4 @@
 - name: "Set Pi-hole Web Interface Password"
   ansible.builtin.command: "pihole -a -p {{ vault_pihole_web_password }}"
   no_log: true
-  when: false 
+  changed_when: false
