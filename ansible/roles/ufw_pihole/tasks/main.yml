@@ -1,0 +1,43 @@
+---
+- name: "Install UFW firewall"
+  apt:
+    name: ufw
+    state: present
+
+- name: "UFW: Set default policy to DENY incoming"
+  ufw:
+    policy: deny
+    direction: incoming
+
+- name: "UFW: Allow SSH (22) from ironhide and runner only"
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+    from_ip: "{{ item }}"
+  loop:
+    - "{{ ironhide }}"
+    - "{{ ironhide_wifi }}"
+    - "{{ hostvars['runner_alpha']['ansible_host'] }}"
+
+- name: "UFW: Allow HTTP/HTTPS from ironhide"
+  ufw:
+    rule: allow
+    port: "80,443"
+    proto: tcp
+    from_ip: "{{ item }}"
+  loop:
+    - "{{ ironhide }}"
+    - "{{ ironhide_wifi }}"
+
+- name: "UFW: Allow DNS (53 UDP)"
+  ufw:
+    rule: allow
+    port: '53'
+    proto: udp
+
+- name: "UFW: Allow DNS (53 TCP)"
+  ufw:
+    rule: allow
+    port: '53'
+    proto: tcp

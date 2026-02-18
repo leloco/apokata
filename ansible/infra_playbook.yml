@@ -1,4 +1,14 @@
 ---
+
+- name: Setup dns servers
+  hosts: shadow
+  become: true
+  roles:
+    - { role: ufw_pihole, tags: ['pihole', 'pihole_ufw'] }
+    - { role: ufw_enable, tags: ['pihole'] }
+    - { role: pihole_records, tags: ['pihole', 'pihole_records'] }
+    - { role: pihole, tags: ['pihole'] }
+
 - name: Setup lxc "tang"
   hosts: tang
   become: true
