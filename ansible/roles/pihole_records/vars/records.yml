@@ -1,0 +1,45 @@
+pihole_records_local:
+  - name: "im.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "conference.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "push.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "upload.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "proxy1.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "router.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "pve.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "fritzbox.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "cloud.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "portainer.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "pihole.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "office-outlet-0.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "converse.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "webadmin-ejabberd.x3dh.de"
+    ip: "192.168.13.70"
+
+  - name: "pgadmin4-ejabberd.x3dh.de"
+    ip: "192.168.13.70"

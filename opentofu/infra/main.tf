@@ -17,6 +17,9 @@ ${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]}
 # managed in /opentofu/runner
 runner_alpha ansible_host=192.168.13.253
 
+[dns_group]
+shadow ansible_host=192.168.13.251
+
 [tang_group]
 ${module.tang.hostname}
 
@@ -28,9 +31,13 @@ proxmox_lxc
 proxmox_vm
 tang_group
 runner_group
+dns_group
 
 [runner_group:vars]
 ansible_user=twoy
+
+[dns_group:vars]
+ansible_user=not32olo
 
 [all:vars]
 ansible_user=root

@@ -1,0 +1,109 @@
+---
+- name: Load secret variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
+- name: "Disable systemd-resolved"
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+  register: pihole_resolved_status
+  failed_when:
+    - pihole_resolved_status.failed
+    - "'Could not find the requested service' not in resolved_status.msg"
+
+- name: "Set temporary DNS (Quad9) for installation"
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: "nameserver 9.9.9.9\n"
+    owner: root
+    group: root
+    mode: '0644'
+    force: true
+
+- name: "Install Unbound"
+  ansible.builtin.apt:
+    name: unbound
+    state: present
+    update_cache: true
+
+- name: "Download Root Hints"
+  ansible.builtin.get_url:
+    url: https://www.internic.net/domain/named.root
+    dest: /var/lib/unbound/root.hints
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Configure Unbound"
+  ansible.builtin.copy:
+    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+    content: |
+      server:
+          verbosity: 0
+          interface: 127.0.0.1
+          port: 5335
+          do-ip4: yes
+          do-udp: yes
+          do-tcp: yes
+          root-hints: "/var/lib/unbound/root.hints"
+          private-address: 192.168.0.0/16
+          private-address: 172.16.0.0/12
+          private-address: 10.0.0.0/8
+    owner: root
+    group: root
+    mode: '0644'
+    notify: Restart Unbound
+
+- name: "Restart and Enable Unbound immediately"
+  ansible.builtin.service:
+    name: unbound
+    state: restarted
+    enabled: true
+
+- name: "Create Pi-hole config dir"
+  ansible.builtin.file:
+    path: /etc/pihole
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: "Pre-seed setupVars.conf"
+  ansible.builtin.template:
+    dest: /etc/pihole/setupVars.conf
+    content: |
+      PIHOLE_INTERFACE={{ vault_pihole_interface }}
+      PIHOLE_DNS_1={{ vault_pihole_dns_upstream }}
+      PIHOLE_DNS_2={{ vault_pihole_dns_upstream }}
+      INSTALL_WEB_SERVER=true
+      INSTALL_WEB_INTERFACE=true
+      LIGHTTPD_ENABLED=true
+      IPV4_ADDRESS={{ ansible_default_ipv4.address }}/24
+      QUERY_LOGGING=true
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Download Installer"
+  ansible.builtin.get_url:
+    url: https://install.pi-hole.net
+    dest: /tmp/install-pihole.sh
+    mode: '0744'
+
+- name: "Run Installer"
+  ansible.builtin.command: "/tmp/install-pihole.sh --unattended"
+  args:
+    creates: /usr/local/bin/pihole
+  notify:
+    - "Update Pi-hole gravity"
+    - "Set Pi-hole Web Interface Password"
+
+- name: "Set local DNS to localhost (Pi uses itself now)"
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: "nameserver 127.0.0.1"
+    owner: root
+    group: root
+    mode: '0644'

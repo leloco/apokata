@@ -1,0 +1,5 @@
+---
+- name: Restart Pihole-DNS
+  ansible.builtin.service:
+    name: pihole-FTL
+    state: restarted
