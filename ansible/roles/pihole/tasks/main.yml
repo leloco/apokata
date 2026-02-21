@@ -16,7 +16,7 @@
         ethernets:
           eth0:
             addresses:
-              - {{ shadow }}/24
+              - {{ hostvars['shadow']['ansible_host'] }}/24
               - {{ shadow_ipv6 }}/64
             routes:
               - to: default
