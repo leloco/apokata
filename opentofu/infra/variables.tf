@@ -9,6 +9,11 @@ variable "tang_ipv4_address" {
   description = "The IPv4 address for Tang in CIDR notation (e.g., 192.168.1.20/24)."
 }
 
+variable "tang_ipv6_address" {
+  type        = string
+  description = "The IPv6 address for tang in CIDR notation (e.g., fd69:efa6:36fd::20/64)."
+}
+
 variable "tang_root_password" {
   type        = string
   description = "The root password for the Tang container."
@@ -45,6 +50,11 @@ variable "prowl_hostname" {
 variable "prowl_ipv4_address" {
   type        = string
   description = "The IPv4 address for prowl in CIDR notation (e.g., 192.168.1.20/24)."
+}
+
+variable "prowl_ipv6_address" {
+  type        = string
+  description = "The IPv6 address for prowl in CIDR notation (e.g., fd69:efa6:36fd::20/64)."
 }
 
 variable "prowl_root_password" {
