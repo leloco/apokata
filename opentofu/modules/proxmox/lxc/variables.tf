@@ -24,9 +24,19 @@ variable "ipv4_address" {
   description = "IPv4 address in CIDR format."
 }
 
+variable "ipv6_address" {
+  type        = string
+  description = "IPv6 address in CIDR format."
+}
+
 variable "gateway" {
   type        = string
   description = "The IPv4 gateway address."
+}
+
+variable "ipv6_gateway" {
+  type        = string
+  description = "The IPv6 gateway address."
 }
 
 variable "ssh_public_key_file" {

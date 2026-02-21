@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = ">= 0.90.0" 
+      version = ">= 0.90.0"
     }
   }
 }
@@ -12,7 +12,7 @@ resource "proxmox_virtual_environment_container" "lxc" {
   node_name   = var.pve_node
   vm_id = var.vm_id
   unprivileged = true
-  
+
   operating_system {
     template_file_id = var.template_file_id
     type             = var.template_type
@@ -28,7 +28,8 @@ resource "proxmox_virtual_environment_container" "lxc" {
       }
 
       ipv6 {
-        address = "auto"  # "auto" activates SLAAC
+        address = var.ipv6_address
+        gateway = var.ipv6_gateway
       }
     }
 
