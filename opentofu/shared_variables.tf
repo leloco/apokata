@@ -18,7 +18,11 @@ variable "shared_virtual_environment_api_token" {
 variable "shared_network_gateway" {
   type        = string
   description = "Gateway for all containers"
-  sensitive = true
+}
+
+variable "shared_network_gateway_ipv6" {
+  type        = string
+  description = "Gateway ipv6 for all containers"
 }
 
 variable "shared_network_bridge" {
@@ -30,7 +34,7 @@ variable "shared_network_bridge" {
 variable "shared_network_subnet" {
   description = "The general subnet"
   type        = string
-  sensitive = true 
+  sensitive = true
 }
 
 variable "shared_ssh_public_key_file" {
@@ -48,6 +52,6 @@ variable "shared_lxc_template_file_id" {
 variable "shared_vm_template_id" {
   description = "The id for vm templates"
   type        = number
-  default     = 9000 
+  default     = 9000
 }
 

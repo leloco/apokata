@@ -38,6 +38,7 @@ ansible_user=twoy
 
 [dns_group:vars]
 ansible_user=not32olo
+shadow_ipv6 = fd69:efa6:36fd:0::251
 
 [all:vars]
 ansible_user=root
@@ -49,6 +50,8 @@ ironhide_wifi = 192.168.13.118
 sentinel = 192.168.13.205
 pihole_ninja = 192.168.13.10
 pve_ip = ${local.proxmox_host_ip}
+network_gateway = ${var.shared_network_gateway}
+network_gateway_ipv6 = ${var.shared_network_gateway_ipv6}
 EOT
 
 depends_on = [ module.tang ]
