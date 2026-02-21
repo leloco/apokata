@@ -1,3 +1,4 @@
+# tang
 variable "tang_hostname" {
   type        = string
   description = "The hostname for the Tang LXC container."
