@@ -3,6 +3,31 @@
   ansible.builtin.include_vars:
     file: secrets.yml
 
+- name: "Configure Netplan for static IPv4 and IPv6"
+  ansible.builtin.copy:
+    dest: /etc/netplan/01-netcfg.yaml
+    owner: root
+    group: root
+    mode: '0600'
+    content: |
+      network:
+        version: 2
+        renderer: networkd
+        ethernets:
+          eth0:
+            addresses:
+              - {{ shadow }}/24
+              - {{ shadow_ipv6 }}/64
+            routes:
+              - to: default
+                via: {{ shared_network_gateway }}
+              - to: default
+                via: {{ shared_network_gateway_ipv6 }}
+  notify: "Apply netplan"
+
+- name: "Apply netplan immediately if changed"
+  ansible.builtin.meta: flush_handlers
+
 - name: "Disable systemd-resolved"
   ansible.builtin.service:
     name: systemd-resolved
@@ -11,7 +36,7 @@
   register: pihole_resolved_status
   failed_when:
     - pihole_resolved_status.failed
-    - "'Could not find the requested service' not in resolved_status.msg"
+    - "'Could not find the requested service' not in pihole_resolved_status.msg"
 
 - name: "Set temporary DNS (Quad9) for installation"
   ansible.builtin.copy:
@@ -95,7 +120,6 @@
     creates: /usr/local/bin/pihole
   notify:
     - "Update Pi-hole gravity"
-    - "Set Pi-hole Web Interface Password"
 
 - name: "Set local DNS to localhost (Pi uses itself now)"
   ansible.builtin.copy:
@@ -104,3 +128,8 @@
     owner: root
     group: root
     mode: '0644'
+
+- name: "Ensure Web Interface Password is set"
+  ansible.builtin.command: "pihole -a -p {{ vault_pihole_web_password }}"
+  no_log: true
+  changed_when: false

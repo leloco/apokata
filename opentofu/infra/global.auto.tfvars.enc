@@ -1,10 +1,11 @@
-shared_virtual_environment_endpoint  =ENC[AES256_GCM,data:+YJoTurgHqZm6MkyKLNrz7mouhPGi03eQkF3Qun8CQ==,iv:Kh7JooPGgdIcw0fe+Z9x6Fe7n3GW02m+B5EnznHmG6Q=,tag:w0dnVoGemmqkwfA75IcGDg==,type:str]
-shared_network_gateway =ENC[AES256_GCM,data:+2jNzcPoXx/WywJ3qAMB,iv:8eFQ9GuWBva5piJctipVDw9ws4FDTJnmBMZxZbvGuE8=,tag:fWl+YJMVWvbe7WFXtj80aA==,type:str]
-shared_network_subnet =ENC[AES256_GCM,data:qoay7XioG2OxFAf2fP8rgYo7,iv:9vIRg/UtTNqQESHV1UVbgCBLyvda+W7cEqidiDfgJQs=,tag:4QMhaoGULDvLXTziJfdxIw==,type:str]
-sops_lastmodified=2026-02-18T22:48:00Z
-sops_mac=ENC[AES256_GCM,data:QV/hGQuzyt6apqkUNRo8k6iyL3/UgHpGKJ/lGRbDYFISWyYa0zjBGs8aaih8VY7y/UzeYfQPsHNKxyfjhvnGxvEH19lcno1ADhK3uDQQH3XzlQU00rKRF+AAG0eh99wq16zSRkdiehpCYk7ZC+ki7HENSSAf3Ehk0zuo0NLpcVc=,iv:W5JRgRcPIJx/4ilU1mrsgXtWxHf/1dVH5XNz0diNejM=,tag:dykzQyPc6rynx3lSHL7j7g==,type:str]
-sops_pgp__list_0__map_created_at=2026-02-18T22:48:00Z
-sops_pgp__list_0__map_enc=-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdA66sKBfYXTKc8ElqFNY/vTZRu5xahQVPw3B1dq4R0fEsw\niKmbpLCd4sIAToQd0TfVxDY9l9sBhiUm4GGsC+aJefVTUqIsAG3BKMnVVoQhqhaU\n0lgB9hUd5SJg+aLCBa0/254efMkBJzXnWdUeCKzUoBw3Ky+mbXfDBj2hBNgjM3hG\nvlhPK2zgykF2nHwegfljkETUjo4zIwPy7u8TEG60i2iRA9A/ZGTmG7z/\n=DocT\n-----END PGP MESSAGE-----
+shared_virtual_environment_endpoint  =ENC[AES256_GCM,data:w0Fbx9LZ6doIbMAN5sqTT2ePFCeQzQ95nVcR+M6G7w==,iv:suuhhfK5z2k4V3nS+snrm/lMA4V9OuZEcNjtINy49Y8=,tag:BVVG9FdFrtK4jzxggBxYrg==,type:str]
+shared_network_gateway =ENC[AES256_GCM,data:LFDayEi2kiI30NcYNLry,iv:RgVkIP9oRATA/Anm7WkO7JumQNTNl3hf9OGlV/PKe7c=,tag:s2cGphOj+lP9PlfMQk6LJw==,type:str]
+shared_network_gateway_ipv6 =ENC[AES256_GCM,data:HlSKMM2BO0xUKsBXUrAiFdZ9jbQrJub/9pfYHXg8Rsem+kuZrDl6,iv:qm0xTzM5fkV+yfI7IMXnvBCVbkpzsC9hb0yoSBdx+WI=,tag:/05JqM/vZw3q28XCkRMqtA==,type:str]
+shared_network_subnet =ENC[AES256_GCM,data:OM+AAWX8t4bHMRgmZhULzYS7,iv:rHwa4wCw6z0hR5TMeGBPuIHxCmFacXhFWFh1aBLf3pQ=,tag:llSr3hGhwa1MZvQ2KNBuWg==,type:str]
+sops_lastmodified=2026-02-21T21:06:07Z
+sops_mac=ENC[AES256_GCM,data:Eek7PTnEbMw523E1b2kfNrNHnkpEowuiKUvMYxSnHGX5wVVTYlCo67IOSRKMPi6SjOJREzrAkheWjt1Bgpkg/meLVlimFGDWyETz7h9ru0+nKXg6Q/doXSWpxrwq5Y07oP0Qj8zrq/Vv86scyWRXxsla1HvDXYIVwELYrq35cf0=,iv:BOriUqJU7S3y6SEOiq6YVPld1sW+5cBg06eXbIaZFM0=,tag:3VZ9twQn6Em8eP3izG6fsA==,type:str]
+sops_pgp__list_0__map_created_at=2026-02-21T21:06:07Z
+sops_pgp__list_0__map_enc=-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdA26+w23rJQku2L2d5QTUjBQsOu/07/Ah1K4K8UKKdV2Qw\nNHXh/GM4/DmZcDg5XRZqhqg948APgrOi/ENkxGqcYKH8Uzf1V+5+JVNGPT8JG89d\n0lgBq4mjsf70NqSjYM+j2I2waAa7mwcSdZE0Ej1iaEkZCnAKw4cf6AHKw1qwcxVE\nu/Tamt+5jj+ciqwVSafHQoOi6VauAYkNnvCBO0wm1obObP8Kp6ZQl2yD\n=7C4M\n-----END PGP MESSAGE-----
 sops_pgp__list_0__map_fp=640170DE796E3CC2C1EA7E9D4DA395A9634B5E40
 sops_unencrypted_suffix=_unencrypted
 sops_version=3.9.0
