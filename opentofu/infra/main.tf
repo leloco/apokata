@@ -12,6 +12,7 @@ resource "local_file" "ansible_inventory" {
 # --------------------------------------------------------------------------
 [proxmox_lxc]
 ${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]}
+${module.prowl.hostname} ansible_host=${split("/", module.prowl.ipv4_address)[0]}
 
 [proxmox_vm]
 # managed in /opentofu/runner
@@ -19,6 +20,7 @@ runner_alpha ansible_host=192.168.13.253
 
 [dns_group]
 shadow ansible_host=192.168.13.251
+${module.prowl.hostname}
 
 [tang_group]
 ${module.tang.hostname}
@@ -68,10 +70,35 @@ module "tang" {
   ipv4_address     = var.tang_ipv4_address
   gateway          = var.shared_network_gateway
 
+  ipv6_address     = var.tang_ipv6_address
+  ipv6_gateway     = var.shared_network_gateway_ipv6
+
   ssh_public_key_file = var.shared_ssh_public_key_file
   root_password       = var.tang_root_password
 
   datastore_id     = var.tang_datastore_id
   datastore_size   = var.tang_datastore_size
   start_on_boot    = var.tang_start_on_boot
+}
+
+module "prowl" {
+  source = "../modules/proxmox/lxc"
+
+  pve_node         = var.shared_virtual_environment_node
+  vm_id            = var.prowl_vm_id
+  hostname         = var.prowl_hostname
+  template_file_id = var.shared_lxc_template_file_id
+
+  ipv4_address     = var.prowl_ipv4_address
+  gateway          = var.shared_network_gateway
+
+  ipv6_address     = var.prowl_ipv6_address
+  ipv6_gateway     = var.shared_network_gateway_ipv6
+
+  ssh_public_key_file = var.shared_ssh_public_key_file
+  root_password       = var.prowl_root_password
+
+  datastore_id     = var.prowl_datastore_id
+  datastore_size   = var.prowl_datastore_size
+  start_on_boot    = var.prowl_start_on_boot
 }

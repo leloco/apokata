@@ -1,7 +1,7 @@
 ---
 
 - name: Setup dns servers
-  hosts: shadow
+  hosts: [shadow, prowl]
   become: true
   roles:
     - { role: ufw_pihole, tags: ['pihole', 'pihole_ufw'] }

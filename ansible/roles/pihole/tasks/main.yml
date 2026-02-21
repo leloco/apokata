@@ -24,6 +24,7 @@
               - to: default
                 via: {{ shared_network_gateway_ipv6 }}
   notify: "Apply netplan"
+  when: inventory_hostname == 'shadow'
 
 - name: "Apply netplan immediately if changed"
   ansible.builtin.meta: flush_handlers
