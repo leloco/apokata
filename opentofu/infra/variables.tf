@@ -34,3 +34,41 @@ variable "tang_start_on_boot" {
   description = "Should the container start automatically when the Proxmox node boots?"
   default = true
 }
+
+# prowl
+variable "prowl_hostname" {
+  type        = string
+  description = "The hostname for the prowl LXC container."
+}
+
+variable "prowl_ipv4_address" {
+  type        = string
+  description = "The IPv4 address for prowl in CIDR notation (e.g., 192.168.1.20/24)."
+}
+
+variable "prowl_root_password" {
+  type        = string
+  description = "The password for the Pi-Hole web-interface"
+  sensitive   = true
+}
+
+variable "prowl_datastore_id" {
+  type        = string
+  description = "The Proxmox storage identifier for the prowl disk."
+}
+
+variable "prowl_datastore_size" {
+  type        = number
+  description = "The disk size for prowl in GB."
+}
+
+variable "prowl_vm_id" {
+  type        = number
+  description = "The dedicated ID for the LXC container (VMID)."
+}
+
+variable "prowl_start_on_boot" {
+  type        = bool
+  description = "Should the container start automatically when the Proxmox node boots?"
+  default = true
+}
