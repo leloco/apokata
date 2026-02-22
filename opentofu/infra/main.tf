@@ -11,15 +11,15 @@ resource "local_file" "ansible_inventory" {
 # Generated on: ${timestamp()}
 # --------------------------------------------------------------------------
 [proxmox_lxc]
-${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]}
+${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]} 
 ${module.prowl.hostname} ansible_host=${split("/", module.prowl.ipv4_address)[0]}
 
 [proxmox_vm]
 # managed in /opentofu/runner
-runner_alpha ansible_host=192.168.13.253
+runner_alpha ansible_host=192.168.13.253 ansible_user=twoy
 
 [dns_group]
-shadow ansible_host=192.168.13.251
+shadow ansible_host=192.168.13.251 ansible_user=not32olo
 ${module.prowl.hostname}
 
 [tang_group]
@@ -35,11 +35,7 @@ tang_group
 runner_group
 dns_group
 
-[runner_group:vars]
-ansible_user=twoy
-
 [dns_group:vars]
-ansible_user=not32olo
 shadow_ipv6 = fd69:efa6:36fd:0::251
 
 [all:vars]
