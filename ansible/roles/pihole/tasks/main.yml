@@ -28,6 +28,7 @@
 
 - name: "Apply netplan immediately if changed"
   ansible.builtin.meta: flush_handlers
+  when: inventory_hostname == 'shadow'
 
 - name: "Disable systemd-resolved"
   ansible.builtin.service:
