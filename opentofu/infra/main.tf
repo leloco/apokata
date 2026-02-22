@@ -11,7 +11,7 @@ resource "local_file" "ansible_inventory" {
 # Generated on: ${timestamp()}
 # --------------------------------------------------------------------------
 [proxmox_lxc]
-${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]} 
+${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]}
 ${module.prowl.hostname} ansible_host=${split("/", module.prowl.ipv4_address)[0]}
 
 [proxmox_vm]
@@ -52,7 +52,7 @@ shared_network_gateway = ${var.shared_network_gateway}
 shared_network_gateway_ipv6 = ${var.shared_network_gateway_ipv6}
 EOT
 
-depends_on = [ module.tang ]
+depends_on = [ module.tang, module.prowl ]
 }
 
 module "tang" {
