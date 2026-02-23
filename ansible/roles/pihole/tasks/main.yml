@@ -132,6 +132,6 @@
     mode: '0644'
 
 - name: "Ensure Web Interface Password is set"
-  ansible.builtin.command: "pihole -a -p {{ vault_pihole_web_password }}"
+  ansible.builtin.command: "pihole setpassword {{ vault_pihole_web_password }}"
   no_log: true
   changed_when: false
