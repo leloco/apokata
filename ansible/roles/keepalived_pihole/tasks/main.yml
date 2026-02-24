@@ -1,6 +1,6 @@
 ---
 - name: Install Keepalived
-  apt:
+  ansible.builtin.apt:
     name: keepalived
     state: present
     update_cache: true
@@ -21,7 +21,7 @@
   become: true
 
 - name: Deploy Keepalived Configuration
-  template:
+  ansible.builtin.template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
     owner: root
