@@ -41,3 +41,18 @@
     rule: allow
     port: '53'
     proto: tcp
+
+- name: "UFW: Allow Full-Trust from other DNS servers (IPv4 and IPv6)"
+  community.general.ufw:
+    rule: allow
+    proto: any
+    from_ip: "{{ item }}"
+    comment: "Keepalived Sync for {{ item }} (VRRP)"
+  loop:
+    - "{{ hostvars[partner_hostname]['ansible_host'] }}"
+    - "{{ hostvars[partner_hostname]['ipv6_address'] }}"
+    - "fe80::/10" # for VRRP hearbeat
+  vars:
+    # all names of the partners in that group
+    partner_hostname: "{{ groups['dns_group'] | reject('equalto', inventory_hostname) | first }}"
+  become: true

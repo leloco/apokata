@@ -12,15 +12,21 @@ resource "local_file" "ansible_inventory" {
 # --------------------------------------------------------------------------
 [proxmox_lxc]
 ${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]}
-${module.prowl.hostname} ansible_host=${split("/", module.prowl.ipv4_address)[0]}
+${module.prowl.hostname} ansible_host=${split("/", module.prowl.ipv4_address)[0]} ipv6_address=${split("/", module.prowl.ipv6_address)[0]}
 
 [proxmox_vm]
 # managed in /opentofu/runner
 runner_alpha ansible_host=192.168.13.253 ansible_user=twoy
 
 [dns_group]
-shadow ansible_host=192.168.13.251 ansible_user=not32olo
-${module.prowl.hostname}
+# shadow is not managed by OpenTofu
+shadow ansible_host=192.168.13.251 ipv6_address=fd69:efa6:36fd:0::251 keepalived_role=MASTER keepalived_priority=100 ansible_user=not32olo
+${module.prowl.hostname} keepalived_role=BACKUP keepalived_priority=80
+
+[dns_group:vars]
+virtual_ip_v4=192.168.13.249/24
+virtual_ip_v6=fd69:efa6:36fd::249/64
+network_interface=eth0
 
 [tang_group]
 ${module.tang.hostname}
@@ -34,9 +40,6 @@ proxmox_vm
 tang_group
 runner_group
 dns_group
-
-[dns_group:vars]
-shadow_ipv6 = fd69:efa6:36fd:0::251
 
 [all:vars]
 ansible_user=root

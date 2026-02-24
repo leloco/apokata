@@ -1,0 +1,6 @@
+---
+- name: "Set UTC-Timezone"
+  community.general.timezone:
+    name: UTC
+  become: true
+  notify: "Restart systemd-journald"

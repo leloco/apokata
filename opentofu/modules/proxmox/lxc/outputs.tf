@@ -8,3 +8,7 @@ output "hostname" {
 output "ipv4_address" {
   value = split("/", proxmox_virtual_environment_container.lxc.initialization[0].ip_config[0].ipv4[0].address)[0]
 }
+
+output "ipv6_address" {
+  value = split("/", proxmox_virtual_environment_container.lxc.initialization[0].ip_config[0].ipv6[0].address)[0]
+}

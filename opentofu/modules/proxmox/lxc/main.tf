@@ -40,7 +40,7 @@ resource "proxmox_virtual_environment_container" "lxc" {
       password = var.root_password
     }
   }
-  
+
   features {
     nesting = var.nesting
   }
