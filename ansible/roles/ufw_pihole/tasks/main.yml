@@ -16,8 +16,8 @@
     proto: tcp
     from_ip: "{{ item }}"
   loop:
-    - "{{ ironhide }}"
-    - "{{ ironhide_wifi }}"
+    - "{{ ironhide_ipv4 }}"
+    - "{{ ironhide_wifi_ipv4 }}"
     - "{{ hostvars['runner_alpha']['ansible_host'] }}"
 
 - name: "UFW: Allow HTTP/HTTPS from ironhide"
@@ -27,8 +27,8 @@
     proto: tcp
     from_ip: "{{ item }}"
   loop:
-    - "{{ ironhide }}"
-    - "{{ ironhide_wifi }}"
+    - "{{ ironhide_ipv4 }}"
+    - "{{ ironhide_wifi_ipv4 }}"
 
 - name: "UFW: Allow DNS (53 UDP)"
   community.general.ufw:
@@ -50,7 +50,7 @@
     comment: "Keepalived Sync for {{ item }} (VRRP)"
   loop:
     - "{{ hostvars[partner_hostname]['ansible_host'] }}"
-    - "{{ hostvars[partner_hostname]['ipv6_address'] }}"
+    - "{{ hostvars[partner_hostname]['ansible_host_ipv6'] }}"
     - "fe80::/10" # for VRRP hearbeat
   vars:
     # all names of the partners in that group

@@ -1,5 +1,5 @@
 locals {
-  proxmox_host_ip = split(":", split("/", var.shared_virtual_environment_endpoint)[2])[0]
+  pve_ipv4 = split(":", split("/", var.shared_virtual_environment_endpoint)[2])[0]
 }
 
 resource "local_file" "ansible_inventory" {
@@ -12,7 +12,7 @@ resource "local_file" "ansible_inventory" {
 # --------------------------------------------------------------------------
 [proxmox_lxc]
 ${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]}
-${module.prowl.hostname} ansible_host=${split("/", module.prowl.ipv4_address)[0]} ipv6_address=${split("/", module.prowl.ipv6_address)[0]}
+${module.prowl.hostname} ansible_host=${split("/", module.prowl.ipv4_address)[0]} ansible_host_ipv6=${split("/", module.prowl.ipv6_address)[0]}
 
 [proxmox_vm]
 # managed in /opentofu/runner
@@ -20,12 +20,10 @@ runner_alpha ansible_host=192.168.13.253 ansible_user=twoy
 
 [dns_group]
 # shadow is not managed by OpenTofu
-shadow ansible_host=192.168.13.251 ipv6_address=fd69:efa6:36fd:0::251 keepalived_role=MASTER keepalived_priority=100 ansible_user=not32olo
+shadow ansible_host=192.168.13.251 ansible_host_ipv6=fd69:efa6:36fd:0::251 keepalived_role=MASTER keepalived_priority=100 ansible_user=not32olo
 ${module.prowl.hostname} keepalived_role=BACKUP keepalived_priority=80
 
 [dns_group:vars]
-virtual_ip_v4=192.168.13.249/24
-virtual_ip_v6=fd69:efa6:36fd::249/64
 network_interface=eth0
 
 [tang_group]
@@ -42,17 +40,22 @@ runner_group
 dns_group
 
 [all:vars]
-ansible_user=root
-# set via ssh-agent
-ansible_ssh_private_key_file=""
-ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-ironhide = 192.168.13.117
-ironhide_wifi = 192.168.13.118
-sentinel = 192.168.13.205
-pihole_ninja = 192.168.13.10
-pve_ip = ${local.proxmox_host_ip}
+# hosts that are not managed by OpenTofu
+ironhide_ipv4 = 192.168.13.117
+ironhide_wifi_ipv4 = 192.168.13.118
+sentinel_ipv4 = 192.168.13.205
+pve_ipv4 = ${local.pve_ipv4}
 shared_network_gateway = ${var.shared_network_gateway}
 shared_network_gateway_ipv6 = ${var.shared_network_gateway_ipv6}
+
+virtual_ipv4=192.168.13.249
+virtual_ipv6=fd69:efa6:36fd::249
+
+# ansible settings
+ansible_user=root
+# configured with ssh-agent
+ansible_ssh_private_key_file=""
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 EOT
 
 depends_on = [ module.tang, module.prowl ]

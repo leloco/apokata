@@ -27,4 +27,4 @@
     owner: root
     group: root
     mode: '0644'
-  notify: restart keepalived
+  notify: Restart keepalived

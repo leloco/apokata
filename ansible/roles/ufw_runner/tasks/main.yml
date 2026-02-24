@@ -3,7 +3,7 @@
   community.general.ufw:
     rule: allow
     direction: out
-    dest: "{{ pve_ip }}"
+    dest: "{{ pve_ipv4 }}"
     port: 8006
     proto: tcp
     insert: 1
@@ -20,4 +20,4 @@
     - "{{ hostvars['shadow']['ansible_host'] }}"
     - "{{ hostvars['prowl']['ansible_host'] }}"
     - "{{ hostvars['tang']['ansible_host'] }}"
-    - "{{ pve_ip }}"
+    - "{{ pve_ipv4 }}"
