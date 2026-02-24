@@ -4,6 +4,11 @@
     name: ufw
     state: present
     update_cache: true
+
+- name: Reset UFW to factory defaults
+  ansible.builtin.command: ufw --force reset
+  changed_when: true
+
 # deny everything what is not explicitly allowed
 - name: Deny ALL (incoming & outgoing)
   community.general.ufw:
@@ -42,12 +47,17 @@
     direction: out
     port: 123
     proto: udp
+
 # the wall: disallow internal communication (except rules above that are definied above)
-- name: BLOCK all other internal outgoing traffic
+- name: BLOCK all other internal outgoing traffic (ipv4, ipv6)
   community.general.ufw:
     rule: deny
     direction: out
-    dest: 192.168.13.0/24
+    dest: "{{ item }}"
+  loop:
+    - 192.168.13.0/24 # ipv4
+    - "fd69:efa6:36fd::/64" # ipv6 (ULA)
+
 # the internet: allow everything thas is not 192.168.13.x
 - name: Allow HTTP/HTTPS to anywhere (Internet only due to rule order)
   community.general.ufw:
