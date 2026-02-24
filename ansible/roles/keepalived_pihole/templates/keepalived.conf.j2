@@ -19,7 +19,7 @@ vrrp_instance VI_IPV4 {
     vrrp_version 3
 
     virtual_ipaddress {
-        {{ virtual_ip_v4 }}/24
+        {{ virtual_ipv4 }}/24
     }
 
     track_script {
@@ -37,7 +37,7 @@ vrrp_instance VI_IPV6 {
     native_ipv6 # Use multicast IPv6 packages
 
     virtual_ipaddress {
-        {{ virtual_ip_v6 }}/64
+        {{ virtual_ipv6 }}/64
     }
 
     track_script {
