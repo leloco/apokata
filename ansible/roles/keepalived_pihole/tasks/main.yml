@@ -1,0 +1,30 @@
+---
+- name: Install Keepalived
+  ansible.builtin.apt:
+    name: keepalived
+    state: present
+    update_cache: true
+
+- name: Allow Keepalived to bind to non-local IPv4
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: '1'
+    sysctl_set: true
+    state: present
+
+- name: Allow Keepalived to bind to non-local IPv6
+  ansible.posix.sysctl:
+    name: net.ipv6.ip_nonlocal_bind
+    value: '1'
+    sysctl_set: true
+    state: present
+  become: true
+
+- name: Deploy Keepalived Configuration
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart keepalived

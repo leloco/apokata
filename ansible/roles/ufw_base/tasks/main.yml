@@ -12,20 +12,30 @@
   loop:
     - incoming
     - outgoing
+
 - name: Allow SSH from ironhide
   community.general.ufw:
     rule: allow
     src: "{{ item }}"
     port: 22
   loop:
-    - "{{ ironhide }}"
-    - "{{ ironhide_wifi }}"
-- name: Allow DNS to pihole_ninja
+    - "{{ ironhide_ipv4 }}"
+    - "{{ ironhide_wifi_ipv4 }}"
+
+- name: Allow DNS to Virtual IP and physical DNS servers
   community.general.ufw:
     rule: allow
     direction: out
-    dest: "{{ pihole_ninja }}"
+    dest: "{{ item }}"
     port: 53
+  loop:
+    - "{{ virtual_ipv4 }}"
+    - "{{ virtual_ipv6 }}"
+    - "{{ hostvars['shadow']['ansible_host'] }}"
+    - "{{ hostvars['shadow']['ansible_host_ipv6'] }}"
+    - "{{ hostvars['prowl']['ansible_host'] }}"
+    - "{{ hostvars['prowl']['ansible_host_ipv6'] }}"
+
 - name: Allow NTP (Time Sync)
   community.general.ufw:
     rule: allow

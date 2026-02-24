@@ -1,0 +1,46 @@
+vrrp_script check_pihole {
+    script "/usr/bin/pgrep pihole-FTL"
+    interval 1
+}
+
+vrrp_sync_group VG_1 {
+    group {
+        VI_IPV4
+        VI_IPV6
+    }
+}
+
+vrrp_instance VI_IPV4 {
+    state {{ keepalived_role }}
+    interface {{ network_interface }}
+    virtual_router_id 51
+    priority {{ keepalived_priority }}
+    advert_int 1
+    vrrp_version 3
+
+    virtual_ipaddress {
+        {{ virtual_ip_v4 }}/24
+    }
+
+    track_script {
+        check_pihole
+    }
+}
+
+vrrp_instance VI_IPV6 {
+    state {{ keepalived_role }}
+    interface {{ network_interface }}
+    virtual_router_id 52
+    priority {{ keepalived_priority }}
+    advert_int 1
+    vrrp_version 3
+    native_ipv6 # Use multicast IPv6 packages
+
+    virtual_ipaddress {
+        {{ virtual_ip_v6 }}/64
+    }
+
+    track_script {
+        check_pihole
+    }
+}
