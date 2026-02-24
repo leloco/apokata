@@ -17,7 +17,7 @@
           eth0:
             addresses:
               - {{ hostvars['shadow']['ansible_host'] }}/24
-              - {{ hostvars['shadow']['ipv6_address'] }}/64
+              - {{ hostvars['shadow']['ansible_host_ipv6'] }}/64
             routes:
               - to: default
                 via: {{ shared_network_gateway }}
