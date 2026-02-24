@@ -6,7 +6,7 @@
     update_cache: true
 
 - name: Reset UFW to factory defaults
-  shell: ufw --force reset
+  ansible.builtin.command: ufw --force reset
   changed_when: true
 
 # deny everything what is not explicitly allowed
@@ -56,7 +56,7 @@
     dest: "{{ item }}"
   loop:
     - 192.168.13.0/24 # ipv4
-    - "fd69:efa6:36fd::/64" #ipv6 (ULA)
+    - "fd69:efa6:36fd::/64" # ipv6 (ULA)
 
 # the internet: allow everything thas is not 192.168.13.x
 - name: Allow HTTP/HTTPS to anywhere (Internet only due to rule order)
