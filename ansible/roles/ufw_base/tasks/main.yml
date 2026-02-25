@@ -5,6 +5,10 @@
     state: present
     update_cache: true
 
+- name: Disable UFW
+  community.general.ufw:
+    state: disabled
+
 - name: Reset UFW to factory defaults
   ansible.builtin.command: ufw --force reset
   changed_when: true
