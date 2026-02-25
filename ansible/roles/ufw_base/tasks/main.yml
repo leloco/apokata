@@ -9,14 +9,13 @@
   ansible.builtin.command: ufw --force reset
   changed_when: true
 
-# deny everything what is not explicitly allowed
-- name: Deny ALL (incoming & outgoing)
+- name: Set secure default policies
   community.general.ufw:
-    policy: deny
-    direction: "{{ item }}"
+    policy: "{{ item.policy }}"
+    direction: "{{ item.direction }}"
   loop:
-    - incoming
-    - outgoing
+    - { direction: 'incoming', policy: 'deny' }
+    - { direction: 'outgoing', policy: 'allow' }
 
 - name: Allow SSH from ironhide
   community.general.ufw:
@@ -33,6 +32,7 @@
     direction: out
     dest: "{{ item }}"
     port: 53
+    proto: any
   loop:
     - "{{ virtual_ipv4 }}"
     - "{{ virtual_ipv6 }}"
