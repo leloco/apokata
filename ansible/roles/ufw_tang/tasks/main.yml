@@ -6,6 +6,7 @@
     port: 22
     proto: tcp
     insert: 1
+    comment: "Allow from current connection"
 
 - name: Allow SSH only from ironhide and runners
   community.general.ufw:
@@ -14,7 +15,7 @@
     port: 22
     proto: tcp
     insert: 1
-    comment: 'Allow access only from ironhide and runners'
+    comment: "Allow access only from ironhide and runners"
   loop:
     - "{{ ironhide_ipv4 }}"
     - "{{ ironhide_wifi_ipv4 }}"

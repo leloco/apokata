@@ -4,6 +4,10 @@
     name: ufw
     state: present
 
+- name: "UFW: Reset UFW to factory defaults"
+  ansible.builtin.command: ufw --force reset
+  changed_when: true
+
 - name: "UFW: Set default policy to DENY incoming"
   community.general.ufw:
     policy: deny
