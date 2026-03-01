@@ -48,6 +48,7 @@ resource "proxmox_virtual_environment_container" "lxc" {
   network_interface {
     name = "eth0"
     bridge = var.network_bridge
+    vlan_id = var.vlan_id
   }
 
   cpu {

@@ -9,8 +9,8 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint = var.shared_virtual_environment_endpoint
-  api_token = var.shared_virtual_environment_api_token
+  endpoint = var.shared_pve_endpoint
+  api_token = var.shared_pve_api_token
 
   insecure = true 
   

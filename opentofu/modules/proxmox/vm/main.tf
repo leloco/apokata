@@ -59,6 +59,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   network_device {
     bridge = "vmbr0"
+    vlan_id = var.vlan_id
   }
 
   agent {
@@ -72,10 +73,11 @@ resource "proxmox_virtual_environment_vm" "vm" {
     ip_config {
       ipv4 {
         address = var.ipv4_address
-        gateway = var.gateway
+        gateway = var.ipv4_gateway
       }
       ipv6 {
-        address = "dhcp"
+        address = var.ipv6_address
+        gateway = var.ipv6_gateway
       }
     }
   }
