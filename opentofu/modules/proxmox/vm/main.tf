@@ -59,6 +59,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   network_device {
     bridge = "vmbr0"
+    vlan_id = var.vlan_id
   }
 
   agent {

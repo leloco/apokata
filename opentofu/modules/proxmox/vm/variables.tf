@@ -8,6 +8,7 @@ variable "template_id"{ type = number }
 variable "memory"     { type = number }
 variable "username"     { type = string }
 variable "hostname"     { type = string }
+variable "vlan_id"     { type = number }
 variable "public_ssh_key" { type = string }
 variable "os" { type = string }
 variable "size" { type = number }

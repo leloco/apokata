@@ -15,26 +15,10 @@ variable "shared_virtual_environment_api_token" {
   sensitive   = true
 }
 
-variable "shared_network_gateway" {
-  type        = string
-  description = "Gateway for all containers"
-}
-
-variable "shared_network_gateway_ipv6" {
-  type        = string
-  description = "Gateway ipv6 for all containers"
-}
-
 variable "shared_network_bridge" {
   description = "Connect Proxmox Bridge to containers"
   type        = string
   default     = "vmbr0"
-}
-
-variable "shared_network_subnet" {
-  description = "The general subnet"
-  type        = string
-  sensitive = true
 }
 
 variable "shared_ssh_public_key_file" {
@@ -54,4 +38,3 @@ variable "shared_vm_template_id" {
   type        = number
   default     = 9000
 }
-
