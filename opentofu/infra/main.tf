@@ -67,12 +67,44 @@ locals {
     }
   }
 
-  pve_ipv4 = split(":", split("/", var.shared_virtual_environment_endpoint)[2])[0]
-
-  non_iac_hosts = {
+  unmanaged_hosts = {
       ironhide = {
+       hostname = "ironhide"
        ipv4_address = "${cidrhost(local.vlans.trusted.network, 117)}/24"
        ipv6_address = "${local.vlans.trusted.ula_prefix}117/64"
+      }
+
+      # TODO: VPN-configuration on OPNSense required
+      sentinel = {
+       hostname = "sentinel"
+       ipv4_address = null
+       ipv6_address = null
+      }
+
+      ninja = {
+       hostname = "ninja"
+       ipv4_address = "${cidrhost(local.vlans.core.network, 10)}/24"
+       ipv6_address = "${local.vlans.core.ula_prefix}10/64"
+      }
+
+      shadow = {
+       hostname = "shadow"
+       ipv4_address = "${cidrhost(local.vlans.core.network, 4)}/24"
+       ipv6_address = "${local.vlans.core.ula_prefix}4/64"
+      }
+  }
+
+  managed_hosts = {
+      tang = {
+       hostname = "tang"
+       ipv4_address = "${cidrhost(local.vlans.core.network, 2)}/24"
+       ipv6_address = "${local.vlans.core.ula_prefix}2/64"
+      }
+
+      prowl = {
+       hostname = "prowl"
+       ipv4_address = "${cidrhost(local.vlans.core.network, 3)}/24"
+       ipv6_address = "${local.vlans.core.ula_prefix}3/64"
       }
   }
 }
@@ -86,11 +118,11 @@ resource "local_file" "ansible_inventory" {
 # Generated on: ${timestamp()}
 # --------------------------------------------------------------------------
 [proxmox_lxc]
-${module.tang.hostname} ansible_host=${split("/", module.tang.ipv4_address)[0]}
-${module.prowl.hostname} ansible_host=${split("/", module.prowl.ipv4_address)[0]} ansible_host_ipv6=${split("/", module.prowl.ipv6_address)[0]}
+${local.managed_hosts.tang.hostname} ansible_host=${split("/", local.managed_hosts.tang.ipv4_address)[0]}
+${local.prowl.hostname} ansible_host=${split("/", local.managed_hosts.prowl.ipv4_address)[0]} ansible_host_ipv6=${split("/", local.managed_hosts.prowl.ipv6_address)[0]}
 
 [proxmox_vm]
-# managed in /opentofu/lab
+# managed in /opentofu/runner
 lab_alpha ansible_host=192.168.13.253 ansible_user=twoy
 
 [dns_group]
@@ -141,14 +173,14 @@ module "tang" {
 
   pve_node         = var.shared_virtual_environment_node
   vm_id            = 200
-  hostname         = "tang"
+  hostname         = local.managed_hosts.tang.hostname
   vlan_id          = null
   template_file_id = var.shared_lxc_template_file_id
 
-  ipv4_address     = "${cidrhost(local.vlans.core.network, 2)}/24"
+  ipv4_address     = local.managed_hosts.tang.ipv4_address
   gateway          = local.vlans.core.gateway_ipv4
 
-  ipv6_address     = "${local.vlans.core.ula_prefix}2/64"
+  ipv6_address     = local.managed_hosts.tang.ipv6_address
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
@@ -163,21 +195,21 @@ module "prowl" {
   source = "../modules/proxmox/lxc"
 
   pve_node         = var.shared_virtual_environment_node
-  vm_id            = var.prowl_vm_id
-  hostname         = var.prowl_hostname
-  vlan_id          = var.vlan_id_core
+  vm_id            = 201
+  hostname         = local.managed_hosts.prowl.hostname
+  vlan_id          = null
   template_file_id = var.shared_lxc_template_file_id
 
-  ipv4_address     = var.prowl_ipv4_address
-  gateway          = var.shared_network_gateway
+  ipv4_address     = local.managed_hosts.prowl.ipv4_address
+  gateway          = local.vlans.core.gateway_ipv4
 
-  ipv6_address     = var.prowl_ipv6_address
-  ipv6_gateway     = var.shared_network_gateway_ipv6
+  ipv6_address     = local.managed_hosts.prowl.ipv6_address
+  ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
   root_password       = var.prowl_root_password
 
-  datastore_id     = var.prowl_datastore_id
-  datastore_size   = var.prowl_datastore_size
-  start_on_boot    = var.prowl_start_on_boot
+  datastore_id     = var.default_datastore_id
+  datastore_size   = var.default_datastore_size
+  start_on_boot    = var.default_start_on_boot
 }

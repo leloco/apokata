@@ -13,6 +13,11 @@ variable "runner_ip" {
   description = "The static IPv4 address for the runner, including the CIDR prefix (e.g., 192.168.1.50/24)."
 }
 
+variable "runner_vlan_id" {
+  type        = number
+  description = "The VLAN ID of the runner."
+}
+
 variable "runner_memory" {
   type        = number
   default     = 4096
@@ -36,17 +41,17 @@ variable "runner_size" {
 }
 
 variable "runner_username" {
-  type        = string 
+  type        = string
   description = "The username on the runner instance."
   sensitive = true
 }
 
 variable "runner_hostname" {
-  type        = string 
+  type        = string
   description = "The hostname on the runner instance."
 }
 variable "runner_os" {
-  type        = string 
+  type        = string
   default     = "l26"
   description = "The operating-system of the vm."
 }

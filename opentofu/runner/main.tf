@@ -11,6 +11,7 @@ module "vm" {
   size = var.runner_size
   username = var.runner_username
   hostname = var.runner_hostname
+  vlan_id = var.runner_vlan_id
   public_ssh_key = var.shared_ssh_public_key_file
   pve_node = var.shared_virtual_environment_node
   gateway     = var.shared_network_gateway
