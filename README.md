@@ -42,19 +42,39 @@ This project is the result of that journey and will continue to grow. It’s the
 
 ### brainstorm
 
-- A OPNSense server that runs on a Fujitsu Futro S940 Thin Client
+- Fujitsu Futro S940 Thin Client
+- OS: FreeBSD
+- RAM: 4GB
+- Storage: 256 GB .M2 SSD
+- CPU:
+- Advantages: Low power usage, dual NIC support for WAN and LAN
 
 ### ninja
 
-- A Proxmox-Virtual-Environment (PVE) server that runs on a HP EliteDesk 800 G4 DM
+- HP EliteDesk 800 G4 DM
+- OS: Debian
+- RAM: 16 GB
+- Storage: 1TB WD RED HDD, 256 GB .M2 Samsung SSD
+- CPU:
+- Advantages: Low power usage
 
 ### shadow
 
-- A Pihole Adblocker with unbound as DNS running on a Raspberry Pi 3
+- Raspberry Pi 3
+- OS: Ubuntu
+- RAM: 2 GB
+- Storage: 32GB SD-Card
+- CPU:
+- Advantages: Low power usage
 
 ### sentinel
 
-- A Proxmox-Backup-Server (PBS) that is running on a Fujitsu ESPRIMO P500 E85
+- Fujitsu ESPRIMO P500 E85
+- OS: Debian
+- RAM: 8 GB
+- CPU:
+- Storage: 4TB Ironwolf HDD, 256 GB Samsung SSD
+- Advantages: Low power usage, space for multiple 3,5" disks
 
 ## Design Decisions
 
@@ -73,6 +93,8 @@ This project is the result of that journey and will continue to grow. It’s the
 
 - **Infrastructure as Code (IaC)**: Git serves as the single source of truth for the entire environment. By leveraging OpenTofu (Terraform) for declarative provisioning and Ansible for automated configuration management, the entire infrastructure is version-controlled, auditable, and fully reproducible from scratch.
 
+- **Dual-Stack Setup**: Every device and service—including both DNS resolvers—is configured for full IPv4 and IPv6 connectivity. This ensures future-proof access and eliminates "bottlenecks" in modern network environments.
+
 - **Secure CI/CD (GitHub & Self-Hosted Runners)**: While GitHub is used as the primary platform for transparency and collaboration, all automation workflows are executed on Self-Hosted Runners. This architecture ensures that specific infrastructure credentials and deployment tasks remain entirely within the private network, eliminating the need to expose internal APIs to the public internet.
 
 ## What is running on
@@ -83,6 +105,8 @@ This project is the result of that journey and will continue to grow. It’s the
 
 ### ninja
 
+Proxmox-Virtual-Environment Server with following LXCs and VMs:
+
 - **Nextcloud**: Multi-user collaboration hub with Redis caching, OnlyOffice integration for real-time document editing and Password Management (KeePassXC)
 - **Tang**: Automated Network Bound Disk Encryption (NBDE); unlocks LUKS partitions on boot only when connected to your secure home network
 - **Portainer**: Centralized Docker management using Stacks/Compose.
@@ -90,7 +114,7 @@ This project is the result of that journey and will continue to grow. It’s the
 - **ejabberd**: Hardened XMPP server supporting OMEMO encryption; acts as a private, self-hosted messaging and alert gateway
 - **Pi-hole + Unbound**: DNS blackhole for ad-blocking combined with a recursive resolver to bypass third-party DNS tracking
 - **Reverse Proxy (NPM)**: Entry point for all services with automated Let’s Encrypt SSL
-- **GitHub Runner**: Isolated VM for CI/CD pipelines; automates local Docker builds and deployments directly from your repos.
+- **GitHub Runner**: Isolated VM for CI/CD pipelines; automates infrastructure deployment in docker.
 
 ### shadow
 
