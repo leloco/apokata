@@ -1,8 +1,11 @@
-shared_virtual_environment_endpoint  =ENC[AES256_GCM,data:+G5uYYOC4nMfANK4rjP367SYZfVbWCIjdxg6,iv:42xrRPHsODjBjQUbo6sP9ItFfKJnbPSNcZ7AqxrsYoI=,tag:gvSAV23awkUgi15ZcLCMwQ==,type:str]
-sops_lastmodified=2026-03-04T09:34:19Z
-sops_mac=ENC[AES256_GCM,data:euSU6rUnfm0WRhQQw0vc2RZ+Lm8i7IqTGrSoxoa+QBlrOFIT4KqCKh/3NYFI7itkYxNC5FomnOyZCS0YeA25vEh8nOd8TMqN5R7/rlm0Ccs1jj50BVaJ59GE+vYpoHF4L3tHEPfSr2/+Flfwfv9ubn0FqT01kTP9oTONdyzMaFs=,iv:VJLrovUmAS9G9pqOmPL8o3PvzbJZNzNBZkNN+lv1vs8=,tag:d4jc5m2RwgJRKCKrDJJazg==,type:str]
-sops_pgp__list_0__map_created_at=2026-03-04T09:34:19Z
-sops_pgp__list_0__map_enc=-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdAaCgxuBGSrYeGH+S+A4adpUXfsbyFLPGASzo4PejkEA0w\nRoiRkRAYDIa4f+umDMOPyvqHtSBSS7Sd6eNSj+Gft3wk59/p1lS3F+psk5Z3P+6y\n0lgB9KTDxVtf+oADznEpjI/JzYE2LuYU8nsqLvXCA35dxt3mty+Hh2+DuvT+8nJR\nKMSMw6BXCrG35LuiwXYTSQ7lOrlHQx2YoGznvcdRG/jvkZsQxPirCxEd\n=QAsx\n-----END PGP MESSAGE-----
+shared_virtual_environment_endpoint  =ENC[AES256_GCM,data:050INvphfFwtLOib+ZCW9SfcL3t+6BFqe+fB+GIm4g==,iv:J1Gngta5SkuanqtEQBJGa0WQ4jYRCG3vEVuxjnIaCTQ=,tag:6/tEZH1p4NCq3Uxe1JLWAg==,type:str]
+shared_network_gateway =ENC[AES256_GCM,data:SRu+Qrt0R0E1QMyEDwSp,iv:YYg1kBGG/ioYjiNnHFT23y4j/K3sYenopSCLmSvBvpg=,tag:xDU3IZT7HmgMlyhGYNkRBg==,type:str]
+shared_network_gateway_ipv6 =ENC[AES256_GCM,data:A3HPu6yALFISvZV+RUbfYr2BNG/K16R0vc7FdbROQmbqRMvbypqN,iv:F+aVfSMazjO4msMcPoGXrsJ80XHI+Cz2osgtp/IlKO4=,tag:/wYb4W8tka2Yi7rMG8LXDQ==,type:str]
+shared_network_subnet =ENC[AES256_GCM,data:OJDL0hV6OulzCAxBBDX6s/X0,iv:KY6VgT31Vy35lkO2xRwAalt5t3U/Jvzc3mJOce4al+0=,tag:UHwbml9O6zdVsY2SIXTMBg==,type:str]
+sops_lastmodified=2026-03-04T09:53:32Z
+sops_mac=ENC[AES256_GCM,data:2ZrIwficEtAvPNDBTcoiQ8fuxCcRkRzWcCAWaNcf1SNWPw0MwLZKm/Ai2dk4IoIo8oDi163XmuWaWKkPqM9eF7Fyv5t6V8OTq+Lijx7zB8l620f2ul5vk6NhnTUp2cMihcnemcdnFjTDdAN/wWzlLjVFGkr5/67Lc64/5Df8K3c=,iv:LlZrE2gTR93DVHNe9Db0ycLmKoUrqbfPAn+suCFv6xA=,tag:p/bZnsOj9GSMyx+aE88JNQ==,type:str]
+sops_pgp__list_0__map_created_at=2026-03-04T09:53:32Z
+sops_pgp__list_0__map_enc=-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdAXbotKX48C7LAcsN8kph2mbEFmeGel8jwo7+IitUVpRkw\nyd7u2WAnl8xZ7JnvAk98LEFVnc6kSYNZdM447M2gep1FQ8V3z5x3fgYq7l5cjDkD\n0lgBLvNgo2N/sgCDgh7ker4PhMSUgkTf9ctwIalLNb1EhtJ9Yn7bBx++Q7gm4ZOi\n3VfRMXKHrMfvRyiT+zCUw+FpZWpKzX/EzwCAgZ+r7zgEfoGPoxhzW5yE\n=mh35\n-----END PGP MESSAGE-----
 sops_pgp__list_0__map_fp=640170DE796E3CC2C1EA7E9D4DA395A9634B5E40
 sops_unencrypted_suffix=_unencrypted
 sops_version=3.9.0

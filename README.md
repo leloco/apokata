@@ -180,7 +180,7 @@ The workflow is the same as for the GitHub Runner but:
 
 ### Secrets and variables
 
-The GitHub workflow / CI/CD Pipeline inside `.github/workflows` needs these secrets definied on GitHub (`repo/settings/secrets/actions`):
+The GitHub workflow / CI/CD Pipeline inside `.github/workflows` needs these secrets definied on GitHub (`repo-name/settings/secrets/actions`):
 
 - `AWS_ACCESS_KEY_ID` for Cloudflare R2 object storage
 - `AWS_SECRET_ACCESS_KEY` for Cloudflare R2 object storage
