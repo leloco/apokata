@@ -1,3 +1,0 @@
-alias tofu-bake='tofu validate && tofu plan -out=deploy.plan'
-alias tofu-serve='tofu apply "deploy.plan" && rm "deploy.plan"'
-
