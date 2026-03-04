@@ -202,4 +202,4 @@ The GitHub workflow / CI/CD Pipeline inside `.github/workflows` needs these secr
 
 ## More documentation
 
-Checkout the [apokata wiki](https://github.com/leloco/apokata/wiki).
+Checkout the [apokata wiki](https://github.com/leloco/apokata/wiki) for more detailed documentation.
