@@ -1,4 +1,11 @@
 ---
+- name: Remove update_etc_hosts module from cloud-init
+  when: inventory_hostname == 'shadow'
+  ansible.builtin.lineinfile:
+    path: /etc/cloud/cloud.cfg
+    regexp: '^\s*-\s*update_etc_hosts'
+    state: absent
+
 - name: "Inject Local DNS Records into /etc/hosts"
   ansible.builtin.blockinfile:
     path: /etc/hosts
