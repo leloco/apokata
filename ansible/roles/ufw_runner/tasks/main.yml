@@ -21,3 +21,12 @@
     - "{{ hostvars['prowl']['ansible_host'] }}"
     - "{{ hostvars['tang']['ansible_host'] }}"
     - "{{ pve_ipv4 }}"
+- name: Allow Runner to talk to XMPP Server
+  community.general.ufw:
+    rule: allow
+    direction: out
+    dest: "192.168.13.70"
+    port: 5222
+    proto: tcp
+    insert: 1
+    comment: "Runner access to XMPP notification server"
