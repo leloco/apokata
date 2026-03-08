@@ -114,4 +114,5 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_RUN_ID: ${{ github.run_id }}
-        run: ./workflow-notifier || echo "Warning: NOTIFICATION NOT SENT"
+        run: |
+          ./workflow-notifier || echo "Warning: NOTIFICATION NOT SENT"
