@@ -100,7 +100,7 @@ jobs:
         if: always()
         working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
         env:
-          COMMIT_MSG: ${{ github.event.pull_request.title || github.event.head_commit.message || 'Unknown' }}
+          COMMIT_MSG: ${{ github.event.commits[0].message || github.event.head_commit.message || github.event.pull_request.title || 'Unknown' }}
           STATUS: ${{ job.status }}
           WORKFLOW_START_TIME: ${{ env.WORKFLOW_START_TIME }}
 
