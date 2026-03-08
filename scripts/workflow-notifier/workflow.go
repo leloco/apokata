@@ -73,7 +73,11 @@ func getData() WorkflowData {
 
 func getTemplate() string {
 	return `
-{{if eq .Status "SUCCESS"}}✅ Worfklow succeeded. {{else}}❌ Workflow failed.{{end}}
+{{if eq .Status "SUCCESS"}}
+✅ Worfklow succeeded.
+Event: {{if eq .Branch "main"}} 🚀 Deployed on .Branch {{else}} 🤝 Ready to merge .Branch into main
+{{else}}❌ Workflow failed.{{end}}
+Event: {{if eq .Branch "main"}} 💥 Deployment on .Branch has some errors. {{else}} ✋ Not ready to merge .Branch into main
 ------------------------------------
 Repo: {{.Project}}
 Triggered by:  {{.Actor}}
