@@ -100,7 +100,7 @@ jobs:
         if: always()
         working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
         env:
-          COMMIT_MSG: ${{ github.event.head_commit.message || github.event.pull_request.title || 'Unknown' }}
+          COMMIT_MSG: ${{ github.event.pull_request.title || github.event.head_commit.message || 'Unknown' }}
           STATUS: ${{ job.status }}
           WORKFLOW_START_TIME: ${{ env.WORKFLOW_START_TIME }}
 
@@ -111,7 +111,7 @@ jobs:
 
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
-          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_REF_NAME: ${{ github.head_ref || github.ref_name }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_RUN_ID: ${{ github.run_id }}
