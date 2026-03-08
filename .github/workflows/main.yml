@@ -3,6 +3,7 @@ name: "Infrastructure Deployment"
 env:
   OPENTOFU_WORKING_DIR: "./opentofu/infra"
   ANSIBLE_WORKING_DIR: "./ansible"
+  WORKFLOW_NOTIFIER_DIR: "./scripts/workflow-notifier"
   OPENTOFU_VERSION: 1.10.7
 
 on:
@@ -35,7 +36,7 @@ jobs:
           cache: true
 
       - name: Build Notifier
-        working-directory: ./scripts/workflow-notifier
+        working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
         run: go build -o workflow-notifier .
 
       - name: Checkout
@@ -97,7 +98,7 @@ jobs:
 
       - name: Send XMPP Notification
         if: always()
-        working-directory: ./scripts/workflow-notifier
+        working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
         env:
           COMMIT_MSG: ${{ github.event.head_commit.message || github.event.pull_request.title || 'Unknown' }}
           STATUS: ${{ job.status }}
