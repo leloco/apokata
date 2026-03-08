@@ -35,7 +35,7 @@ jobs:
           cache: true
 
       - name: Build Notifier
-        working-directory: scripts/workflow-notifier
+        working-directory: ./scripts/workflow-notifier
         run: go build -o workflow-notifier .
 
       - name: Checkout
@@ -97,7 +97,7 @@ jobs:
 
       - name: Send XMPP Notification
         if: always()
-        working-directory: scripts/workflow-notifier
+        working-directory: ./scripts/workflow-notifier
         env:
           COMMIT_MSG: ${{ github.event.head_commit.message || github.event.pull_request.title || 'Unknown' }}
           STATUS: ${{ job.status }}
