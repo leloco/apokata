@@ -107,7 +107,7 @@ jobs:
           XMPP_SERVER: ${{ secrets.XMPP_SERVER }}
           XMPP_USER: ${{ secrets.XMPP_USER }}
           XMPP_PASSWORD: ${{ secrets.XMPP_PASSWORD }}
-          XMPP_TARGET: ${{ secrets.XMPP_TARGET }}
+          XMPP_ROOM: ${{ secrets.XMPP_ROOM }}
 
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
