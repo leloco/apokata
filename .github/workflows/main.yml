@@ -3,6 +3,7 @@ name: "Infrastructure Deployment"
 env:
   OPENTOFU_WORKING_DIR: "./opentofu/infra"
   ANSIBLE_WORKING_DIR: "./ansible"
+  WORKFLOW_NOTIFIER_WORKING_DIR: "./scripts/workflow-notifier"
   OPENTOFU_VERSION: 1.10.7
 
 on:
@@ -19,14 +20,30 @@ jobs:
   validate_deploy:
     name: "Validate & Deploy Infrastructure"
     runs-on: [self-hosted, linux]
+    timeout-minutes: 10
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    
+
     steps:
+      - name: Start Timer
+        run: echo "WORKFLOW_START_TIME=$(date +%s)" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
-      
+        with:
+          fetch-depth: 0 # Load full history
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Build Notifier
+        working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
+        run: go build -o workflow-notifier .
+
       - name: Decrypt Secrets
         uses: ./.github/actions/decrypt-secrets
         with:
@@ -36,7 +53,7 @@ jobs:
         uses: ./.github/actions/install-ansible
         with:
           ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-          
+
       - name: Setup OpenTofu Tools
         uses: ./.github/actions/opentofu-prep
         with:
@@ -80,3 +97,39 @@ jobs:
         run: |
           export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook -i inventory.ini infra_playbook.yml
+
+      - name: Extract Git Metadata
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+            # first parent: main, second parent: the feature branch
+            echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s' HEAD^2)" >> $GITHUB_ENV
+            echo "SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+          else
+            echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+            echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+            echo "SHA=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+
+      - name: Send XMPP Notification
+        if: always()
+        working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
+        env:
+          STATUS: ${{ job.status }}
+          WORKFLOW_START_TIME: ${{ env.WORKFLOW_START_TIME }}
+          COMMIT_MSG: ${{ env.COMMIT_MSG }}
+          SHA: ${{ env.SHA }}
+          BRANCH: ${{ env.BRANCH }}
+
+          XMPP_SERVER: ${{ secrets.XMPP_SERVER }}
+          XMPP_USER: ${{ secrets.XMPP_USER }}
+          XMPP_PASSWORD: ${{ secrets.XMPP_PASSWORD }}
+          XMPP_ROOM: ${{ secrets.XMPP_ROOM }}
+
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          ./workflow-notifier || echo "Warning: NOTIFICATION NOT SENT"
