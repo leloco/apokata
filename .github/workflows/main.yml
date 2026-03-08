@@ -19,14 +19,28 @@ jobs:
   validate_deploy:
     name: "Validate & Deploy Infrastructure"
     runs-on: [self-hosted, linux]
+    timeout-minutes: 10
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    
+
     steps:
+      - name: Start Timer
+        run: echo "WORKFLOW_START_TIME=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Build Notifier
+        working-directory: scripts/workflow-notifier
+        run: go build -o workflow-notifier .
+
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Decrypt Secrets
         uses: ./.github/actions/decrypt-secrets
         with:
@@ -36,7 +50,7 @@ jobs:
         uses: ./.github/actions/install-ansible
         with:
           ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-          
+
       - name: Setup OpenTofu Tools
         uses: ./.github/actions/opentofu-prep
         with:
@@ -80,3 +94,24 @@ jobs:
         run: |
           export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook -i inventory.ini infra_playbook.yml
+
+      - name: Send XMPP Notification
+        if: always()
+        working-directory: scripts/workflow-notifier
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message || github.event.pull_request.title || 'Unknown' }}
+          STATUS: ${{ job.status }}
+          WORKFLOW_START_TIME: ${{ env.WORKFLOW_START_TIME }}
+
+          XMPP_SERVER: ${{ secrets.XMPP_SERVER }}
+          XMPP_USER: ${{ secrets.XMPP_USER }}
+          XMPP_PASSWORD: ${{ secrets.XMPP_PASSWORD }}
+          XMPP_TARGET: ${{ secrets.XMPP_TARGET }}
+
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: ./workflow-notifier || echo "Warning: NOTIFICATION NOT SENT"
