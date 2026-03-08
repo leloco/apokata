@@ -31,6 +31,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -103,11 +105,12 @@ jobs:
             echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
             # first parent: main, second parent: the feature branch
             echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s' HEAD^2)" >> $GITHUB_ENV
+            echo "SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
           else
             echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
             echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+            echo "SHA=${{ github.sha }}" >> $GITHUB_ENV
           fi
-          echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
 
       - name: Send XMPP Notification
         if: always()
@@ -123,7 +126,7 @@ jobs:
           XMPP_ROOM: ${{ secrets.XMPP_ROOM }}
 
           GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_SHA: ${{ env.SHA }}
           GITHUB_REF_NAME: ${{ env.BRANCH }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
