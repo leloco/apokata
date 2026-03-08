@@ -1,0 +1,6 @@
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/xmppo/go-xmpp v0.3.2 h1:RAQf7yD2XNH1UAy4OPlofnI2qLVx1iQzAR7ghptvaA8=
+github.com/xmppo/go-xmpp v0.3.2/go.mod h1:EBLbzPt4Y9OJBEF58Lhc4IrTnO226aIkbfosQo6KWeA=
+golang.org/x/net v0.48.0 h1:zyQRTTrjc33Lhh0fBgT/H3oZq9WuvRR5gPC70xpDiQU=
+golang.org/x/net v0.48.0/go.mod h1:+ndRgGjkh8FGtu1w1FGbEC31if4VrNVMuKTgcAAnQRY=
