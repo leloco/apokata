@@ -60,21 +60,14 @@ func getData() WorkflowData {
 	data := WorkflowData{
 		Status:  status,
 		Project: getProjectName(),
-		Commit:  os.Getenv("GITHUB_SHA")[:7],
+		Commit:  os.Getenv("SHA")[:7],
 		Message:  os.Getenv("COMMIT_MSG"),
-		Branch:  os.Getenv("GITHUB_REF_NAME"),
+		Branch:  os.Getenv("BRANCH"),
 		Actor:  os.Getenv("GITHUB_ACTOR"),
         Duration:     computeDuration(),
         URL:     getURL(),
 	}
 
-	if status != "SUCCESS" {
-		data.URL = fmt.Sprintf("%s/%s/actions/runs/%s",
-			os.Getenv("GITHUB_SERVER_URL"),
-			os.Getenv("GITHUB_REPOSITORY"),
-			os.Getenv("GITHUB_RUN_ID"),
-		)
-	}
 	return data
 }
 

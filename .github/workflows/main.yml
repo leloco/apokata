@@ -102,7 +102,7 @@ jobs:
         shell: bash
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+            echo "BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
             # first parent: main, second parent: the feature branch
             echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s' HEAD^2)" >> $GITHUB_ENV
             echo "SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
@@ -116,19 +116,19 @@ jobs:
         if: always()
         working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
         env:
-          COMMIT_MSG: ${{ env.COMMIT_MSG }}
           STATUS: ${{ job.status }}
           WORKFLOW_START_TIME: ${{ env.WORKFLOW_START_TIME }}
+          COMMIT_MSG: ${{ env.COMMIT_MSG }}
+          SHA: ${{ env.SHA }}
+          BRANCH: ${{ env.BRANCH }}
 
           XMPP_SERVER: ${{ secrets.XMPP_SERVER }}
           XMPP_USER: ${{ secrets.XMPP_USER }}
           XMPP_PASSWORD: ${{ secrets.XMPP_PASSWORD }}
           XMPP_ROOM: ${{ secrets.XMPP_ROOM }}
 
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_SHA: ${{ env.SHA }}
-          GITHUB_REF_NAME: ${{ env.BRANCH }}
           GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
