@@ -3,7 +3,7 @@ name: "Infrastructure Deployment"
 env:
   OPENTOFU_WORKING_DIR: "./opentofu/infra"
   ANSIBLE_WORKING_DIR: "./ansible"
-  WORKFLOW_NOTIFIER_DIR: "./scripts/workflow-notifier"
+  WORKFLOW_NOTIFIER_WORKING_DIR: "./scripts/workflow-notifier"
   OPENTOFU_VERSION: 1.10.7
 
 on:
