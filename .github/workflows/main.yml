@@ -29,6 +29,9 @@ jobs:
       - name: Start Timer
         run: echo "WORKFLOW_START_TIME=$(date +%s)" >> $GITHUB_ENV
 
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -38,9 +41,6 @@ jobs:
       - name: Build Notifier
         working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
         run: go build -o workflow-notifier .
-
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Decrypt Secrets
         uses: ./.github/actions/decrypt-secrets
