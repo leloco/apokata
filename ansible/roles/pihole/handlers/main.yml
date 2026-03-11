@@ -3,6 +3,10 @@
     name: unbound
     state: restarted
 
+- name: Restart Pihole-DNS
+  ansible.builtin.command: pihole restartdns
+  changed_when: false
+
 - name: Restart Pihole-FTL
   ansible.builtin.service:
     name: pihole-FTL

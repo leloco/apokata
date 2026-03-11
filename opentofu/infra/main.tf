@@ -155,6 +155,9 @@ ${local.fully_managed_hosts.prowl.hostname} keepalived_role=BACKUP keepalived_pr
 
 [dns_group:vars]
 network_interface=eth0
+dns_gateway_ipv4=${local.vlans.core.gateway_ipv4}
+dns_gateway_ipv6=${local.vlans.core.gateway_ipv6}
+custom_domain=x3dh.de
 
 [tang_group]
 ${local.fully_managed_hosts.tang.hostname}
