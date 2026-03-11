@@ -39,38 +39,38 @@ variable "local_runner_storage" {
 variable "local_runner_size" {
   type        = number
   description = "The storage size in GB."
-  default = 4
+  default = 20
 }
 
 variable "local_runner_username" {
-  type        = string 
+  type        = string
   description = "The username on the runner instance."
   sensitive = true
 }
 
 variable "local_runner_hostname" {
-  type        = string 
+  type        = string
   description = "The hostname on the runner instance."
 }
 
 variable "local_runner_gateway_ipv4" {
-  type        = string 
+  type        = string
   description = "The ipv4 gateway of the runner."
 }
 
 variable "local_runner_gateway_ipv6" {
-  type        = string 
+  type        = string
   description = "The ipv6 gateway of the runner."
 }
 
 variable "local_runner_vlan_id" {
-  type        = number 
+  type        = number
   description = "The vlan id on the runner instance."
   default = 22
 }
 
 variable "local_runner_os" {
-  type        = string 
+  type        = string
   default     = "l26"
   description = "The operating-system of the vm."
 }

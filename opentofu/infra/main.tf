@@ -69,7 +69,7 @@ locals {
 
   # Fully managed means automatically created with IaC (OpenTofu) and / or configured with CaC (Ansible)
   # Semi managed means the host was created manually but is configured CaC
-  # Unmanaged means everything is configured manually 
+  # Unmanaged means everything is configured manually
 
   fully_managed_hosts = {
     # ----------------------- WARNING -------------------------
@@ -77,8 +77,8 @@ locals {
     # ---------------------------------------------------------
     runner_alpha = {
        hostname = "runner-alpha"
-       ipv4_address = "${cidrhost(local.vlans.lab.network, 22)}"
-       ipv6_address = "${local.vlans.lab.ula_prefix}22"
+       ipv4_address = "${cidrhost(local.vlans.lab.network, 2)}"
+       ipv6_address = "${local.vlans.lab.ula_prefix}2"
        user = "runner_alpha"
     }
     # ---------------------------------------------------------
@@ -144,10 +144,10 @@ resource "local_file" "ansible_inventory" {
 # ---------------------------------------------------------
 [proxmox_lxc]
 ${local.fully_managed_hosts.tang.hostname} ansible_host=${local.fully_managed_hosts.tang.ipv4_address}
-${local.fully_managed_hosts.prowl.hostname} ansible_host=${local.fully_managed_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.fully_managed_hosts.prowl.ipv6_address} 
+${local.fully_managed_hosts.prowl.hostname} ansible_host=${local.fully_managed_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.fully_managed_hosts.prowl.ipv6_address}
 
 [proxmox_vm]
-${local.fully_managed_hosts.runner_alpha.hostname} ansible_host=${local.fully_managed_hosts.runner_alpha.ipv4_address}  ansible_user=${local.fully_managed_hosts.runner_alpha.user} 
+${local.fully_managed_hosts.runner_alpha.hostname} ansible_host=${local.fully_managed_hosts.runner_alpha.ipv4_address}  ansible_user=${local.fully_managed_hosts.runner_alpha.user}
 
 [dns_group]
 ${local.semi_managed_hosts.shadow.hostname} ansible_host=${local.semi_managed_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.semi_managed_hosts.shadow.ipv6_address} keepalived_role=MASTER keepalived_priority=100 ansible_user=${local.semi_managed_hosts.shadow.user}
@@ -157,7 +157,7 @@ ${local.fully_managed_hosts.prowl.hostname} keepalived_role=BACKUP keepalived_pr
 network_interface=eth0
 
 [tang_group]
-${local.fully_managed_hosts.tang.hostname} 
+${local.fully_managed_hosts.tang.hostname}
 
 [runner_group]
 ${local.fully_managed_hosts.runner_alpha.hostname}

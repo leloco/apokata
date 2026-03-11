@@ -23,6 +23,14 @@ sudo: ALL=(ALL) NOPASSWD:ALL
 packages:
   - qemu-guest-agent
 
+# Ensure the root partition and filesystem expand to fill the available disk space
+growpart:
+  mode: auto
+  devices: ['/']
+  ignore_growpart_errors: false
+
+resize_rootfs: true
+
 runcmd:
   - systemctl enable --now qemu-guest-agent
 EOF
