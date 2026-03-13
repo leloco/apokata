@@ -4,9 +4,9 @@ PROJECT_ROOT=$(git rev-parse --show-toplevel)
 CONFIG_PATH="$PROJECT_ROOT/.sops.yaml"
 
 encrypt_files() {
-    local rel_dir=$1      # Relative path from project root
-    local extension=$2    # File extension (e.g., tfvars or jwk)
-    local sops_type=$3     # SOPS data type (e.g., dotenv or json)
+    local rel_dir=$1
+    local extension=$2
+    local sops_type=$3
 
     if [ ! -d "$PROJECT_ROOT/$rel_dir" ]; then
         echo "Info: Directory $rel_dir does not exist. Skipping..."
@@ -18,20 +18,32 @@ encrypt_files() {
 
         filename=$(basename "$file")
 
-        # Skip files that are already encrypted
+        # skip if already an encrypted file (safety check)
         if [[ "$filename" == *.enc ]]; then
+            continue
+        fi
+
+        # skip if source file is empty to avoid corrupt .enc files
+        if [ ! -s "$file" ]; then
+            echo "Warning: Skipping empty file $filename"
             continue
         fi
 
         echo "Protecting file: $rel_dir/$filename (Type: $sops_type)"
 
-        sops --encrypt \
+
+        if sops --encrypt \
              --config "$CONFIG_PATH" \
              --input-type "$sops_type" \
              --output-type "$sops_type" \
-             "$file" > "$PROJECT_ROOT/$rel_dir/$filename.enc"
+             --output "$PROJECT_ROOT/$rel_dir/$filename.enc" \
+             "$file"; then
 
-        git add "$PROJECT_ROOT/$rel_dir/$filename.enc"
+            git add "$PROJECT_ROOT/$rel_dir/$filename.enc"
+        else
+            echo "ERROR: Encryption failed for $filename. Check your .sops.yaml!"
+            exit 1
+        fi
     done
 }
 

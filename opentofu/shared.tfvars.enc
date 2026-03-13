@@ -1,0 +1,9 @@
+shared_pve_endpoint =ENC[AES256_GCM,data:+xu5KnxGa7UcHqZJSd8rAbnYAKVYaJzTt78=,iv:vbB1wRDX6m9V/VtSY1F1ffx+Fr8tPBfhXPXmQepyUsg=,tag:BXuFgwarZOqfSsnecX47JQ==,type:str]
+shared_pve_api_token =ENC[AES256_GCM,data:jj21vO94VNpUjRBIHzRm5/ZTna+tOJU2tYPG+WQqNP5VgddTOGRFqQ+z08VXAn7JxyjRMOcmxooyBw==,iv:3q+062heFJxM9BoCmIbHHusPuNAkEsM9j1I+8Xf1Efk=,tag:Yubf+eIt83rUdyHpBFytVQ==,type:str]
+sops_lastmodified=2026-03-13T11:01:06Z
+sops_mac=ENC[AES256_GCM,data:kB3snsFOypIiOZo+Q3KOj6J7u0u4MF7vdlWmp/Rris4mdtbE8xCdY1ibIXu0VL3b9pyw/5N3sVR6V+txDlDT9803AYb8Z6FakreswlMt81rL3XF63MIUOmR0FiKDPoeHcaNqUbOnZFKKqLlB7uRRApH8psonhu0b5qbgoddJazk=,iv:67fOrnsM2cNYgOEkT2zNO+ym53rnEKpaelbFl/t10EQ=,tag:BKRnxvVnYZoCqE0TYwJ3Dw==,type:str]
+sops_pgp__list_0__map_created_at=2026-03-13T11:01:06Z
+sops_pgp__list_0__map_enc=-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdAnZzV5qCBSIxXGGtvXhr675DNfc8Smj3ly6Mqwmdme3ow\nDOAl8Ldo1lUQxr5h5lm0Ji6IAscZmwgZ1qgYD5i4T40yAKODjGzC1CBo+YwblIQc\n0lEBSBDZGXYE0VML0Kk5NFDHk+TqRQFldLAHALcdMeAmrREBX+JmxDa51yaX3Dqu\nd8ZdkYAj8uKaLAZ4kJHo/PuElQsPUM/ZINQqtGo3jUPp194=\n=p8vp\n-----END PGP MESSAGE-----
+sops_pgp__list_0__map_fp=640170DE796E3CC2C1EA7E9D4DA395A9634B5E40
+sops_unencrypted_suffix=_unencrypted
+sops_version=3.9.0
