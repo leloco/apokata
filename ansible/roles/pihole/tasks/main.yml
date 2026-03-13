@@ -95,7 +95,7 @@
     mode: '0755'
 
 - name: Preseed SetupVars for skipping IP-check on LXC
-  copy:
+  ansible.builtin.copy:
     dest: /etc/pihole/setupVars.conf
     content: |
       PIHOLE_INTERFACE={{ network_interface }}
