@@ -4,6 +4,7 @@
   hosts: dns_group
   become: true
   roles:
+    - { role: apt_upgrade, tags: ['apt_upgrade'] }
     - { role: common, tags: ['common'] }
     - { role: pihole, tags: ['pihole'] }
     - { role: keepalived_pihole, tags: ['pihole', 'keepalived'] }
@@ -12,6 +13,6 @@
   hosts: tang
   become: true
   roles:
+    - { role: apt_upgrade, tags: ['apt_upgrade'] }
     - { role: common, tags: ['common'] }
-    - { role: update, tags: ['update'] }
     - { role: tang, tags: ['tang'] }

@@ -3,6 +3,6 @@
   hosts: runner_group
   become: yes
   roles:
-    - { role: update, tags: ['update'] }
+    - { role: apt_upgrade, tags: ['apt_upgrade'] }
     - { role: docker, tags: ['docker'] }
     - { role: github_runner, tags: ['runner'] }

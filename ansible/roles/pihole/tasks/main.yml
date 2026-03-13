@@ -94,22 +94,6 @@
     group: root
     mode: '0755'
 
-- name: "Pre-seed setupVars.conf"
-  ansible.builtin.copy:
-    dest: /etc/pihole/setupVars.conf
-    content: |
-      PIHOLE_INTERFACE={{ vault_pihole_interface }}
-      PIHOLE_DNS_1={{ vault_pihole_dns_upstream }}
-      PIHOLE_DNS_2={{ vault_pihole_dns_upstream }}
-      INSTALL_WEB_SERVER=true
-      INSTALL_WEB_INTERFACE=true
-      LIGHTTPD_ENABLED=true
-      IPV4_ADDRESS={{ ansible_default_ipv4.address }}/24
-      QUERY_LOGGING=true
-    owner: root
-    group: root
-    mode: '0644'
-
 - name: "Download Installer"
   ansible.builtin.get_url:
     url: https://install.pi-hole.net
@@ -131,22 +115,22 @@
     group: root
     mode: '0644'
 
-- name: "Configure Conditional Forwarding for custom domain"
-  ansible.builtin.copy:
-    dest: "/etc/dnsmasq.d/05-opnsense-forwarding.conf"
-    content: |
-      # Forwarding all custom domain requests to OPNSense
-      server=/{{custom_domain}}/{{ dns_gateway_ipv4 }}
-      server=/{{custom_domain}}/{{ dns_gateway_ipv6 }}
-
-      # Reverse DNS
-      server=/f.e.8.0.arpa/{{ dns_gateway_ipv6 }}
-      server=/d.f.ip6.arpa/{{ dns_gateway_ipv6 }}
-      server=/ip6.arpa/{{ dns_gateway_ipv6 }}
-    owner: root
-    group: root
-    mode: '0644'
-  notify: "Restart Pihole-DNS"
+- name: "Configure pihole.toml via cli"
+  vars:
+    upstreams_list:
+      - "{{ vault_pihole_dns_upstream }}"
+      - "/{{ custom_domain }}/{{ dns_gateway_ipv4 }}"
+      - "/{{ custom_domain }}/{{ dns_gateway_ipv6 }}"
+      - "/{{ dns_gateway_ipv4.split('.')[:3] | reverse | join('.') }}.in-addr.arpa/{{ dns_gateway_ipv4 }}"
+      - "/ip6.arpa/{{ dns_gateway_ipv6 }}"
+  ansible.builtin.command: "pihole-FTL --config {{ item.key }} {{ item.value }}"
+  loop:
+    - { key: 'dns.interface', value: '{{ network_interface }}' }
+    - { key: 'dns.listeningMode', value: 'all' }
+    - { key: 'dns.bogusPriv', value: 'false' }
+    - { key: 'dns.domainNeeded', value: 'false' }
+    - { key: 'dns.upstreams', value: "'{{ upstreams_list | to_json }}'" }
+  changed_when: true
 
 - name: "Ensure Web Interface Password is set"
   ansible.builtin.command: "pihole setpassword {{ vault_pihole_web_password }}"

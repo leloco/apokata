@@ -99,8 +99,8 @@ locals {
   semi_managed_hosts = {
     shadow = {
        hostname = "shadow"
-       ipv4_address = "${cidrhost(local.vlans.core.network, 2)}"
-       ipv6_address = "${local.vlans.core.ula_prefix}2"
+       ipv4_address = "${cidrhost(local.vlans.core.network, 3)}"
+       ipv6_address = "${local.vlans.core.ula_prefix}3"
        user = "not32olo"
     }
 
@@ -128,7 +128,7 @@ locals {
       }
   }
 
-  dns_vip = {
+  virtual = {
     ipv4_address = "${cidrhost(local.vlans.core.network, 10)}"
     ipv6_address = "${local.vlans.core.ula_prefix}10"
   }
@@ -158,6 +158,8 @@ network_interface=eth0
 dns_gateway_ipv4=${local.vlans.core.gateway_ipv4}
 dns_gateway_ipv6=${local.vlans.core.gateway_ipv6}
 custom_domain=x3dh.de
+virtual_ipv4=${local.virtual.ipv4_address}
+virtual_ipv6=${local.virtual.ipv6_address}
 
 [tang_group]
 ${local.fully_managed_hosts.tang.hostname}
@@ -173,9 +175,6 @@ runner_group
 dns_group
 
 [all:vars]
-dns_vip_ipv4_address=${local.dns_vip.ipv4_address}
-dns_vip_ipv4_address=${local.dns_vip.ipv6_address}
-
 # ansible settings
 ansible_user=root
 # configured with ssh-agent
