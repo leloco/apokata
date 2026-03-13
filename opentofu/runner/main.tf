@@ -13,6 +13,8 @@ module "vm" {
   size = var.local_runner_size
   username = var.local_runner_username
   hostname = var.local_runner_hostname
+  nameservers = var.shared_nameservers
+  searchdomain = var.shared_searchdomain
   vlan_id = var.local_runner_vlan_id
   public_ssh_key = var.shared_ssh_public_key_file
   pve_node = var.shared_pve_node

@@ -51,6 +51,18 @@ variable "shared_pve_node" {
   default = "ninja"
 }
 
+variable "shared_nameservers" {
+  type        = list(string)
+  description = "The nameservers for the instance."
+  default = null
+}
+
+variable "shared_searchdomain" {
+  type        = string
+  description = "The searchdomain for the instance."
+  default = "x3dh.de"
+}
+
 variable "shared_pve_api_token" {
   type        = string
   description = "API Token in the following format: USER@REALM!TOKENID=UUID"

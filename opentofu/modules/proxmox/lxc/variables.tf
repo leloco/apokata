@@ -19,6 +19,17 @@ variable "hostname" {
   description = "The hostname for the LXC container."
 }
 
+variable "nameservers" {
+  type        = list(string)
+  description = "The nameservers for the LXC container."
+}
+
+variable "searchdomain" {
+  type        = string
+  description = "The searchdomain for the LXC container."
+  default = "."
+}
+
 variable "vlan_id" {
   type        = number
   description = "The VLAN id for the network interface"

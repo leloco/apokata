@@ -191,6 +191,10 @@ module "tang" {
   pve_node         = var.shared_pve_node
   vm_id            = 200
   hostname         = "${local.fully_managed_hosts.tang.hostname}"
+
+  nameservers       = ["${local.virtual.ipv4_address}", "${local.virtual.ipv6_address}", "${local.vlans.core.gateway_ipv4}", "${local.vlans.core.gateway_ipv6}"]
+  searchdomain     = var.shared_searchdomain
+
   vlan_id          = var.local_vlan_id
   template_file_id = var.shared_lxc_template_file_id
 
@@ -214,6 +218,9 @@ module "prowl" {
   pve_node         = var.shared_pve_node
   vm_id            = 201
   hostname         = "${local.fully_managed_hosts.prowl.hostname}"
+  nameservers       = ["${local.virtual.ipv4_address}", "${local.virtual.ipv6_address}", "${local.vlans.core.gateway_ipv4}", "${local.vlans.core.gateway_ipv6}"]
+  searchdomain     = var.shared_searchdomain
+
   vlan_id          = var.local_vlan_id
   template_file_id = var.shared_lxc_template_file_id
 

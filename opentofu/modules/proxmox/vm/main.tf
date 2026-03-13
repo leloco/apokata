@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    proxmox = {
+   proxmox = {
       source  = "bpg/proxmox"
       version = ">= 0.90.0"
     }
@@ -72,12 +72,18 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   agent {
     enabled = true
-    timeout = "0s"
+    timeout = "2m"
   }
 
   initialization {
     user_data_file_id = proxmox_virtual_environment_file.user_data.id
-    interface = "scsi1"
+    interface = "ide2"
+
+    dns {
+      servers = var.nameservers
+      domain  = var.searchdomain
+    }
+
     ip_config {
       ipv4 {
         address = var.ipv4_address
