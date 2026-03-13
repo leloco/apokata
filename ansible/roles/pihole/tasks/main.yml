@@ -100,6 +100,7 @@
     content: |
       PIHOLE_INTERFACE={{ network_interface }}
       IPV4_ADDRESS={{ ansible_default_ipv4.address }}/24
+    mode: '0644'
   when: ansible_virtualization_type == 'lxc'
 
 - name: "Download Installer"
