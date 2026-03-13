@@ -81,7 +81,7 @@ jobs:
       - name: OpenTofu Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
-        run: tofu apply -var-file="../shared.tfvars" -auto-approve -lock=false main.tfplan
+        run: tofu apply -auto-approve -lock=false main.tfplan
 
       - name: Install SSH Private Key
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -116,20 +116,20 @@ jobs:
         if: always()
         working-directory: ${{ env.WORKFLOW_NOTIFIER_WORKING_DIR }}
         env:
-          STATUS: ${{ job.status }}
+          WORKFLOW_STATUS: ${{ job.status }}
           WORKFLOW_START_TIME: ${{ env.WORKFLOW_START_TIME }}
-          COMMIT_MSG: ${{ env.COMMIT_MSG }}
-          SHA: ${{ env.SHA }}
-          BRANCH: ${{ env.BRANCH }}
+          WORKFLOW_COMMIT_MSG: ${{ env.COMMIT_MSG }}
+          WORKFLOW_SHA: ${{ env.SHA }}
+          WORKFLOW_BRANCH: ${{ env.BRANCH }}
 
-          XMPP_SERVER: ${{ secrets.XMPP_SERVER }}
-          XMPP_USER: ${{ secrets.XMPP_USER }}
-          XMPP_PASSWORD: ${{ secrets.XMPP_PASSWORD }}
-          XMPP_ROOM: ${{ secrets.XMPP_ROOM }}
+          WORKFLOW_XMPP_SERVER: ${{ secrets.XMPP_SERVER }}
+          WORKFLOW_XMPP_USER: ${{ secrets.XMPP_USER }}
+          WORKFLOW_XMPP_PASSWORD: ${{ secrets.XMPP_PASSWORD }}
+          WORKFLOW_XMPP_ROOM: ${{ secrets.XMPP_ROOM }}
 
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_SERVER_URL: ${{ github.server_url }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
+          WORKFLOW_GITHUB_ACTOR: ${{ github.actor }}
+          WORKFLOW_GITHUB_REPOSITORY: ${{ github.repository }}
+          WORKFLOW_GITHUB_SERVER_URL: ${{ github.server_url }}
+          WORKFLOW_GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
           ./workflow-notifier || echo "Warning: NOTIFICATION NOT SENT"
