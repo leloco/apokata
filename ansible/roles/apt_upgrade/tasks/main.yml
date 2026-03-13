@@ -18,9 +18,9 @@
 - name: Check if a reboot is required
   ansible.builtin.stat:
     path: /var/run/reboot-required
-  register: update_reboot_required_file
+  register: apt_upgrade_reboot_required_file
 
 - name: Reboot the server if kernel was updated
   ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible"
-  when: update_reboot_required_file.stat.exists
+  when: apt_upgrade_reboot_required_file.stat.exists

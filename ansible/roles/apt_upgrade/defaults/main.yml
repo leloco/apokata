@@ -1,1 +1,1 @@
-upgrade_method: "yes"
+apt_upgrade_method: "yes"
