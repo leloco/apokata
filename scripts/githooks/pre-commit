@@ -15,27 +15,27 @@ encrypt_files() {
 
     for file in "$PROJECT_ROOT/$rel_dir"/*."$extension"; do
         [ -e "$file" ] || continue
-        
+
         filename=$(basename "$file")
-        
+
         # Skip files that are already encrypted
         if [[ "$filename" == *.enc ]]; then
             continue
         fi
 
         echo "Protecting file: $rel_dir/$filename (Type: $sops_type)"
-        
+
         sops --encrypt \
              --config "$CONFIG_PATH" \
              --input-type "$sops_type" \
              --output-type "$sops_type" \
              "$file" > "$PROJECT_ROOT/$rel_dir/$filename.enc"
-        
+
         git add "$PROJECT_ROOT/$rel_dir/$filename.enc"
     done
 }
 
-encrypt_files "opentofu/infra" "tfvars" "dotenv"
+encrypt_files "opentofu" "tfvars" "dotenv"
 encrypt_files "ansible/roles/tang/files/tang-keys" "jwk" "json"
 
 
