@@ -3,7 +3,7 @@
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
-    upgrade: "{{ upgrade_method }}"
+    upgrade: "{{ apt_upgrade_method }}"
     force_apt_get: true
 
 - name: Remove unused dependency packages (autoremove)
