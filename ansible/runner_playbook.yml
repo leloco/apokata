@@ -3,9 +3,6 @@
   hosts: runner_group
   become: yes
   roles:
-    - { role: ufw_base, tags: ['ufw'] }
-    - { role: ufw_runner, tags: ['ufw'] }
-    - { role: ufw_enable, tags: ['ufw'] }
-    - { role: update, tags: ['update'] }
+    - { role: apt_upgrade, tags: ['apt_upgrade'] }
     - { role: docker, tags: ['docker'] }
     - { role: github_runner, tags: ['runner'] }

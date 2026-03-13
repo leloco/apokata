@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    proxmox = {
+   proxmox = {
       source  = "bpg/proxmox"
       version = ">= 0.90.0"
     }
@@ -22,6 +22,14 @@ ssh_authorized_keys:
 sudo: ALL=(ALL) NOPASSWD:ALL
 packages:
   - qemu-guest-agent
+
+# Ensure the root partition and filesystem expand to fill the available disk space
+growpart:
+  mode: auto
+  devices: ['/']
+  ignore_growpart_errors: false
+
+resize_rootfs: true
 
 runcmd:
   - systemctl enable --now qemu-guest-agent
@@ -59,23 +67,31 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   network_device {
     bridge = "vmbr0"
+    vlan_id = var.vlan_id
   }
 
   agent {
     enabled = true
-    timeout = "0s"
+    timeout = "2m"
   }
 
   initialization {
     user_data_file_id = proxmox_virtual_environment_file.user_data.id
-    interface = "scsi1"
+    interface = "ide2"
+
+    dns {
+      servers = var.nameservers
+      domain  = var.searchdomain
+    }
+
     ip_config {
       ipv4 {
         address = var.ipv4_address
-        gateway = var.gateway
+        gateway = var.ipv4_gateway
       }
       ipv6 {
-        address = "dhcp"
+        address = var.ipv6_address
+        gateway = var.ipv6_gateway
       }
     }
   }

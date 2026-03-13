@@ -21,6 +21,11 @@ resource "proxmox_virtual_environment_container" "lxc" {
   initialization {
     hostname = var.hostname
 
+    dns {
+      servers = var.nameservers
+      domain  = var.searchdomain
+    }
+
     ip_config {
       ipv4 {
         address = var.ipv4_address
@@ -48,6 +53,7 @@ resource "proxmox_virtual_environment_container" "lxc" {
   network_interface {
     name = "eth0"
     bridge = var.network_bridge
+    vlan_id = var.vlan_id
   }
 
   cpu {

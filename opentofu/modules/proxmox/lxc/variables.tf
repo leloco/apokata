@@ -19,6 +19,23 @@ variable "hostname" {
   description = "The hostname for the LXC container."
 }
 
+variable "nameservers" {
+  type        = list(string)
+  description = "The nameservers for the LXC container."
+}
+
+variable "searchdomain" {
+  type        = string
+  description = "The searchdomain for the LXC container."
+  default = "."
+}
+
+variable "vlan_id" {
+  type        = number
+  description = "The VLAN id for the network interface"
+  default = null
+}
+
 variable "ipv4_address" {
   type        = string
   description = "IPv4 address in CIDR format."
@@ -94,11 +111,11 @@ variable "start_on_boot" {
 variable "vm_id" {
   type        = number
   description = "The dedicated ID for the LXC container (VMID)."
-  default     = null 
+  default     = null
 }
 
 variable "nesting" {
   type        = bool
   description = "Activates nesting (for Docker oder systemd compability)"
-  default     = true  
+  default     = true
 }
