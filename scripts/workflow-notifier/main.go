@@ -7,19 +7,20 @@ import (
 )
 
 func main() {
-    data := getData()
+    checkWorkflowEnv()
+    data := getWorkflowData()
     body := renderTemplate(getTemplate(), data)
 
-    room := os.Getenv("XMPP_ROOM")
+    room := os.Getenv("WORKFLOW_XMPP_ROOM")
     if room == "" {
-        fmt.Println("[Error] XMPP_ROOM environment variable is not set.")
+        fmt.Println("[Error] WORKFLOW_XMPP_ROOM environment variable is not set.")
         os.Exit(1)
     }
 
     options := xmpp.Options{
-		Host:     os.Getenv("XMPP_SERVER"),
-		User:     os.Getenv("XMPP_USER"),
-		Password: os.Getenv("XMPP_PASSWORD"),
+		Host:     os.Getenv("WORKFLOW_XMPP_SERVER"),
+		User:     os.Getenv("WORKFLOW_XMPP_USER"),
+		Password: os.Getenv("WORKFLOW_XMPP_PASSWORD"),
         NoTLS: true,
         StartTLS: true,
 	}
