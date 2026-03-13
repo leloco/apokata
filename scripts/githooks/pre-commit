@@ -16,30 +16,37 @@ encrypt_files() {
     for file in "$PROJECT_ROOT/$rel_dir"/*."$extension"; do
         [ -e "$file" ] || continue
 
+        target_file="$file.enc"
         filename=$(basename "$file")
 
-        # skip if already an encrypted file (safety check)
+        # Skip already encrypted files
         if [[ "$filename" == *.enc ]]; then
             continue
         fi
 
-        # skip if source file is empty to avoid corrupt .enc files
+        # Check for empty source files
         if [ ! -s "$file" ]; then
-            echo "Warning: Skipping empty file $filename"
+            echo "ERROR: Skipping empty file $filename."
+            exit 1
+        fi
+
+        # only encrypt when timestamp of source file is newer than the encrypted version (target_file)
+        if [ -f "$target_file" ] && [ "$file" -ot "$target_file" ]; then
+            echo "No changes in $filename. No need to encrypt again."
             continue
         fi
 
-        echo "Protecting file: $rel_dir/$filename (Type: $sops_type)"
+        echo "Encrypting file: $rel_dir/$filename (Type: $sops_type)"
 
 
         if sops --encrypt \
              --config "$CONFIG_PATH" \
              --input-type "$sops_type" \
              --output-type "$sops_type" \
-             --output "$PROJECT_ROOT/$rel_dir/$filename.enc" \
+             --output "$target_file" \
              "$file"; then
 
-            git add "$PROJECT_ROOT/$rel_dir/$filename.enc"
+            git add "$target_file"
         else
             echo "ERROR: Encryption failed for $filename. Check your .sops.yaml!"
             exit 1
