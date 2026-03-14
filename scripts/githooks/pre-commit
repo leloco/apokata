@@ -16,6 +16,8 @@ encrypt_files() {
     for file in "$PROJECT_ROOT/$rel_dir"/*."$extension"; do
         [ -e "$file" ] || continue
 
+        echo "$file"
+
         target_file="$file.enc"
         filename=$(basename "$file")
 
