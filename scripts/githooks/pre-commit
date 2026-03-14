@@ -25,7 +25,7 @@ encrypt_files() {
 
         # only encrypt when timestamp of source file is newer than the encrypted version (target_file)
         if [ -f "$target_file" ] && [ "$file" -ot "$target_file" ]; then
-            echo "No changes in $filename. No need to encrypt again."
+            echo "No changes in $rel_dir/$filename. No need to encrypt again."
             continue
         fi
 
