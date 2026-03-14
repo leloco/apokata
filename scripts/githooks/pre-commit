@@ -13,18 +13,9 @@ encrypt_files() {
         return
     fi
 
-    for file in "$PROJECT_ROOT/$rel_dir"/*."$extension"; do
-        [ -e "$file" ] || continue
-
-        echo "$file"
-
+    find "$PROJECT_ROOT/$rel_dir" -type f -name "*.$extension" | while read -r file; do
         target_file="$file.enc"
         filename=$(basename "$file")
-
-        # Skip already encrypted files
-        if [[ "$filename" == *.enc ]]; then
-            continue
-        fi
 
         # Check for empty source files
         if [ ! -s "$file" ]; then
