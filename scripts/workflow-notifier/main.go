@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+    "time"
     xmpp "github.com/xmppo/go-xmpp"
 )
 
@@ -12,10 +13,6 @@ func main() {
     body := renderTemplate(getTemplate(), data)
 
     room := os.Getenv("WORKFLOW_XMPP_ROOM")
-    if room == "" {
-        fmt.Println("[Error] WORKFLOW_XMPP_ROOM environment variable is not set.")
-        os.Exit(1)
-    }
 
     options := xmpp.Options{
 		Host:     os.Getenv("WORKFLOW_XMPP_SERVER"),
@@ -31,13 +28,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	client.JoinMUC(room, "runner_alpha", 0, 0, nil)
+	_, err = client.JoinMUC(room, "runner_alpha", 0, 0, nil)
 
     if err != nil {
       fmt.Printf("[Join error] Could not join MUC: %v\n", err)
     }
 
-	client.Send(xmpp.Chat{Remote: room, Type: "groupchat", Text: body})
+    time.Sleep(500 * time.Millisecond)
 
-	fmt.Println("NOTIFICATION SENT.")
+	_, err = client.Send(xmpp.Chat{Remote: room, Type: "groupchat", Text: body})
+
+    if err != nil {
+      fmt.Printf("[Sending error]: Unable to send message: %s", err)
+      return
+    }
+    fmt.Println("NOTIFICATION SENT.")
 }
