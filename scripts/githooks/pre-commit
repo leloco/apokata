@@ -13,16 +13,9 @@ encrypt_files() {
         return
     fi
 
-    for file in "$PROJECT_ROOT/$rel_dir"/*."$extension"; do
-        [ -e "$file" ] || continue
-
+    find "$PROJECT_ROOT/$rel_dir" -type f -name "*.$extension" | while read -r file; do
         target_file="$file.enc"
         filename=$(basename "$file")
-
-        # Skip already encrypted files
-        if [[ "$filename" == *.enc ]]; then
-            continue
-        fi
 
         # Check for empty source files
         if [ ! -s "$file" ]; then
@@ -32,7 +25,7 @@ encrypt_files() {
 
         # only encrypt when timestamp of source file is newer than the encrypted version (target_file)
         if [ -f "$target_file" ] && [ "$file" -ot "$target_file" ]; then
-            echo "No changes in $filename. No need to encrypt again."
+            echo "No changes in $rel_dir/$filename. No need to encrypt again."
             continue
         fi
 

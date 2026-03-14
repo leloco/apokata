@@ -140,10 +140,12 @@ Every homelab has unique hardware, VLAN IDs, and IP ranges, you should not clone
 
 ### Local repository
 
-After cloning the repository you need to copy the `pre-commit` script from the `scripts/githooks` folder into your `.git/githooks` folder.
+After cloning the repository you need to set the `/scripts/githooks` folder as default `hooksPath` for your local git repository.
+
+Run this command from project root:
 
 ```bash
-cp scripts/githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+git config core.hooksPath scripts/githooks
 ```
 
 This is a security feature that makes sure that commits can only be successful if specific files inside the repo are encrypted with SOPS.

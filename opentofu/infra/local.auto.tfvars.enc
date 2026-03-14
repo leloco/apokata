@@ -1,9 +1,0 @@
-local_tang_root_password =ENC[AES256_GCM,data:ZwIHQbGmTlr5CZg6BoS3KUcQAnhh6EY=,iv:Jy3oWVfJbfp9oW0PNpFssuR1Z+oteBWHNBsxAmOv4Cs=,tag:c2STsDfQb4yLFD/wOGy56g==,type:str]
-local_prowl_root_password =ENC[AES256_GCM,data:tpj9EsJNd1grt7GzPT614ZQe,iv:DjzSdJVUPCOK7gsLu+MgkibjoxJKi16+qlqv4tGdOZU=,tag:5EUPA2iTUlwldkN/LruIng==,type:str]
-sops_lastmodified=2026-03-13T09:57:16Z
-sops_mac=ENC[AES256_GCM,data:88fO9gVHtlPHJXiWn3FniUK1LitwT1EboCzTQnNwH1CF9obOLpqzqJMGgAsF/d5RWBCt1iIlV8nMPfZR9jROOzccUU2KHiP6BUqUtb0rOO66d7dTyyd5cyGGXLmnqTquXAgI0IRtXy4BlZae3kA1eOD4AjwOdzsxa+ZaF0wC4RA=,iv:s2K15x7vASPazvseODVaUTf5c+rhfYVZ9MN9+SphMP8=,tag:AYhYIYHUBPwrE4vzp3iMkA==,type:str]
-sops_pgp__list_0__map_created_at=2026-03-13T09:57:16Z
-sops_pgp__list_0__map_enc=-----BEGIN PGP MESSAGE-----\n\nhF4DTDcBKYv4VEMSAQdA3ZnQXTlmEUg8PhEYpjlShZOisHzkBlf/ames59xRtmow\nQA6Gu/jh6LQLPYRPwF1MtOtEVLyeFsSo35bcgzSJs47lBVVtPTfaRGlrb7PYXjuW\n0lgBEJF5yeIgwcMSDb0LXAC6n51qizJy+SHcOZq8dno9f7FfHlDgP9++fghKDYoK\nOgPXhbgQRh+9IdNTb4QRpwaAJ7x6OZ2mH9ISLwe1bvUzZDWLXUA5qgHH\n=fgLv\n-----END PGP MESSAGE-----
-sops_pgp__list_0__map_fp=640170DE796E3CC2C1EA7E9D4DA395A9634B5E40
-sops_unencrypted_suffix=_unencrypted
-sops_version=3.9.0

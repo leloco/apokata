@@ -1,69 +1,69 @@
 locals {
   _networks = {
-    trusted = "10.0.10.0/24"
-    core = "10.0.20.0/24"
-    iot = "10.0.21.0/24"
-    lab = "10.0.22.0/24"
-    guest = "10.0.30.0/24"
-    work = "10.0.40.0/24"
+    trusted = var.infra_trusted_cidr
+    core = var.infra_core_cidr
+    iot = var.infra_iot_cidr
+    lab = var.infra_lab_cidr
+    guest = var.infra_guest_cidr
+    work = var.infra_work_cidr
   }
 
   _ula_prefixes = {
-    trusted  = "fd00:10::"
-    core     = "fd00:20::"
-    iot       = "fd00:21::"
-    lab    = "fd00:22::"
-    guest     = "fd00:30::"
-    work      = "fd00:40::"
+    trusted = var.infra_trusted_prefix
+    core = var.infra_core_prefix
+    iot = var.infra_iot_prefix
+    lab = var.infra_lab_prefix
+    guest = var.infra_guest_prefix
+    work = var.infra_work_prefix
   }
 
   vlans = {
     trusted = {
-      id      = 10
+      id      = var.infra_trusted_vlan_id
       network = local._networks.trusted
-      gateway_ipv4 = cidrhost(local._networks.trusted, 1)
+      gateway_ipv4 = cidrhost(local._networks.trusted, var.infra_trusted_gateway_host_id)
       ula_prefix   = local._ula_prefixes.trusted
-      gateway_ipv6 = "${local._ula_prefixes.trusted}1"
+      gateway_ipv6 = "${local._ula_prefixes.trusted}${var.infra_trusted_gateway_iid}"
     }
 
     core = {
-      id      = 20
+      id      = var.infra_core_vlan_id
       network = local._networks.core
-      gateway_ipv4 = cidrhost(local._networks.core, 1)
+      gateway_ipv4 = cidrhost(local._networks.core, var.infra_core_gateway_host_id)
       ula_prefix   = local._ula_prefixes.core
-      gateway_ipv6 = "${local._ula_prefixes.core}1"
+      gateway_ipv6 = "${local._ula_prefixes.core}${var.infra_core_gateway_iid}"
     }
 
     iot = {
-      id      = 21
+      id      = var.infra_iot_vlan_id
       network = local._networks.iot
-      gateway_ipv4 = cidrhost(local._networks.iot, 1)
+      gateway_ipv4 = cidrhost(local._networks.iot, var.infra_iot_gateway_host_id)
       ula_prefix   = local._ula_prefixes.iot
-      gateway_ipv6 = "${local._ula_prefixes.iot}1"
+      gateway_ipv6 = "${local._ula_prefixes.iot}${var.infra_iot_gateway_iid}"
     }
 
     lab = {
-      id      = 22
+      id      = var.infra_lab_vlan_id
       network = local._networks.lab
-      gateway_ipv4 = cidrhost(local._networks.lab, 1)
+      gateway_ipv4 = cidrhost(local._networks.lab, var.infra_lab_gateway_host_id)
       ula_prefix   = local._ula_prefixes.lab
-      gateway_ipv6 = "${local._ula_prefixes.lab}1"
+      gateway_ipv6 = "${local._ula_prefixes.lab}${var.infra_lab_gateway_iid}"
     }
 
     guest = {
-      id      = 30
+      id      = var.infra_guest_vlan_id
       network = local._networks.guest
-      gateway_ipv4 = cidrhost(local._networks.guest, 1)
+      gateway_ipv4 = cidrhost(local._networks.guest, var.infra_guest_gateway_host_id)
       ula_prefix   = local._ula_prefixes.guest
-      gateway_ipv6 = "${local._ula_prefixes.guest}1"
+      gateway_ipv6 = "${local._ula_prefixes.guest}${var.infra_guest_gateway_iid}"
     }
 
     work = {
-      id      = 40
+      id      = var.infra_work_vlan_id
       network = local._networks.work
-      gateway_ipv4 = cidrhost(local._networks.work, 1)
+      gateway_ipv4 = cidrhost(local._networks.work, var.infra_work_gateway_host_id)
       ula_prefix   = local._ula_prefixes.work
-      gateway_ipv6 = "${local._ula_prefixes.work}1"
+      gateway_ipv6 = "${local._ula_prefixes.work}${var.infra_work_gateway_iid}"
     }
   }
 
@@ -77,31 +77,31 @@ locals {
     # ---------------------------------------------------------
     runner_alpha = {
        hostname = "runner-alpha"
-       ipv4_address = "${cidrhost(local.vlans.lab.network, 2)}"
-       ipv6_address = "${local.vlans.lab.ula_prefix}2"
-       user = "runner_alpha"
+       ipv4_address = cidrhost(local.vlans.lab.network, var.infra_runner_alpha_host_id)
+       ipv6_address = "${local.vlans.lab.ula_prefix}${var.infra_runner_alpha_iid}"
+       user = var.infra_runner_alpha_user
     }
     # ---------------------------------------------------------
 
     tang = {
        hostname = "tang"
-       ipv4_address = "${cidrhost(local.vlans.core.network, 6)}"
-       ipv6_address = "${local.vlans.core.ula_prefix}6"
+       ipv4_address = cidrhost(local.vlans.core.network, var.infra_tang_host_id)
+       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_tang_iid}"
     }
 
     prowl = {
        hostname = "prowl"
-       ipv4_address = "${cidrhost(local.vlans.core.network, 5)}"
-       ipv6_address = "${local.vlans.core.ula_prefix}5"
+       ipv4_address = cidrhost(local.vlans.core.network, var.infra_prowl_host_id)
+       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_prowl_iid}"
     }
   }
 
   semi_managed_hosts = {
     shadow = {
        hostname = "shadow"
-       ipv4_address = "${cidrhost(local.vlans.core.network, 3)}"
-       ipv6_address = "${local.vlans.core.ula_prefix}3"
-       user = "not32olo"
+       ipv4_address = cidrhost(local.vlans.core.network, var.infra_shadow_host_id)
+       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_shadow_iid}"
+       user = var.infra_shadow_user
     }
 
     // TODO: Solved by #18
@@ -116,21 +116,21 @@ locals {
   unmanaged_hosts = {
       ninja = {
         hostname = "ninja"
-        ipv4_address = split(":", split("/", var.shared_pve_endpoint)[2])[0]
-        ipv6_address = "${local.vlans.core.ula_prefix}2"
+        ipv4_address = cidrhost(local.vlans.core.network, var.infra_ninja_host_id)
+        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_ninja_iid}"
 
       }
 
       ironhide = {
        hostname = "ironhide"
-       ipv4_address = "${cidrhost(local.vlans.trusted.network, 2)}"
-       ipv6_address = "${local.vlans.trusted.ula_prefix}2"
+       ipv4_address = cidrhost(local.vlans.trusted.network, var.infra_ironhide_host_id)
+       ipv6_address = "${local.vlans.trusted.ula_prefix}${var.infra_ironhide_iid}"
       }
   }
 
   virtual = {
-    ipv4_address = "${cidrhost(local.vlans.core.network, 10)}"
-    ipv6_address = "${local.vlans.core.ula_prefix}10"
+    ipv4_address = cidrhost(local.vlans.core.network, var.infra_vip_host_id)
+    ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_vip_iid}"
   }
 }
 
@@ -190,12 +190,12 @@ module "tang" {
 
   pve_node         = var.shared_pve_node
   vm_id            = 200
-  hostname         = "${local.fully_managed_hosts.tang.hostname}"
+  hostname         = local.fully_managed_hosts.tang.hostname
 
-  nameservers       = ["${local.virtual.ipv4_address}", "${local.virtual.ipv6_address}", "${local.vlans.core.gateway_ipv4}", "${local.vlans.core.gateway_ipv6}"]
+  nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
 
-  vlan_id          = var.local_vlan_id
+  vlan_id          = local.vlans.core.id
   template_file_id = var.shared_lxc_template_file_id
 
   ipv4_address     = "${local.fully_managed_hosts.tang.ipv4_address}/24"
@@ -205,7 +205,7 @@ module "tang" {
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
-  root_password       = var.local_tang_root_password
+  root_password       = var.infra_tang_root_password
 
   datastore_id     = var.shared_datastore_id
   datastore_size   = var.shared_datastore_size
@@ -217,11 +217,11 @@ module "prowl" {
 
   pve_node         = var.shared_pve_node
   vm_id            = 201
-  hostname         = "${local.fully_managed_hosts.prowl.hostname}"
-  nameservers       = ["${local.virtual.ipv4_address}", "${local.virtual.ipv6_address}", "${local.vlans.core.gateway_ipv4}", "${local.vlans.core.gateway_ipv6}"]
+  hostname         = local.fully_managed_hosts.prowl.hostname
+  nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
 
-  vlan_id          = var.local_vlan_id
+  vlan_id          = local.vlans.core.id
   template_file_id = var.shared_lxc_template_file_id
 
   ipv4_address     = "${local.fully_managed_hosts.prowl.ipv4_address}/24"
@@ -231,7 +231,7 @@ module "prowl" {
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
-  root_password       = var.local_prowl_root_password
+  root_password       = var.infra_prowl_root_password
 
   datastore_id     = var.shared_datastore_id
   datastore_size   = var.shared_datastore_size
