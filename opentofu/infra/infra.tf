@@ -1,16 +1,3 @@
-# ----------------------- PASSWORDS start -----------------------------
-variable "infra_tang_root_password" {
-  type        = string
-  description = "The root password for the Tang container."
-  sensitive   = true
-}
-
-variable "infra_prowl_root_password" {
-  type        = string
-  description = "The password for the Pi-Hole web-interface"
-  sensitive   = true
-}
-# ----------------------- PASSWORDS end -----------------------------
 
 # ----------------------- VLANS start -----------------------------
 variable "infra_trusted_cidr" {
@@ -266,6 +253,17 @@ variable "infra_ironhide_host_id" {
   sensitive = true
 }
 variable "infra_ironhide_iid" {
+  type        = number
+  description = "The interface identifier (ipv6) that identifies the host."
+  sensitive = true
+}
+# ----
+variable "infra_unifi_controller_host_id" {
+  type        = number
+  description = "The host id (ipv4) that identifies the host."
+  sensitive = true
+}
+variable "infra_unifi_controller_iid" {
   type        = number
   description = "The interface identifier (ipv6) that identifies the host."
   sensitive = true
