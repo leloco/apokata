@@ -42,7 +42,6 @@ resource "proxmox_virtual_environment_container" "lxc" {
       keys = [
         trimspace(file(var.ssh_public_key_file))
       ]
-      password = var.root_password
     }
   }
 
@@ -70,6 +69,15 @@ resource "proxmox_virtual_environment_container" "lxc" {
     size         = var.datastore_size
   }
 
+  dynamic "mount_point" {
+    for_each = var.mount_points
+    content {
+      volume = mount_point.value.volume
+      path   = mount_point.value.path
+      size   = mount_point.value.size
+      backup = mount_point.value.backup
+    }
+  }
 
   start_on_boot = var.start_on_boot
   started = true

@@ -1,6 +1,6 @@
 ---
 
-- name: Setup dns servers
+- name: Setup DNS servers
   hosts: dns_group
   become: true
   roles:
@@ -9,10 +9,18 @@
     - { role: pihole, tags: ['pihole'] }
     - { role: keepalived_pihole, tags: ['pihole', 'keepalived'] }
 
-- name: Setup lxc "tang"
-  hosts: tang
+- name: Setup tang server
+  hosts: tang_group
   become: true
   roles:
     - { role: apt_upgrade, tags: ['apt_upgrade'] }
     - { role: common, tags: ['common'] }
     - { role: tang, tags: ['tang'] }
+
+- name: Setup unifi-controller
+  hosts: unifi_group
+  become: true
+  roles:
+    - { role: apt_upgrade, tags: ['apt_upgrade', 'unifi_group'] }
+    - { role: common, tags: ['common', 'unifi_group'] }
+    - { role: install_unifi, tags: ['install_unifi', 'unifi_group'] }

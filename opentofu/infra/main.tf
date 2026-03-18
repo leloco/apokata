@@ -94,6 +94,12 @@ locals {
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_prowl_host_id)
        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_prowl_iid}"
     }
+
+    unifi_controller = {
+       hostname = "unifi-controller"
+       ipv4_address = cidrhost(local.vlans.core.network, var.infra_unifi_controller_host_id)
+       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_unifi_controller_iid}"
+    }
   }
 
   semi_managed_hosts = {
@@ -145,6 +151,7 @@ resource "local_file" "ansible_inventory" {
 [proxmox_lxc]
 ${local.fully_managed_hosts.tang.hostname} ansible_host=${local.fully_managed_hosts.tang.ipv4_address}
 ${local.fully_managed_hosts.prowl.hostname} ansible_host=${local.fully_managed_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.fully_managed_hosts.prowl.ipv6_address}
+${local.fully_managed_hosts.unifi_controller.hostname} ansible_host=${local.fully_managed_hosts.unifi_controller.ipv4_address} ansible_host_ipv6=${local.fully_managed_hosts.unifi_controller.ipv6_address}
 
 [proxmox_vm]
 ${local.fully_managed_hosts.runner_alpha.hostname} ansible_host=${local.fully_managed_hosts.runner_alpha.ipv4_address}  ansible_user=${local.fully_managed_hosts.runner_alpha.user}
@@ -167,12 +174,16 @@ ${local.fully_managed_hosts.tang.hostname}
 [runner_group]
 ${local.fully_managed_hosts.runner_alpha.hostname}
 
+[unifi_group]
+${local.fully_managed_hosts.unifi_controller.hostname}
+
 [all:children]
 proxmox_lxc
 proxmox_vm
 tang_group
 runner_group
 dns_group
+unifi_group
 
 [all:vars]
 # ansible settings
@@ -182,7 +193,7 @@ ansible_ssh_trusted_key_file=""
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 EOT
 
-depends_on = [ module.tang, module.prowl ]
+depends_on = [ module.tang, module.prowl, module.unifi_controller ]
 }
 
 module "tang" {
@@ -205,10 +216,9 @@ module "tang" {
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
-  root_password       = var.infra_tang_root_password
 
-  datastore_id     = var.shared_datastore_id
-  datastore_size   = var.shared_datastore_size
+  datastore_id     = var.shared_root_datastore_id
+  datastore_size   = var.shared_small_root_datastore_size
   start_on_boot    = var.shared_start_on_boot
 }
 
@@ -231,9 +241,38 @@ module "prowl" {
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
-  root_password       = var.infra_prowl_root_password
 
-  datastore_id     = var.shared_datastore_id
-  datastore_size   = var.shared_datastore_size
+  datastore_id     = var.shared_root_datastore_id
+  datastore_size   = var.shared_small_root_datastore_size
+  start_on_boot    = var.shared_start_on_boot
+}
+
+
+module "unifi_controller" {
+  source = "../modules/proxmox/lxc"
+
+  pve_node         = var.shared_pve_node
+  vm_id            = 203
+  hostname         = local.fully_managed_hosts.unifi_controller.hostname
+  nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
+  searchdomain     = var.shared_searchdomain
+
+  memory_dedicated = 2048
+  memory_swap      = 1024
+  cpu_cores        = 2
+
+  vlan_id          = local.vlans.core.id
+  template_file_id = var.shared_lxc_template_file_id
+
+  ipv4_address     = "${local.fully_managed_hosts.unifi_controller.ipv4_address}/24"
+  gateway          = local.vlans.core.gateway_ipv4
+
+  ipv6_address     = "${local.fully_managed_hosts.unifi_controller.ipv6_address}/64"
+  ipv6_gateway     = local.vlans.core.gateway_ipv6
+
+  ssh_public_key_file = var.shared_ssh_public_key_file
+
+  datastore_id     = var.shared_root_datastore_id
+  datastore_size   = var.shared_medium_root_datastore_size
   start_on_boot    = var.shared_start_on_boot
 }

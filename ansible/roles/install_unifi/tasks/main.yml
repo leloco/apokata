@@ -1,0 +1,25 @@
+- name: Check if UniFi is already installed
+  ansible.builtin.stat:
+    path: /usr/lib/unifi/lib/ace.jar
+  register: install_unifi_jar
+
+- name: Download script
+  ansible.builtin.get_url:
+    url: https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh
+    dest: /tmp/unifi-latest.sh
+    mode: '0755'
+  when: not install_unifi_jar.stat.exists
+  changed_when: not install_unifi_jar.stat.exists
+
+- name: Run script
+  ansible.builtin.command:
+    cmd: >
+      bash /tmp/unifi-latest.sh
+      --skip
+      --skip-swap
+      --check-ssh-port
+      --add-repository
+      --install-network-application
+      --local-install
+  when: not install_unifi_jar.stat.exists
+  changed_when: not install_unifi_jar.stat.exists

@@ -4,3 +4,23 @@
     name: UTC
   become: true
   notify: "Restart systemd-journald"
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name:
+      - wget
+      - curl
+      - vim
+      - ca-certificates
+      - gnupg
+      - software-properties-common
+      - fail2ban
+      - htop
+    state: present
+    update_cache: true
+
+- name: Make sure fail2ban is running
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: started
+    enabled: true

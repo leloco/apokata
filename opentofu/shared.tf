@@ -22,16 +22,28 @@ variable "shared_vm_template_id" {
   default     = 9000
 }
 
-variable "shared_datastore_id" {
+variable "shared_root_datastore_id" {
   type        = string
-  description = "The Proxmox storage identifier for the disk."
+  description = "The Proxmox storage identifier for storing the root disk of the instance."
   default = "local-lvm"
 }
 
-variable "shared_datastore_size" {
+variable "shared_small_root_datastore_size" {
   type        = number
-  description = "The disk size for in GB."
-  default = 4
+  description = "The disk size for root disk in GB."
+  default = 5
+}
+
+variable "shared_medium_root_datastore_size" {
+  type        = number
+  description = "The disk size for root disk in GB."
+  default = 10
+}
+
+variable "shared_large_root_datastore_size" {
+  type        = number
+  description = "The disk size for root disk in GB."
+  default = 20
 }
 
 variable "shared_start_on_boot" {
@@ -61,6 +73,12 @@ variable "shared_searchdomain" {
   type        = string
   description = "The searchdomain for the instance."
   default = "x3dh.de"
+}
+
+variable "shared_mountpoint_datastore_id" {
+  type        = string
+  description = "The Proxmox storage identifier for storing data on separate storage disks."
+  default = "wd-red-plus-1"
 }
 
 variable "shared_pve_api_token" {

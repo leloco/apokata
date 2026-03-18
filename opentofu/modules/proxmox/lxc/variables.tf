@@ -61,12 +61,6 @@ variable "ssh_public_key_file" {
   description = "Path to the SSH public key file."
 }
 
-variable "root_password" {
-  type        = string
-  description = "The root password for the container."
-  sensitive   = true
-}
-
 variable "network_bridge" {
   type        = string
   description = "The network bridge to attach the interface to."
@@ -118,4 +112,15 @@ variable "nesting" {
   type        = bool
   description = "Activates nesting (for Docker oder systemd compability)"
   default     = true
+}
+
+variable "mount_points" {
+  type = list(object({
+    volume = string
+    path   = string
+    size   = optional(string)
+    backup = optional(bool, true)
+  }))
+  description = "The mountpoint of the LXC with the volume, the path on the LXC, the size and wether it should be included in backup or not."
+  default = []
 }

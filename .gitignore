@@ -13,3 +13,4 @@ ansible/inventory.ini
 *.tfplan
 **/*.plan
 *.plan
+*.env
