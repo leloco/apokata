@@ -9,6 +9,7 @@
     dest: /tmp/unifi-latest.sh
     mode: '0755'
   when: not install_unifi_jar.stat.exists
+  changed_when: not install_unifi_jar.stat.exists
 
 - name: Run script
   ansible.builtin.command:
@@ -21,3 +22,4 @@
       --install-network-application
       --local-install
   when: not install_unifi_jar.stat.exists
+  changed_when: not install_unifi_jar.stat.exists
