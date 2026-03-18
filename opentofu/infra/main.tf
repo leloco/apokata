@@ -183,7 +183,7 @@ proxmox_vm
 tang_group
 runner_group
 dns_group
-unifi_controller
+unifi_group
 
 [all:vars]
 # ansible settings
@@ -252,10 +252,14 @@ module "unifi_controller" {
   source = "../modules/proxmox/lxc"
 
   pve_node         = var.shared_pve_node
-  vm_id            = 202
+  vm_id            = 203
   hostname         = local.fully_managed_hosts.unifi_controller.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
+
+  memory_dedicated = 2048
+  memory_swap      = 1024
+  cpu_cores        = 2
 
   vlan_id          = local.vlans.core.id
   template_file_id = var.shared_lxc_template_file_id
@@ -268,11 +272,7 @@ module "unifi_controller" {
 
   ssh_public_key_file = var.shared_ssh_public_key_file
 
-  mount_points = [
-  { volume = var.shared_mountpoint_datastore_id, path = "/mnt/tank/unifi_controller/", size = "20G" },
-  ]
-
   datastore_id     = var.shared_root_datastore_id
-  datastore_size   = var.shared_small_root_datastore_size
+  datastore_size   = var.shared_medium_root_datastore_size
   start_on_boot    = var.shared_start_on_boot
 }
