@@ -1,0 +1,4 @@
+- name: Restart WireGuard
+  systemd:
+    name: "wg-quick@{{ vault_interface }}"
+    state: restarted

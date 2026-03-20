@@ -279,5 +279,11 @@ variable "infra_vip_iid" {
   description = "The interface identifier (ipv6) that identifies the host."
   sensitive = true
 }
+# ----
+variable "infra_sentinel_ipv4" {
+  type        = string
+  description = "The wireguard IP of sentinel (not local)."
+  sensitive = true
+}
 # ----------------------- HOSTS end -----------------------------
 

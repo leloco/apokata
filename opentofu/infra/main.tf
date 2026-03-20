@@ -110,23 +110,19 @@ locals {
        user = var.infra_shadow_user
     }
 
-    // TODO: Solved by #18
     sentinel = {
       hostname = "sentinel"
-      ipv4_address = null
-      ipv6_address = null
+      ipv4_address = var.infra_sentinel_ipv4
+    }
 
+    ninja = {
+      hostname = "ninja"
+      ipv4_address = cidrhost(local.vlans.core.network, var.infra_ninja_host_id)
+      ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_ninja_iid}"
     }
   }
 
   unmanaged_hosts = {
-      ninja = {
-        hostname = "ninja"
-        ipv4_address = cidrhost(local.vlans.core.network, var.infra_ninja_host_id)
-        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_ninja_iid}"
-
-      }
-
       ironhide = {
        hostname = "ironhide"
        ipv4_address = cidrhost(local.vlans.trusted.network, var.infra_ironhide_host_id)
@@ -148,6 +144,12 @@ resource "local_file" "ansible_inventory" {
 # Any manual changes to this file will be overwritten during the next run of tofu apply.
 # Generated on: ${timestamp()}
 # ---------------------------------------------------------
+[proxmox_ve]
+${local.semi_managed_hosts.ninja.hostname} ansible_host=${local.semi_managed_hosts.ninja.ipv4_address}
+
+[proxmox_bs]
+${local.semi_managed_hosts.sentinel.hostname} ansible_host=${local.semi_managed_hosts.sentinel.ipv4_address}
+
 [proxmox_lxc]
 ${local.fully_managed_hosts.tang.hostname} ansible_host=${local.fully_managed_hosts.tang.ipv4_address}
 ${local.fully_managed_hosts.prowl.hostname} ansible_host=${local.fully_managed_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.fully_managed_hosts.prowl.ipv6_address}
@@ -178,6 +180,8 @@ ${local.fully_managed_hosts.runner_alpha.hostname}
 ${local.fully_managed_hosts.unifi_controller.hostname}
 
 [all:children]
+proxmox_ve
+proxmox_bs
 proxmox_lxc
 proxmox_vm
 tang_group
@@ -194,6 +198,12 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 EOT
 
 depends_on = [ module.tang, module.prowl, module.unifi_controller ]
+}
+
+resource "proxmox_virtual_environment_dns" "node_dns" {
+  node_name = "ninja"
+  servers = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4]
+  domain  = var.shared_searchdomain
 }
 
 module "tang" {
