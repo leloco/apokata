@@ -1,0 +1,14 @@
+[Unit]
+Description=Decrypt LUKS and Import ZFS Pool on Boot
+After=network-online.target
+Wants=network-online.target
+Before=proxmox-backup.service proxmox-backup-proxy.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/disk-decrypt.sh
+RemainAfterExit=yes
+User=root
+
+[Install]
+WantedBy=multi-user.target

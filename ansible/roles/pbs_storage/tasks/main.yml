@@ -1,0 +1,105 @@
+---
+- name: Load secret variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
+- name: Install required storage and encryption tools
+  ansible.builtin.apt:
+    name:
+      - cryptsetup
+      - zfsutils-linux
+      - clevis
+      - clevis-luks
+      - clevis-dracut
+      - moreutils
+      - bsd-mailx
+    state: present
+
+- name: Check if device has a LUKS header
+  ansible.builtin.command: "cryptsetup isLuks {{ vault_disk_device }}"
+  register: vault_is_luks
+  failed_when: false
+  changed_when: false
+
+- name: Initialize LUKS partition
+  community.crypto.luks_device:
+    device: "{{ vault_disk_device }}"
+    state: present
+    passphrase: "{{ vault_luks_passphrase }}"
+  when: vault_is_luks.rc != 0
+
+- name: Ensure LUKS device is open
+  community.crypto.luks_device:
+    device: "{{ vault_disk_device }}"
+    state: opened
+    name: "{{ vault_mapper_name }}"
+    passphrase: "{{ vault_luks_passphrase }}"
+
+- name: Check for existing ZFS pool
+  ansible.builtin.command: "zpool list {{ vault_pool_name }}"
+  register: pbs_storage_zpool_exists
+  failed_when: false
+  changed_when: false
+
+- name: Create ZFS pool on mapper device
+  community.general.zpool:
+    name: "{{ vault_pool_name }}"
+    devices: "/dev/mapper/{{ vault_mapper_name }}"
+    state: present
+  when: pbs_storage_zpool_exists.rc != 0
+
+- name: Create ZFS backup dataset
+  community.general.zfs:
+    name: "{{ vault_pool_name }}/{{ vault_dataset_name }}"
+    state: present
+    extra_zfs_properties:
+      mountpoint: "/{{ vault_pool_name }}/{{ vault_dataset_name }}"
+
+- name: Get LUKS dump for Clevis check
+  ansible.builtin.command: "cryptsetup luksDump {{ vault_disk_device }}"
+  register: luks_dump_output
+  changed_when: false
+
+- name: Bind LUKS device to Tang server for auto-unlock
+  ansible.builtin.command: "clevis luks bind -d {{ vault_disk_device }} tang '{\"url\":\"{{ vault_tang_url }}\"}'"
+  stdin: "{{ vault_luks_passphrase }}"
+  when: "'clevis' not in luks_dump_output.stdout"
+
+- name: Ensure Proxmox Backup services are active
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - proxmox-backup.service
+    - proxmox-backup-proxy.service
+
+- name: List configured PBS datastores
+  ansible.builtin.command: "proxmox-backup-manager datastore list"
+  register: pbs_datastores
+  changed_when: false
+
+- name: Register ZFS dataset as PBS datastore
+  ansible.builtin.command: >
+    proxmox-backup-manager datastore create {{ vault_dataset_name }} /{{ vault_pool_name }}/{{ vault_dataset_name }}
+  when: vault_dataset_name not in pbs_datastores.stdout
+
+- name: Copy the script to the server
+  ansible.builtin.template:
+    src: "disk-decrypt.sh.j2"
+    dest: "/usr/local/bin/disk-decrypt.sh"
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Create systemd service for delayed unlock
+  ansible.builtin.template:
+    src: "disk-decrypt.service.j2"
+    dest: "/etc/systemd/system/disk-decrypt.service"
+    mode: '0644'
+
+- name: Enable and daemon-reload the unlock service
+  ansible.builtin.systemd:
+    name: disk-decrypt.service
+    enabled: true
+    daemon_reload: true

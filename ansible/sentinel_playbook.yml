@@ -1,0 +1,16 @@
+---
+################################################################################
+# LOCAL EXECUTION ONLY
+# - Does NOT run in CI/CD: Manual run required (Hardware/LUKS tasks).
+# - VPN connection necessary: Active connection to reach tang server.
+# - SAFE: Fully idempotent (checks for existing LUKS/ZFS).
+################################################################################
+- name: Setup sentinel (Proxmox BS)
+  hosts: proxmox_bs
+  become: true
+  roles:
+    - { role: pbs_storage, tags: ['pbs_storage'] }
+
+
+
+

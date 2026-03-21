@@ -1,7 +1,4 @@
-- name: Load secret variables
-  ansible.builtin.include_vars:
-    file: secrets.yml
-
+---
 - name: Install WireGuard and dependencies
   ansible.builtin.apt:
     name:
@@ -24,12 +21,10 @@
     cmd: "dig +short {{ vault_domain }} @9.9.9.9"
   register: wireguard_dns_command_result
   changed_when: false
-  no_log: true
 
 - name: Set wireguard_remote_ip fact
   ansible.builtin.set_fact:
     wireguard_remote_ip: "{{ wireguard_dns_command_result.stdout }}"
-  no_log: true
 
 - name: Verify DNS Resolution Success
   ansible.builtin.assert:
@@ -38,11 +33,10 @@
       - wireguard_remote_ip | length > 0
       - wireguard_remote_ip != "NXDOMAIN"
     fail_msg: "DNS Lookup for {{ vault_domain }} failed (Result was empty or NXDOMAIN)!"
-  no_log: true
 
 - name: Deploy WireGuard configuration
   ansible.builtin.template:
-    src: wg0.conf.j2
+    src: wireguard.conf.j2
     dest: "/etc/wireguard/{{ vault_interface }}.conf"
     mode: '0600'
     owner: root

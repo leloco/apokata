@@ -201,7 +201,7 @@ depends_on = [ module.tang, module.prowl, module.unifi_controller ]
 }
 
 resource "proxmox_virtual_environment_dns" "node_dns" {
-  node_name = "ninja"
+  node_name = local.semi_managed_hosts.ninja.hostname
   servers = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4]
   domain  = var.shared_searchdomain
 }
