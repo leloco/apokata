@@ -1,0 +1,32 @@
+---
+- name: Ensure systemd-resolved is installed
+  ansible.builtin.apt:
+    name: systemd-resolved
+    state: present
+
+- name: Configure systemd-resolved
+  ansible.builtin.copy:
+    dest: /etc/systemd/resolved.conf
+    content: |
+      [Resolve]
+      DNS={{ vault_systemd_resolved_dns }}
+      Domains={{ vault_systemd_resolved_domains }}
+      DNSStubListener=yes
+    mode: '0644'
+  notify: Restart Systemd Resolved
+
+- name: Create symlink for /etc/resolv.conf
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: true
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure systemd-resolved is started and enabled
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    enabled: yes
+    state: started

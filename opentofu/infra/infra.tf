@@ -287,3 +287,31 @@ variable "infra_sentinel_ipv4" {
 }
 # ----------------------- HOSTS end -----------------------------
 
+variable "pbs_username" {
+  type        = string
+  description = "The username for authenticating with Proxmox Backup Server (e.g., user@pbs!tokenid)."
+  sensitive = true
+}
+
+variable "pbs_password" {
+  type        = string
+  description = "The password or API token secret for the PBS user."
+  sensitive   = true
+}
+
+variable "pbs_fingerprint" {
+  type        = string
+  description = "The SHA-256 fingerprint of the PBS certificate for SSL verification."
+}
+
+variable "pbs_encryption_key" {
+  type        = string
+  description = "The Base64 encoded key used for client-side backup encryption. Data is encrypted before leaving the PVE host."
+  sensitive   = true
+}
+
+variable "backup_notification_email" {
+  type        = list(string)
+  description = "A list of email addresses to receive backup job reports and notifications."
+  sensitive = true
+}

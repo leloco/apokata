@@ -9,6 +9,8 @@
   hosts: proxmox_bs
   become: true
   roles:
+    - { role: systemd_resolved, tags: ['systemd_resolved'] }
+    - { role: wireguard, tags: ['wireguard'] }
     - { role: pbs_storage, tags: ['pbs_storage'] }
 
 

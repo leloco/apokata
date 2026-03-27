@@ -1,23 +1,11 @@
 ---
 - name: Load secret variables
-  ansible.builtin.include_vars:
+  include_vars:
     file: secrets.yml
-
-- name: Install required storage and encryption tools
-  ansible.builtin.apt:
-    name:
-      - cryptsetup
-      - zfsutils-linux
-      - clevis
-      - clevis-luks
-      - clevis-dracut
-      - moreutils
-      - bsd-mailx
-    state: present
 
 - name: Check if device has a LUKS header
   ansible.builtin.command: "cryptsetup isLuks {{ vault_disk_device }}"
-  register: vault_is_luks
+  register: pbs_storage_vault_is_luks
   failed_when: false
   changed_when: false
 
@@ -26,7 +14,7 @@
     device: "{{ vault_disk_device }}"
     state: present
     passphrase: "{{ vault_luks_passphrase }}"
-  when: vault_is_luks.rc != 0
+  when: pbs_storage_vault_is_luks.rc != 0
 
 - name: Ensure LUKS device is open
   community.crypto.luks_device:
@@ -44,7 +32,9 @@
 - name: Create ZFS pool on mapper device
   community.general.zpool:
     name: "{{ vault_pool_name }}"
-    devices: "/dev/mapper/{{ vault_mapper_name }}"
+    vdevs:
+      - disks:
+          - "/dev/mapper/{{ vault_mapper_name }}"
     state: present
   when: pbs_storage_zpool_exists.rc != 0
 
@@ -56,14 +46,21 @@
       mountpoint: "/{{ vault_pool_name }}/{{ vault_dataset_name }}"
 
 - name: Get LUKS dump for Clevis check
-  ansible.builtin.command: "cryptsetup luksDump {{ vault_disk_device }}"
-  register: luks_dump_output
+  ansible.builtin.command:
+    cmd: "cryptsetup luksDump {{ vault_disk_device }}"
+  register: pbs_storage_luks_dump_output
   changed_when: false
 
-- name: Bind LUKS device to Tang server for auto-unlock
-  ansible.builtin.command: "clevis luks bind -d {{ vault_disk_device }} tang '{\"url\":\"{{ vault_tang_url }}\"}'"
-  stdin: "{{ vault_luks_passphrase }}"
-  when: "'clevis' not in luks_dump_output.stdout"
+- name: Bind LUKS device to Tang server (Non-interactive)
+  ansible.builtin.shell: |
+    if clevis luks list -d {{ vault_disk_device }} | grep -q tang; then
+      exit 0
+    fi
+    echo -n {{ vault_luks_passphrase | quote }} | \
+    clevis luks bind -d {{ vault_disk_device }} tang \
+    '{"url":"{{ vault_tang_url }}","thp":"{{ vault_tang_thumbprint }}"}'
+  when: "'tang' not in pbs_storage_luks_dump_output.stdout"
+  no_log: true
 
 - name: Ensure Proxmox Backup services are active
   ansible.builtin.systemd:
@@ -76,13 +73,13 @@
 
 - name: List configured PBS datastores
   ansible.builtin.command: "proxmox-backup-manager datastore list"
-  register: pbs_datastores
+  register: pbs_storage_datastores
   changed_when: false
 
 - name: Register ZFS dataset as PBS datastore
   ansible.builtin.command: >
     proxmox-backup-manager datastore create {{ vault_dataset_name }} /{{ vault_pool_name }}/{{ vault_dataset_name }}
-  when: vault_dataset_name not in pbs_datastores.stdout
+  when: vault_dataset_name not in pbs_storage_datastores.stdout
 
 - name: Copy the script to the server
   ansible.builtin.template:

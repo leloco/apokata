@@ -3,8 +3,6 @@
   ansible.builtin.apt:
     name:
       - wireguard
-      - resolvconf
-      - systemd-resolved
     state: present
     update_cache: yes
 

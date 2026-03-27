@@ -164,11 +164,6 @@ ${local.fully_managed_hosts.prowl.hostname} keepalived_role=BACKUP keepalived_pr
 
 [dns_group:vars]
 network_interface=eth0
-dns_gateway_ipv4=${local.vlans.core.gateway_ipv4}
-dns_gateway_ipv6=${local.vlans.core.gateway_ipv6}
-custom_domain=x3dh.de
-virtual_ipv4=${local.virtual.ipv4_address}
-virtual_ipv6=${local.virtual.ipv6_address}
 
 [tang_group]
 ${local.fully_managed_hosts.tang.hostname}
@@ -190,6 +185,11 @@ dns_group
 unifi_group
 
 [all:vars]
+dns_gateway_ipv4=${local.vlans.core.gateway_ipv4}
+dns_gateway_ipv6=${local.vlans.core.gateway_ipv6}
+custom_domain=x3dh.de
+virtual_ipv4=${local.virtual.ipv4_address}
+virtual_ipv6=${local.virtual.ipv6_address}
 # ansible settings
 ansible_user=root
 # configured with ssh-agent
@@ -285,4 +285,33 @@ module "unifi_controller" {
   datastore_id     = var.shared_root_datastore_id
   datastore_size   = var.shared_medium_root_datastore_size
   start_on_boot    = var.shared_start_on_boot
+}
+
+resource "proxmox_virtual_environment_storage_pbs" "pbs_backup" {
+  id          = "backups"
+  nodes       = ["ninja"]
+  server      = local.semi_managed_hosts.sentinel.ipv4_address
+  datastore   = "backups"
+  username       = var.pbs_username
+  password       = var.pbs_password
+  fingerprint    = var.pbs_fingerprint
+  encryption_key = var.pbs_encryption_key
+  content = ["backup"]
+}
+
+resource "proxmox_backup_job" "daily_pbs_backup" {
+  id       = "daily-pbs-backup"
+  enabled  = true
+  schedule = "12:30"
+  storage  = proxmox_virtual_environment_storage_pbs.pbs_backup.id
+
+  vmid = ["203"]
+  mode = "snapshot"
+  notes_template = "{{guestname}} backup"
+  prune_backups = {
+    "keep-last"    = "7"
+    "keep-daily"   = "30"
+    "keep-monthly" = "6"
+  }
+  mailto = var.backup_notification_email
 }

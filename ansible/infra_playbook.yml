@@ -3,6 +3,7 @@
   hosts: proxmox_ve
   become: true
   roles:
+    - { role: systemd_resolved, tags: ['systemd_resolved'] }
     - { role: wireguard, tags: ['wireguard'] }
 
 - name: Setup DNS servers
