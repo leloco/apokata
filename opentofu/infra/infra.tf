@@ -279,5 +279,39 @@ variable "infra_vip_iid" {
   description = "The interface identifier (ipv6) that identifies the host."
   sensitive = true
 }
+# ----
+variable "infra_sentinel_ipv4" {
+  type        = string
+  description = "The wireguard IP of sentinel (not local)."
+  sensitive = true
+}
 # ----------------------- HOSTS end -----------------------------
 
+variable "pbs_username" {
+  type        = string
+  description = "The username for authenticating with Proxmox Backup Server (e.g., user@pbs!tokenid)."
+  sensitive = true
+}
+
+variable "pbs_password" {
+  type        = string
+  description = "The password or API token secret for the PBS user."
+  sensitive   = true
+}
+
+variable "pbs_fingerprint" {
+  type        = string
+  description = "The SHA-256 fingerprint of the PBS certificate for SSL verification."
+}
+
+variable "pbs_encryption_key_data" {
+  type = string
+  description = "Encryption key data for Proxmox Backup Server"
+  sensitive   = true
+}
+
+variable "backup_notification_email" {
+  type        = list(string)
+  description = "Email address list for backup job reports and notifications."
+  sensitive = true
+}

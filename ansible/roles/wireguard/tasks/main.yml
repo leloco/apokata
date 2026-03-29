@@ -1,0 +1,51 @@
+---
+- name: Install WireGuard and dependencies
+  ansible.builtin.apt:
+    name:
+      - wireguard
+    state: present
+    update_cache: true
+
+- name: Ensure WireGuard configuration directory exists
+  ansible.builtin.file:
+    path: /etc/wireguard
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+
+- name: Resolve Public IP via DNS
+  ansible.builtin.command:
+    cmd: "dig +short {{ vault_domain }} @9.9.9.9"
+  register: wireguard_dns_command_result
+  changed_when: false
+
+- name: Set wireguard_remote_ip fact
+  ansible.builtin.set_fact:
+    wireguard_remote_ip: "{{ wireguard_dns_command_result.stdout }}"
+
+- name: Verify DNS Resolution Success
+  ansible.builtin.assert:
+    that:
+      - wireguard_remote_ip is defined
+      - wireguard_remote_ip | length > 0
+      - wireguard_remote_ip != "NXDOMAIN"
+    fail_msg: "DNS Lookup for {{ vault_domain }} failed (Result was empty or NXDOMAIN)!"
+
+- name: Deploy WireGuard configuration
+  ansible.builtin.template:
+    src: wireguard.conf.j2
+    dest: "/etc/wireguard/{{ vault_interface }}.conf"
+    mode: '0600'
+    owner: root
+    group: root
+  notify: Restart WireGuard
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start WireGuard service
+  ansible.builtin.systemd:
+    name: "wg-quick@{{ vault_interface }}"
+    enabled: true
+    state: started

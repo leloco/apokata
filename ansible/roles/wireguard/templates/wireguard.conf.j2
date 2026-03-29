@@ -1,0 +1,13 @@
+[Interface]
+PrivateKey = {{ vault_local_private_key }}
+Address = {{ vault_address }}
+PostUp = {{ vault_postup }}
+
+[Peer]
+PublicKey = {{ vault_remote_public_key }}
+{% if vault_psk is defined and vault_psk | length > 0 %}
+PresharedKey = {{ vault_psk }}
+{% endif %}
+Endpoint = {{ wireguard_remote_ip }}:{{ vault_port }}
+AllowedIPs = {{ vault_allowed_ips }}
+PersistentKeepalive = 25
