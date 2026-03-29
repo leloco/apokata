@@ -295,7 +295,7 @@ resource "proxmox_virtual_environment_storage_pbs" "pbs_backup" {
   username       = var.pbs_username
   password       = var.pbs_password
   fingerprint    = var.pbs_fingerprint
-  encryption_key = jsonencode(var.pbs_encryption_key_data)
+  encryption_key = var.pbs_encryption_key_data
   content = ["backup"]
 }
 

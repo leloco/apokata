@@ -305,13 +305,7 @@ variable "pbs_fingerprint" {
 }
 
 variable "pbs_encryption_key_data" {
-  type = object({
-    kdf         = optional(string)
-    created     = string
-    modified    = string
-    data        = string
-    fingerprint = string
-  })
+  type = string
   description = "Encryption key data for Proxmox Backup Server"
   sensitive   = true
 }
