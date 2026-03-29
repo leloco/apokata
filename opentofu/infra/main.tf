@@ -305,8 +305,8 @@ resource "proxmox_backup_job" "daily_pbs_backup" {
   schedule = "23:00"
   storage  = proxmox_virtual_environment_storage_pbs.pbs_backup.id
 
-  vmid = ["203"]
-  mode = "snapshot"
+  all = true
+  mode = "stop"
   notes_template = "{{guestname}} backup"
   prune_backups = {
     "keep-last"    = "7"
