@@ -295,14 +295,14 @@ resource "proxmox_virtual_environment_storage_pbs" "pbs_backup" {
   username       = var.pbs_username
   password       = var.pbs_password
   fingerprint    = var.pbs_fingerprint
-  encryption_key = var.pbs_encryption_key
+  encryption_key = jsonencode(var.pbs_encryption_key_data)
   content = ["backup"]
 }
 
 resource "proxmox_backup_job" "daily_pbs_backup" {
   id       = "daily-pbs-backup"
   enabled  = true
-  schedule = "10:25"
+  schedule = "23:00"
   storage  = proxmox_virtual_environment_storage_pbs.pbs_backup.id
 
   vmid = ["203"]

@@ -304,14 +304,20 @@ variable "pbs_fingerprint" {
   description = "The SHA-256 fingerprint of the PBS certificate for SSL verification."
 }
 
-variable "pbs_encryption_key" {
-  type        = string
-  description = "The Base64 encoded key used for client-side backup encryption. Data is encrypted before leaving the PVE host."
+variable "pbs_encryption_key_data" {
+  type = object({
+    kdf         = optional(string)
+    created     = string
+    modified    = string
+    data        = string
+    fingerprint = string
+  })
+  description = "Encryption key data for Proxmox Backup Server"
   sensitive   = true
 }
 
 variable "backup_notification_email" {
-  type        = string
-  description = "Primary email address for backup job reports and notifications."
+  type        = list(string)
+  description = "Email address list for backup job reports and notifications."
   sensitive = true
 }
