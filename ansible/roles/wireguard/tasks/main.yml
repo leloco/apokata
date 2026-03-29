@@ -4,7 +4,7 @@
     name:
       - wireguard
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure WireGuard configuration directory exists
   ansible.builtin.file:
@@ -47,5 +47,5 @@
 - name: Enable and start WireGuard service
   ansible.builtin.systemd:
     name: "wg-quick@{{ vault_interface }}"
-    enabled: yes
+    enabled: true
     state: started

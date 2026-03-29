@@ -1,4 +1,4 @@
 - name: Restart WireGuard
-  systemd:
+  ansible.builtin.systemd:
     name: "wg-quick@{{ vault_interface }}"
     state: restarted

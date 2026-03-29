@@ -81,6 +81,15 @@
     proxmox-backup-manager datastore create {{ vault_dataset_name }} /{{ vault_pool_name }}/{{ vault_dataset_name }}
   when: vault_dataset_name not in pbs_storage_datastores.stdout
 
+- name: Set ACL for PBS Token on datastore
+  ansible.builtin.command: >
+    proxmox-backup-manager acl update /datastore/{{ vault_dataset_name }} DatastoreAdmin --auth-id '{{ vault_token_id }}'
+  register: pbs_storage_acl_cmd
+  failed_when:
+    - pbs_storage_acl_cmd.stdout != ""
+    - pbs_storage_acl_cmd.rc != 0
+  changed_when: pbs_storage_acl_cmd.rc == 0 and pbs_storage_acl_cmd.stdout == ""
+
 - name: Copy the script to the server
   ansible.builtin.template:
     src: "disk-decrypt.sh.j2"

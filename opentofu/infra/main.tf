@@ -302,7 +302,7 @@ resource "proxmox_virtual_environment_storage_pbs" "pbs_backup" {
 resource "proxmox_backup_job" "daily_pbs_backup" {
   id       = "daily-pbs-backup"
   enabled  = true
-  schedule = "12:30"
+  schedule = "10:25"
   storage  = proxmox_virtual_environment_storage_pbs.pbs_backup.id
 
   vmid = ["203"]
