@@ -311,7 +311,7 @@ variable "pbs_encryption_key" {
 }
 
 variable "backup_notification_email" {
-  type        = list(string)
-  description = "A list of email addresses to receive backup job reports and notifications."
+  type        = string
+  description = "Email address for backup job reports and notifications."
   sensitive = true
 }
