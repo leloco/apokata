@@ -288,10 +288,10 @@ module "unifi_controller" {
 }
 
 resource "proxmox_virtual_environment_storage_pbs" "pbs_backup" {
-  id          = "backups"
+  id          = "sentinel_datastore_1"
   nodes       = ["ninja"]
   server      = local.semi_managed_hosts.sentinel.ipv4_address
-  datastore   = "backups"
+  datastore   = "datastore_1"
   username       = var.pbs_username
   password       = var.pbs_password
   fingerprint    = var.pbs_fingerprint

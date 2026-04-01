@@ -4,6 +4,7 @@
   become: true
   roles:
     - { role: systemd_resolved, tags: ['systemd_resolved'] }
+    - { role: duckdns, tags: ['duckdns'] }
     - { role: wireguard, tags: ['wireguard'] }
 
 - name: Setup DNS servers

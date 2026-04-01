@@ -1,0 +1,11 @@
+# Managed by Ansible
+
+[Unit]
+Description=Run WireGuard Reresolve every 2 minutes
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=2min
+
+[Install]
+WantedBy=timers.target
