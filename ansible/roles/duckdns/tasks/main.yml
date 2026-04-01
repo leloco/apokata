@@ -16,11 +16,19 @@
   ansible.builtin.template:
     src: duckdns.service.j2
     dest: /etc/systemd/system/duckdns.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd
 
 - name: Deploy Systemd Timer
   ansible.builtin.template:
     src: duckdns.timer.j2
     dest: /etc/systemd/system/duckdns.timer
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd
 
 - name: Enable and start DuckDNS timer
   ansible.builtin.systemd:
