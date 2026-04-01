@@ -1,0 +1,30 @@
+---
+- name: Install curl
+  ansible.builtin.apt:
+    name: curl
+    state: present
+
+- name: Deploy DuckDNS update script
+  ansible.builtin.template:
+    src: duckdns.sh.j2
+    dest: /usr/local/bin/duckdns.sh
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Deploy Systemd Service
+  ansible.builtin.template:
+    src: duckdns.service.j2
+    dest: /etc/systemd/system/duckdns.service
+
+- name: Deploy Systemd Timer
+  ansible.builtin.template:
+    src: duckdns.timer.j2
+    dest: /etc/systemd/system/duckdns.timer
+
+- name: Enable and start DuckDNS timer
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: duckdns.timer
+    state: started
+    enabled: true

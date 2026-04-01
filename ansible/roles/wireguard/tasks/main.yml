@@ -14,24 +14,6 @@
     owner: root
     group: root
 
-- name: Resolve Public IP via DNS
-  ansible.builtin.command:
-    cmd: "dig +short {{ vault_domain }} @9.9.9.9"
-  register: wireguard_dns_command_result
-  changed_when: false
-
-- name: Set wireguard_remote_ip fact
-  ansible.builtin.set_fact:
-    wireguard_remote_ip: "{{ wireguard_dns_command_result.stdout }}"
-
-- name: Verify DNS Resolution Success
-  ansible.builtin.assert:
-    that:
-      - wireguard_remote_ip is defined
-      - wireguard_remote_ip | length > 0
-      - wireguard_remote_ip != "NXDOMAIN"
-    fail_msg: "DNS Lookup for {{ vault_domain }} failed (Result was empty or NXDOMAIN)!"
-
 - name: Deploy WireGuard configuration
   ansible.builtin.template:
     src: wireguard.conf.j2
@@ -49,3 +31,35 @@
     name: "wg-quick@{{ vault_interface }}"
     enabled: true
     state: started
+
+- name: Deploy Reresolve Script for Live IP Update
+  ansible.builtin.template:
+    src: reresolve-dns.sh.j2
+    dest: "/usr/local/bin/reresolve-dns.sh"
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Deploy Reresolve Service
+  ansible.builtin.template:
+    src: wg-reresolve.service.j2
+    dest: "/etc/systemd/system/wg-reresolve.service"
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Deploy Reresolve Timer
+  ansible.builtin.template:
+    src: wg-reresolve.timer.j2
+    dest: "/etc/systemd/system/wg-reresolve.timer"
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Reload systemd and activate Timer
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: wg-reresolve.timer
+    state: started
+    enabled: true
+

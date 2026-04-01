@@ -1,0 +1,7 @@
+#!/bin/bash
+# Managed by Ansible
+
+DOMAIN="{{ vault_duckdns_domain }}"
+TOKEN="{{ vault_duckdns_token }}"
+
+/usr/bin/curl -4 -s "https://www.duckdns.org/update?domains=${DOMAIN}&token=${TOKEN}&ip="
