@@ -5,6 +5,7 @@
     cache_valid_time: 3600
     upgrade: "{{ apt_upgrade_method }}"
     force_apt_get: true
+    dpkg_options: 'force-confdef,force-confold'
 
 - name: Remove unused dependency packages (autoremove)
   ansible.builtin.apt:
