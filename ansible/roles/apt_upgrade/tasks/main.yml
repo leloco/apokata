@@ -1,27 +1,51 @@
 ---
+- name: Force update cache and clean
+  ansible.builtin.apt:
+    update_cache: true
+    force_apt_get: true
+    clean: true
+    lock_timeout: 300
+  become: true
+  when: '"repair" in ansible_run_tags'
+
+- name: Force repair of broken package states via shell
+  ansible.builtin.shell: |
+    dpkg --configure -a
+    apt-get install -f -y
+  become: true
+  when: '"repair" in ansible_run_tags'
+  failed_when: false
+
 - name: Update apt cache and upgrade all packages
   ansible.builtin.apt:
     update_cache: true
-    cache_valid_time: 3600
-    upgrade: "{{ apt_upgrade_method }}"
+    upgrade: "dist"
     force_apt_get: true
     dpkg_options: 'force-confdef,force-confold'
+    lock_timeout: 300
+  become: true
 
 - name: Remove unused dependency packages (autoremove)
   ansible.builtin.apt:
     autoremove: true
     purge: true
+    lock_timeout: 300
+  become: true
 
 - name: Clean up local repository (autoclean)
   ansible.builtin.apt:
     autoclean: true
+    lock_timeout: 300
+  become: true
 
 - name: Check if a reboot is required
   ansible.builtin.stat:
     path: /var/run/reboot-required
   register: apt_upgrade_reboot_required_file
+  become: true
 
 - name: Reboot the server if kernel was updated
   ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible"
   when: apt_upgrade_reboot_required_file.stat.exists
+  become: true
