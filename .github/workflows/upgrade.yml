@@ -7,10 +7,10 @@ env:
 
 on:
   schedule:
-    - cron: '0 23 * * 0'
+    - cron: '0 23 * * 4'
   workflow_dispatch:
 concurrency:
-  group: upgrade_apt_packages
+  group: terraform-state
   cancel-in-progress: false
 
 jobs:
@@ -58,7 +58,6 @@ jobs:
         run: tofu apply -target=local_file.ansible_inventory -replace=local_file.ansible_inventory -auto-approve -lock=false
 
       - name: Install SSH Private Key
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
