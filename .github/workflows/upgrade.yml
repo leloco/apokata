@@ -34,11 +34,6 @@ jobs:
         with:
           gpg_key: ${{ secrets.GPG_KEY }}
 
-            - name: Decrypt Secrets
-        uses: ./.github/actions/decrypt-secrets
-        with:
-          gpg_key: ${{ secrets.GPG_KEY }}
-
       - name: Setup Ansible Tools
         uses: ./.github/actions/install-ansible
         with:
