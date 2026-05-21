@@ -1,0 +1,77 @@
+name: "Infrastructure Package Upgrades"
+
+env:
+  OPENTOFU_WORKING_DIR: "./opentofu/infra"
+  ANSIBLE_WORKING_DIR: "./ansible"
+  OPENTOFU_VERSION: 1.10.7
+
+on:
+  schedule:
+    - cron: '0 23 * * 0'
+  workflow_dispatch:
+concurrency:
+  group: upgrade_apt_packages
+  cancel-in-progress: false
+
+jobs:
+  upgrade_apt_packages:
+    name: "Upgrade apt packages"
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 60
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
+
+      - name: Decrypt Secrets
+        uses: ./.github/actions/decrypt-secrets
+        with:
+          gpg_key: ${{ secrets.GPG_KEY }}
+
+            - name: Decrypt Secrets
+        uses: ./.github/actions/decrypt-secrets
+        with:
+          gpg_key: ${{ secrets.GPG_KEY }}
+
+      - name: Setup Ansible Tools
+        uses: ./.github/actions/install-ansible
+        with:
+          ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+
+      - name: Setup OpenTofu Tools
+        uses: ./.github/actions/opentofu-prep
+        with:
+          ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+
+      - name: Install OpenTofu CLI
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.OPENTOFU_VERSION }}
+
+      - name: OpenTofu Init
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu init
+
+      - name: OpenTofu Generate inventory.ini
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu apply -target=local_file.ansible_inventory -replace=local_file.ansible_inventory -auto-approve -lock=false
+
+      - name: Install SSH Private Key
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "unnecessary"
+          if_key_exists: fail
+
+      - name: Run Ansible Playbook
+        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i inventory.ini apt_upgrade_playbook.yml --tags repair

@@ -11,7 +11,6 @@
   hosts: dns_group
   become: true
   roles:
-    - { role: apt_upgrade, tags: ['apt_upgrade'] }
     - { role: common, tags: ['common'] }
     - { role: pihole, tags: ['pihole'] }
     - { role: keepalived_pihole, tags: ['pihole', 'keepalived'] }
@@ -20,7 +19,6 @@
   hosts: tang_group
   become: true
   roles:
-    - { role: apt_upgrade, tags: ['apt_upgrade'] }
     - { role: common, tags: ['common'] }
     - { role: tang, tags: ['tang'] }
 
@@ -28,6 +26,5 @@
   hosts: unifi_group
   become: true
   roles:
-    - { role: apt_upgrade, tags: ['apt_upgrade', 'unifi_group'] }
     - { role: common, tags: ['common', 'unifi_group'] }
     - { role: install_unifi, tags: ['install_unifi', 'unifi_group'] }

@@ -1,0 +1,6 @@
+---
+- name: Upgrade core infrastructure
+  hosts: proxmox_ve:dns_group:tang_group:unifi_group
+  become: true
+  roles:
+    - { role: apt_upgrade, tags: ['apt_upgrade'] }
