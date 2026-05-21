@@ -94,14 +94,13 @@
     group: root
     mode: '0755'
 
-- name: Preseed SetupVars for skipping IP-check on LXC
+- name: Preseed SetupVars for skipping IP-check
   ansible.builtin.copy:
     dest: /etc/pihole/setupVars.conf
     content: |
       PIHOLE_INTERFACE={{ network_interface }}
       IPV4_ADDRESS={{ ansible_default_ipv4.address }}/24
     mode: '0644'
-  when: ansible_virtualization_type == 'lxc'
 
 - name: "Download Installer"
   ansible.builtin.get_url:

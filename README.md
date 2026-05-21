@@ -2,6 +2,8 @@
 
 [![Infrastructure Deployment](https://github.com/leloco/apokata/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/leloco/apokata/actions/workflows/main.yml)
 
+[![Infrastructure Package Upgrades](https://github.com/leloco/apokata/actions/workflows/upgrade.yml/badge.svg?branch=main)](https://github.com/leloco/apokata/actions/workflows/upgrade.yml)
+
 - [apokata](#apokata)
   - [Project Overview](#project-overview)
   - [Motivation](#motivation)
