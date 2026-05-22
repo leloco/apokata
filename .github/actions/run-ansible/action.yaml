@@ -1,0 +1,40 @@
+name: 'Run Ansible'
+description: 'Runs a playbook, displays recap and uploads the log.'
+inputs:
+  playbook_name:
+    description: 'Name of the playbook to run'
+    required: true
+  working_dir:
+    description: 'Working directory for Ansible'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Ansible Playbook
+      working-directory: ${{ inputs.working_dir }}
+      shell: bash
+      run: |
+        export ANSIBLE_HOST_KEY_CHECKING=False
+        LOG_FILE="ansible_run_${{ github.run_number }}_id_${{ github.run_id }}.log"
+
+        ansible-playbook -i inventory.ini ${{ inputs.playbook_name }} > "$LOG_FILE" 2>&1
+      continue-on-error: false
+
+    - name: Display Ansible PLAY RECAP
+      if: always()
+      working-directory: ${{ inputs.working_dir }}
+      shell: bash
+      run: |
+        echo "====================================================================="
+        LOG_FILE="ansible_run_${{ github.run_number }}_id_${{ github.run_id }}.log"
+        sed -n '/PLAY RECAP/,$p' "$LOG_FILE" || echo "PLAY RECAP not found."
+        echo "====================================================================="
+
+    - name: Upload Ansible Log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ansible-log-${{ inputs.playbook_name }}-run-${{ github.run_number }}
+        path: ${{ inputs.working_dir }}/ansible_run_${{ github.run_number }}_id_${{ github.run_id }}.log
+        retention-days: 7

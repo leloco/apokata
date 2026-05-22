@@ -7,7 +7,7 @@ env:
 
 on:
   schedule:
-    - cron: '0 23 * * 4'
+    - cron: '0 23 * * 1'
   workflow_dispatch:
 concurrency:
   group: terraform-state
@@ -65,26 +65,8 @@ jobs:
           if_key_exists: fail
 
       - name: Run Ansible Playbook
-        working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
-        run: |
-          export ANSIBLE_HOST_KEY_CHECKING=False
-          LOG_FILE="ansible_run_${{ github.run_number }}_id_${{ github.run_id }}.log"
-          echo "ANSIBLE_LOG_PATH=${LOG_FILE}" >> $GITHUB_ENV
-
-          ansible-playbook -i inventory.ini apt_upgrade_playbook.yml --tags repair > "$LOG_FILE" 2>&1
-        continue-on-error: false
-
-      - name: Display Ansible PLAY RECAP
-        if: always()
-        run: |
-          echo "====================================================================="
-          sed -n '/PLAY RECAP/,$p' "${{ env.ANSIBLE_LOG_PATH }}" || echo "PLAY RECAP not found."
-          echo "====================================================================="
-
-      - name: Upload Detailed Ansible Log
-        if: always()
-        uses: actions/upload-artifact@v4
+        uses: ./.github/actions/ansible-run
         with:
-          name: ansible-detailed-log-run-${{ github.run_number }}
-          path: ${{ env.ANSIBLE_LOG_PATH }}
-          retention-days: 7
+          playbook_name: 'apt_upgrade_playbook.yml'
+          working_dir: ${{ env.ANSIBLE_WORKING_DIR }}
+
