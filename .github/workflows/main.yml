@@ -110,7 +110,26 @@ jobs:
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
         run: |
           export ANSIBLE_HOST_KEY_CHECKING=False
-          ansible-playbook -i inventory.ini infra_playbook.yml
+          LOG_FILE="ansible_run_${{ github.run_number }}_id_${{ github.run_id }}.log"
+          echo "ANSIBLE_LOG_PATH=${LOG_FILE}" >> $GITHUB_ENV
+
+          ansible-playbook -i inventory.ini infra_playbook.yml > "$LOG_FILE" 2>&1
+        continue-on-error: false
+
+      - name: Display Ansible PLAY RECAP
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "====================================================================="
+          sed -n '/PLAY RECAP/,$p' "${{ env.ANSIBLE_LOG_PATH }}" || echo "PLAY RECAP not found."
+          echo "====================================================================="
+
+      - name: Upload Ansible Log
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ansible-detailed-log-run-${{ github.run_number }}
+          path: ${{ env.ANSIBLE_LOG_PATH }}
+          retention-days: 7
 
       - name: Send XMPP Notification
         if: always()

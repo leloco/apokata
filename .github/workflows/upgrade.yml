@@ -55,7 +55,7 @@ jobs:
 
       - name: OpenTofu Generate inventory.ini
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
-        run: tofu apply -target=local_file.ansible_inventory -replace=local_file.ansible_inventory -auto-approve -lock=false
+        run: tofu apply -var-file="../shared.tfvars" -target=local_file.ansible_inventory -replace=local_file.ansible_inventory -auto-approve -lock=false
 
       - name: Install SSH Private Key
         uses: shimataro/ssh-key-action@v2
@@ -68,4 +68,23 @@ jobs:
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
         run: |
           export ANSIBLE_HOST_KEY_CHECKING=False
-          ansible-playbook -i inventory.ini apt_upgrade_playbook.yml --tags repair
+          LOG_FILE="ansible_run_${{ github.run_number }}_id_${{ github.run_id }}.log"
+          echo "ANSIBLE_LOG_PATH=${LOG_FILE}" >> $GITHUB_ENV
+
+          ansible-playbook -i inventory.ini apt_upgrade_playbook.yml --tags repair > "$LOG_FILE" 2>&1
+        continue-on-error: false
+
+      - name: Display Ansible PLAY RECAP
+        if: always()
+        run: |
+          echo "====================================================================="
+          sed -n '/PLAY RECAP/,$p' "${{ env.ANSIBLE_LOG_PATH }}" || echo "PLAY RECAP not found."
+          echo "====================================================================="
+
+      - name: Upload Detailed Ansible Log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ansible-detailed-log-run-${{ github.run_number }}
+          path: ${{ env.ANSIBLE_LOG_PATH }}
+          retention-days: 7
