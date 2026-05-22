@@ -74,11 +74,11 @@ jobs:
           ansible-playbook -i inventory.ini apt_upgrade_playbook.yml --tags repair > "$LOG_FILE" 2>&1
         continue-on-error: false
 
-      - name: Display Play Recap Only
+      - name: Display Ansible PLAY RECAP
         if: always()
         run: |
           echo "====================================================================="
-          grep -A 100 "PLAY RECAP" "${{ env.ANSIBLE_LOG_PATH }}" || echo "PLAY RECAP not found."
+          sed -n '/PLAY RECAP/,$p' "${{ env.ANSIBLE_LOG_PATH }}" || echo "PLAY RECAP not found."
           echo "====================================================================="
 
       - name: Upload Detailed Ansible Log

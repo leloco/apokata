@@ -116,15 +116,16 @@ jobs:
           ansible-playbook -i inventory.ini infra_playbook.yml > "$LOG_FILE" 2>&1
         continue-on-error: false
 
-      - name: Display Play Recap Only
-        if: always()
+      - name: Display Ansible PLAY RECAP
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           echo "====================================================================="
-          grep -A 100 "PLAY RECAP" "${{ env.ANSIBLE_LOG_PATH }}" || echo "PLAY RECAP not found."
+          sed -n '/PLAY RECAP/,$p' "${{ env.ANSIBLE_LOG_PATH }}" || echo "PLAY RECAP not found."
           echo "====================================================================="
 
-      - name: Upload Detailed Ansible Log
-        if: always()
+      - name: Upload Ansible Log
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
         uses: actions/upload-artifact@v4
         with:
           name: ansible-detailed-log-run-${{ github.run_number }}
