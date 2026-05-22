@@ -107,7 +107,7 @@ jobs:
 
       - name: Run Ansible Playbook
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: ./.github/actions/ansible-run
+        uses: ./.github/actions/run-ansible
         with:
           playbook_name: 'infra_playbook.yml'
           working_dir: ${{ env.ANSIBLE_WORKING_DIR }}

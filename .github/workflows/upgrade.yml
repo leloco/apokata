@@ -65,7 +65,7 @@ jobs:
           if_key_exists: fail
 
       - name: Run Ansible Playbook
-        uses: ./.github/actions/ansible-run
+        uses: ./.github/actions/run-ansible
         with:
           playbook_name: 'apt_upgrade_playbook.yml'
           working_dir: ${{ env.ANSIBLE_WORKING_DIR }}
