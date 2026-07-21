@@ -1,0 +1,22 @@
+- name: Install ndisc6 package for IPv6 Router Solicitation
+  ansible.builtin.apt:
+    name: ndisc6
+    state: present
+    update_cache: true
+
+- name: Deploy persistent SLAAC trigger script
+  ansible.builtin.copy:
+    dest: /etc/network/if-up.d/slaac-custom
+    mode: '0755'
+    content: |
+      #!/bin/sh
+      # ignore looback and emtpy interfaces
+      [ -z "$IFACE" ] || [ "$IFACE" = "lo" ] && exit 0
+
+      sysctl -w "net.ipv6.conf.$IFACE.accept_ra=2" >/dev/null 2>&1
+      sysctl -w "net.ipv6.conf.$IFACE.autoconf=1" >/dev/null 2>&1
+      sysctl -w "net.ipv6.conf.$IFACE.use_tempaddr=0" >/dev/null 2>&1
+
+      # Router Solicitation
+      rdisc6 -q "$IFACE" || true
+  notify: Trigger SLAAC immediately

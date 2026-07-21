@@ -1,0 +1,17 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ansible-lint
+        name: ansible-lint
+        entry: env ANSIBLE_CONFIG=ansible/ansible.cfg ansible-lint -c ansible/.ansible-lint ansible/
+        language: system
+        files: ^ansible/.*\.(yaml|yml)$
+        pass_filenames: false
+  - repo: local
+    hooks:
+      - id: encrypted-secrets-check
+        name: encrypted-secrets-check
+        entry: ./scripts/githooks/pre-commit
+        language: script
+        always_run: true
+        pass_filenames: false

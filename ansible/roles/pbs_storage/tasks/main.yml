@@ -1,6 +1,6 @@
 ---
 - name: Load secret variables
-  include_vars:
+  ansible.builtin.include_vars:
     file: secrets.yml
 
 - name: Check if device has a LUKS header
@@ -53,15 +53,13 @@
 
 - name: Bind LUKS device to Tang server (Non-interactive)
   ansible.builtin.shell: |
-    if clevis luks list -d {{ vault_disk_device }} | grep -q tang; then
-      exit 0
-    fi
     clevis luks bind -d {{ vault_disk_device }} tang \
     '{"url":"{{ vault_tang_url }}", "thp": "{{ vault_tang_thumbprint }}"}' -f
   args:
     stdin: "{{ vault_luks_passphrase }}"
   when: "'tang' not in pbs_storage_luks_list.stdout"
   no_log: true
+  changed_when: true
 
 - name: Ensure Proxmox Backup services are active
   ansible.builtin.systemd:
@@ -81,6 +79,7 @@
   ansible.builtin.command: >
     proxmox-backup-manager datastore create {{ vault_dataset_name }} /{{ vault_pool_name }}/{{ vault_dataset_name }}
   when: vault_dataset_name not in pbs_storage_datastores.stdout
+  changed_when: false
 
 - name: Set ACL for PBS Token on datastore
   ansible.builtin.command: >

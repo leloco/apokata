@@ -40,6 +40,20 @@
     - pihole_resolved_status.failed
     - "'Could not find the requested service' not in pihole_resolved_status.msg"
 
+
+# required for Keepalived VIP failover
+- name: Allow non-local IP binding for IPv4 and IPv6
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: "1"
+    state: present
+    sysctl_file: /etc/sysctl.d/99-ip-nonlocal-bind.conf
+    sysctl_set: true
+    reload: true
+  loop:
+    - net.ipv4.ip_nonlocal_bind
+    - net.ipv6.ip_nonlocal_bind
+
 - name: "Set temporary DNS (Quad9) for installation"
   ansible.builtin.copy:
     dest: /etc/resolv.conf
@@ -63,15 +77,17 @@
     group: root
     mode: '0644'
 
-- name: "Configure Unbound"
+- name: "Configure Unbound for Dual-Stack"
   ansible.builtin.copy:
     dest: /etc/unbound/unbound.conf.d/pi-hole.conf
     content: |
       server:
           verbosity: 0
           interface: 127.0.0.1
+          interface: ::1
           port: 5335
           do-ip4: yes
+          do-ip6: yes
           do-udp: yes
           do-tcp: yes
           root-hints: "/var/lib/unbound/root.hints"
@@ -127,6 +143,7 @@
   vars:
     upstreams_list:
       - "{{ vault_pihole_dns_upstream }}"
+      - "{{ vault_pihole_dns_upstream_ipv6 }}"
       - "/{{ custom_domain }}/{{ dns_gateway_ipv4 }}"
       - "/{{ custom_domain }}/{{ dns_gateway_ipv6 }}"
       - "/{{ dns_gateway_ipv4.split('.')[:3] | reverse | join('.') }}.in-addr.arpa/{{ dns_gateway_ipv4 }}"

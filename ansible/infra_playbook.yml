@@ -7,6 +7,14 @@
     - { role: duckdns, tags: ['duckdns'] }
     - { role: wireguard, tags: ['wireguard'] }
 
+- name: Setup Proxmox guests
+  hosts:
+  - proxmox_lxc
+  - proxmox_vm
+  become: true
+  roles:
+    - { role: proxmox_guests, tags: ['proxmox_guests'] }
+
 - name: Setup DNS servers
   hosts: dns_group
   become: true
@@ -28,3 +36,5 @@
   roles:
     - { role: common, tags: ['common', 'unifi_group'] }
     - { role: install_unifi, tags: ['install_unifi', 'unifi_group'] }
+
+

@@ -15,6 +15,7 @@
   become: true
   when: '"repair" in ansible_run_tags'
   failed_when: false
+  changed_when: false
 
 - name: Update apt cache and upgrade all packages
   ansible.builtin.apt:
