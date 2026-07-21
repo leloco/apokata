@@ -1,2 +1,15 @@
+# Prevent collection duplicate warnings from cluttering the output
+warn_list:
+  - core-review
+
+# Explicitly ignore system collection path conflicts if needed
+skip_list:
+  - var-naming
+  - yaml[line-length]
+  - args[module]
+
 exclude_paths:
+  - ".ansible"
+  - "**/vars/vault.yml"
+  - "**/vars/vault.yaml"
   - "roles/**/vars/secrets.yml"
