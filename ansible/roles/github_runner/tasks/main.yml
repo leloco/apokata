@@ -1,10 +1,10 @@
 ---
 - name: Load secret variables
-  include_vars:
+  ansible.builtin.include_vars:
     file: secrets.yml
 
 - name: Ensure runner work directory exists
-  file:
+  ansible.builtin.file:
     path: /opt/actions-runner
     state: directory
     mode: '0755'

@@ -10,6 +10,9 @@ skip_list:
 
 exclude_paths:
   - ".ansible"
+  - ".venv"
+  - "**/vars/secrets.yml"
   - "**/vars/vault.yml"
   - "**/vars/vault.yaml"
-  - "roles/**/vars/secrets.yml"
+  - "host_vars/**"
+  - "group_vars/**"
