@@ -2,7 +2,7 @@
   ansible.builtin.apt:
     name: ndisc6
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Deploy persistent SLAAC trigger script
   ansible.builtin.copy:
@@ -19,10 +19,4 @@
 
       # Router Solicitation
       rdisc6 -q "$IFACE" || true
-  register: slaac_script
-
-- name: Trigger SLAAC immediately on first deploy
-  ansible.builtin.command: /etc/network/if-up.d/slaac-custom
-  environment:
-    IFACE: "{{ ansible_default_ipv4.interface | default('eth0') }}"
-  when: slaac_script.changed
+  notify: Trigger SLAAC immediately

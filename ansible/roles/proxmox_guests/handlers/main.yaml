@@ -1,0 +1,6 @@
+---
+handlers:
+  - name: Trigger SLAAC immediately
+    ansible.builtin.command: /etc/network/if-up.d/slaac-custom
+    environment:
+      IFACE: "{{ ansible_default_ipv4.interface | default('eth0') }}"
