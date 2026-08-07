@@ -269,6 +269,17 @@ variable "infra_unifi_controller_iid" {
   sensitive = true
 }
 # ----
+variable "infra_z1_npm_host_id" {
+  type        = number
+  description = "The host id (ipv4) that identifies the host."
+  sensitive = true
+}
+variable "infra_z1_npm_iid" {
+  type        = number
+  description = "The interface identifier (ipv6) that identifies the host."
+  sensitive = true
+}
+# ----
 variable "infra_vip_host_id" {
   type        = number
   description = "The host id (ipv4) that identifies the host."
