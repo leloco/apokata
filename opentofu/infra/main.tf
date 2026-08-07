@@ -67,14 +67,11 @@ locals {
     }
   }
 
-  # Fully managed means automatically created with IaC (OpenTofu) and / or configured with CaC (Ansible)
-  # Semi managed means the host was created manually but is configured CaC
-  # Unmanaged means everything is configured manually
-
-  fully_managed_hosts = {
+  mutable_hosts = {
     # ----------------------- WARNING -------------------------
     # Runners are primarily configured in /runner where their configuration actually live. Changes here require changes inside /runner and vice versa.
     # ---------------------------------------------------------
+    //TODO: Runners should be immutable (See `/docs/ard/0001.md`)
     runner_alpha = {
        hostname = "runner-alpha"
        ipv4_address = cidrhost(local.vlans.lab.network, var.infra_runner_alpha_host_id)
@@ -100,9 +97,7 @@ locals {
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_unifi_controller_host_id)
        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_unifi_controller_iid}"
     }
-  }
 
-  semi_managed_hosts = {
     shadow = {
        hostname = "shadow"
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_shadow_host_id)
@@ -120,16 +115,14 @@ locals {
       ipv4_address = cidrhost(local.vlans.core.network, var.infra_ninja_host_id)
       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_ninja_iid}"
     }
-  }
 
-  unmanaged_hosts = {
-      ironhide = {
-       hostname = "ironhide"
-       ipv4_address = cidrhost(local.vlans.trusted.network, var.infra_ironhide_host_id)
-       ipv6_address = "${local.vlans.trusted.ula_prefix}${var.infra_ironhide_iid}"
-      }
-  }
+    ironhide = {
+      hostname = "ironhide"
+      ipv4_address = cidrhost(local.vlans.trusted.network, var.infra_ironhide_host_id)
+      ipv6_address = "${local.vlans.trusted.ula_prefix}${var.infra_ironhide_iid}"
+    }
 
+  }
   virtual = {
     ipv4_address = cidrhost(local.vlans.core.network, var.infra_vip_host_id)
     ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_vip_iid}"
@@ -145,34 +138,34 @@ resource "local_file" "ansible_inventory" {
 # Generated on: ${timestamp()}
 # ---------------------------------------------------------
 [proxmox_ve]
-${local.semi_managed_hosts.ninja.hostname} ansible_host=${local.semi_managed_hosts.ninja.ipv4_address}
+${local.mutable_hosts.ninja.hostname} ansible_host=${local.mutable_hosts.ninja.ipv4_address}
 
 [proxmox_bs]
-${local.semi_managed_hosts.sentinel.hostname} ansible_host=${local.semi_managed_hosts.sentinel.ipv4_address}
+${local.mutable_hosts.sentinel.hostname} ansible_host=${local.mutable_hosts.sentinel.ipv4_address}
 
 [proxmox_lxc]
-${local.fully_managed_hosts.tang.hostname} ansible_host=${local.fully_managed_hosts.tang.ipv4_address}
-${local.fully_managed_hosts.prowl.hostname} ansible_host=${local.fully_managed_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.fully_managed_hosts.prowl.ipv6_address}
-${local.fully_managed_hosts.unifi_controller.hostname} ansible_host=${local.fully_managed_hosts.unifi_controller.ipv4_address} ansible_host_ipv6=${local.fully_managed_hosts.unifi_controller.ipv6_address}
+${local.mutable_hosts.tang.hostname} ansible_host=${local.mutable_hosts.tang.ipv4_address}
+${local.mutable_hosts.prowl.hostname} ansible_host=${local.mutable_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.prowl.ipv6_address}
+${local.mutable_hosts.unifi_controller.hostname} ansible_host=${local.mutable_hosts.unifi_controller.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.unifi_controller.ipv6_address}
 
 [proxmox_vm]
-${local.fully_managed_hosts.runner_alpha.hostname} ansible_host=${local.fully_managed_hosts.runner_alpha.ipv4_address}  ansible_user=${local.fully_managed_hosts.runner_alpha.user}
+${local.mutable_hosts.runner_alpha.hostname} ansible_host=${local.mutable_hosts.runner_alpha.ipv4_address}  ansible_user=${local.mutable_hosts.runner_alpha.user}
 
 [dns_group]
-${local.semi_managed_hosts.shadow.hostname} ansible_host=${local.semi_managed_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.semi_managed_hosts.shadow.ipv6_address} keepalived_role=MASTER keepalived_priority=100 ansible_user=${local.semi_managed_hosts.shadow.user}
-${local.fully_managed_hosts.prowl.hostname} keepalived_role=BACKUP keepalived_priority=80
+${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=MASTER keepalived_priority=100 ansible_user=${local.mutable_hosts.shadow.user}
+${local.mutable_hosts.prowl.hostname} keepalived_role=BACKUP keepalived_priority=80
 
 [dns_group:vars]
 network_interface=eth0
 
 [tang_group]
-${local.fully_managed_hosts.tang.hostname}
+${local.mutable_hosts.tang.hostname}
 
 [runner_group]
-${local.fully_managed_hosts.runner_alpha.hostname}
+${local.mutable_hosts.runner_alpha.hostname}
 
 [unifi_group]
-${local.fully_managed_hosts.unifi_controller.hostname}
+${local.mutable_hosts.unifi_controller.hostname}
 
 [all:children]
 proxmox_ve
@@ -201,7 +194,7 @@ depends_on = [ module.tang, module.prowl, module.unifi_controller ]
 }
 
 resource "proxmox_virtual_environment_dns" "node_dns" {
-  node_name = local.semi_managed_hosts.ninja.hostname
+  node_name = local.mutable_hosts.ninja.hostname
   servers = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4]
   domain  = var.shared_searchdomain
 }
@@ -211,7 +204,7 @@ module "tang" {
 
   pve_node         = var.shared_pve_node
   vm_id            = 200
-  hostname         = local.fully_managed_hosts.tang.hostname
+  hostname         = local.mutable_hosts.tang.hostname
 
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
@@ -219,10 +212,10 @@ module "tang" {
   vlan_id          = local.vlans.core.id
   template_file_id = var.shared_lxc_template_file_id
 
-  ipv4_address     = "${local.fully_managed_hosts.tang.ipv4_address}/24"
+  ipv4_address     = "${local.mutable_hosts.tang.ipv4_address}/24"
   gateway          = local.vlans.core.gateway_ipv4
 
-  ipv6_address     = "${local.fully_managed_hosts.tang.ipv6_address}/64"
+  ipv6_address     = "${local.mutable_hosts.tang.ipv6_address}/64"
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
@@ -237,17 +230,17 @@ module "prowl" {
 
   pve_node         = var.shared_pve_node
   vm_id            = 201
-  hostname         = local.fully_managed_hosts.prowl.hostname
+  hostname         = local.mutable_hosts.prowl.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
 
   vlan_id          = local.vlans.core.id
   template_file_id = var.shared_lxc_template_file_id
 
-  ipv4_address     = "${local.fully_managed_hosts.prowl.ipv4_address}/24"
+  ipv4_address     = "${local.mutable_hosts.prowl.ipv4_address}/24"
   gateway          = local.vlans.core.gateway_ipv4
 
-  ipv6_address     = "${local.fully_managed_hosts.prowl.ipv6_address}/64"
+  ipv6_address     = "${local.mutable_hosts.prowl.ipv6_address}/64"
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
@@ -263,7 +256,7 @@ module "unifi_controller" {
 
   pve_node         = var.shared_pve_node
   vm_id            = 203
-  hostname         = local.fully_managed_hosts.unifi_controller.hostname
+  hostname         = local.mutable_hosts.unifi_controller.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
 
@@ -274,10 +267,10 @@ module "unifi_controller" {
   vlan_id          = local.vlans.core.id
   template_file_id = var.shared_lxc_template_file_id
 
-  ipv4_address     = "${local.fully_managed_hosts.unifi_controller.ipv4_address}/24"
+  ipv4_address     = "${local.mutable_hosts.unifi_controller.ipv4_address}/24"
   gateway          = local.vlans.core.gateway_ipv4
 
-  ipv6_address     = "${local.fully_managed_hosts.unifi_controller.ipv6_address}/64"
+  ipv6_address     = "${local.mutable_hosts.unifi_controller.ipv6_address}/64"
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
@@ -290,7 +283,7 @@ module "unifi_controller" {
 resource "proxmox_virtual_environment_storage_pbs" "pbs_backup" {
   id          = "sentinel_datastore_1"
   nodes       = ["ninja"]
-  server      = local.semi_managed_hosts.sentinel.ipv4_address
+  server      = local.mutable_hosts.sentinel.ipv4_address
   datastore   = "datastore_1"
   username       = var.pbs_username
   password       = var.pbs_password
