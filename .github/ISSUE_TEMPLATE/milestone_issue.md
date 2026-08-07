@@ -15,8 +15,7 @@ assignees: 'leloco'
 ---
 
 ## 🔗 Architecture & Planning Context
-* **Milestone:** [M1: Zone 1 Hardening and Backup](../docs/milestones/roadmap.md)
-* **Related ADRs:** [ADR-0001](../docs/adr/0001-hybrid-architecture-scope-definition.md), [ADR-0002](../docs/adr/0002-backup-strategy-of-zone-1-components.md)
+* **Related ADRs:** [ADR-0001](https://github.com/leloco/apokata/blob/main/docs/adr/0001-hybrid-architecture-with-two-zones.md), [ADR-0002](https://github.com/leloco/apokata/blob/main/docs/adr/0002-backup-strategy-of-zone-1-components.md)
 
 ---
 
