@@ -11,7 +11,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-
+paths-ignore:
+  - '**.md'
+  - '.github/ISSUE_TEMPLATE/**'
+  - 'docs/**'
 concurrency:
   group: terraform-state
   cancel-in-progress: false
