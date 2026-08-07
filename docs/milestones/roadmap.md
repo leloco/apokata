@@ -1,0 +1,27 @@
+# Roadmap
+
+## M1: Zone 1 Hardening and Backup
+
+> **Context:**
+> * **Goal:** Provision core LXC services and establish PBS and Cloudflare R2 backup pipelines.
+> * **Related ADRs:** [ADR-0001](../adr/0001-hybrid-architecture-with-two-zones.md), [ADR-0002](../adr/0002-backup-strategy-of-zone-1-components.md)
+
+### GitHub Sync Status
+
+- [x] **Milestone created:** [1](https://github.com/leloco/apokata/milestone/1)
+- [ ] **Issues created:**
+  - [ ] `TBD` - Migrate `z1-npm` LXC
+  - [ ] `TBD` - Migrate `z1-portainer` LXC
+  - [ ] `TBD` - Migrate `z1-ejabberd` LXC
+  - [ ] `TBD` - Migrate `z1-iobroker` LXC
+  - [ ] `TBD` - Create `z1-rocketchat` LXC
+  - [ ] `TBD` - Recreate `z1-tang` LXC
+  - [ ] `TBD` - Recreate `z1-prowl` LXC
+  - [ ] `TBD` - Recreate `z1-unifi` LXC
+  - [ ] `TBD` - Validate PBS snapshot job for all Zone 1 LXCs
+  - [ ] `TBD` - Deploy Ansible role for Cloudflare R2 encrypted config export for dedicated LXCs
+
+### Definition of Done (DoD)
+- [ ] Code is formatted and passes linter checks (`tofu fmt`, `ansible-lint`)
+- [ ] All GitHub Issues associated with this milestone are closed
+- [ ] Disaster recovery / restoration path has been tested
