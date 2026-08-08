@@ -1,0 +1,17 @@
+services:
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:{{ npm_version | default("2.12.6") }}'
+    container_name: {{ inventory_hostname }}
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '127.0.0.1:81:81'
+    volumes:
+      - {{ npm_mount_base }}/data:/data
+      - {{ npm_mount_base }}/letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy1-network
+networks:
+  proxy1-network:
+    driver: bridge

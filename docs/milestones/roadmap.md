@@ -10,7 +10,7 @@
 
 - [x] **Milestone created:** [1](https://github.com/leloco/apokata/milestone/1)
 - [ ] **Issues created:**
-  - [ ] `TBD` - Migrate `z1-npm` LXC
+  - [x] Migrate `z1-npm` LXC -> https://github.com/leloco/apokata/issues/102
   - [ ] `TBD` - Migrate `z1-portainer` LXC
   - [ ] `TBD` - Migrate `z1-ejabberd` LXC
   - [ ] `TBD` - Migrate `z1-iobroker` LXC
@@ -19,6 +19,7 @@
   - [ ] `TBD` - Recreate `z1-prowl` LXC
   - [ ] `TBD` - Recreate `z1-unifi` LXC
   - [ ] `TBD` - Validate PBS snapshot job for all Zone 1 LXCs
+  - [ ] `TBD` - Automate proxy hosts config in z1-npm
   - [ ] `TBD` - Deploy Ansible role for Cloudflare R2 encrypted config export for dedicated LXCs
 
 ### Definition of Done (DoD)

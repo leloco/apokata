@@ -23,6 +23,13 @@
     - { role: pihole, tags: ['pihole'] }
     - { role: keepalived_pihole, tags: ['pihole', 'keepalived'] }
 
+- name: Setup proxy server
+  hosts: proxy_group
+  become: true
+  roles:
+    - { role: docker, tags: ['docker'] }
+    - { role: docker_compose_npm, tags: ['docker_compose_npm'] }
+
 - name: Setup tang server
   hosts: tang_group
   become: true
