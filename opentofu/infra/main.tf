@@ -323,7 +323,7 @@ module "z1_npm" {
   mount_points = [
     {
       //TODO: Define the right volume
-      volume = "wd-red-plus-1:?"
+      volume = "wd-red-plus-1:subvol-103-disk-2"
       path   = "/opt/npm-data"
       backup = true
     }

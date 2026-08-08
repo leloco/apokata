@@ -10,24 +10,8 @@ services:
     volumes:
       - {{ npm_mount_base }}/data:/data
       - {{ npm_mount_base }}/letsencrypt:/etc/letsencrypt
-    env_file:
-      - {{ npm_base_dir }}/{{ inventory_hostname }}.env
-    depends_on:
-      - db
     networks:
       - proxy1-network
-
-  db:
-    image: 'mariadb:{{ npm_db_version | default("10.9") }}'
-    container_name: {{ inventory_hostname }}_db
-    restart: unless-stopped
-    env_file:
-      - {{ npm_base_dir }}/{{ inventory_hostname }}_db.env
-    volumes:
-      - {{ npm_mount_base }}/db:/var/lib/mysql
-    networks:
-      - proxy1-network
-
 networks:
   proxy1-network:
     driver: bridge

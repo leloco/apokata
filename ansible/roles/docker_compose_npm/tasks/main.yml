@@ -12,19 +12,6 @@
     - "{{ npm_base_dir }}"
     - "{{ npm_mount_base }}/data"
     - "{{ npm_mount_base }}/letsencrypt"
-    - "{{ npm_mount_base }}/db"
-
-- name: Create npm app env file from template
-  ansible.builtin.template:
-    src: app.env.j2
-    dest: "{{ npm_base_dir }}/{{ inventory_hostname }}.env"
-    mode: '0600'
-
-- name: Create npm db env file from template
-  ansible.builtin.template:
-    src: db.env.j2
-    dest: "{{ npm_base_dir }}/{{ inventory_hostname }}_db.env"
-    mode: '0600'
 
 - name: Create docker-compose.yml from template
   ansible.builtin.template:

@@ -1,9 +1,4 @@
 ---
 npm_version: "2.12.6"
-npm_db_version: "10.9"
-
 npm_base_dir: "/opt/npm"
 npm_mount_base: "/opt/npm-data"
-
-npm_db_name: "proxy1_data"
-npm_db_user: "proxy1_user"
