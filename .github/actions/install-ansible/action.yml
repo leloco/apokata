@@ -24,7 +24,7 @@ runs:
       uses: actions/cache@v4
       id: cache-ansible
       with:
-        path: /root/.ansible/collections
+        path: ~/.ansible/collections
         key: ${{ runner.os }}-ansible-${{ hashFiles('./ansible/requirements.yml') }}
         restore-keys: |
           ${{ runner.os }}-ansible-
