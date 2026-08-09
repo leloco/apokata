@@ -9,22 +9,31 @@ env:
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - '**.md'
-      - '.github/ISSUE_TEMPLATE/**'
-      - 'docs/**'
   pull_request:
     branches: [main]
-    paths-ignore:
-      - '**.md'
-      - '.github/ISSUE_TEMPLATE/**'
-      - 'docs/**'
 concurrency:
   group: terraform-state
   cancel-in-progress: false
 
 jobs:
+  changes:
+    name: "Detect functional changes"
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - '!**.md'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!docs/**'
   validate_deploy:
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
     name: "Validate & Deploy Infrastructure"
     runs-on: [self-hosted, linux]
     timeout-minutes: 10
