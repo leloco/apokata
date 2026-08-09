@@ -26,3 +26,26 @@
 - [ ] Code is formatted and passes linter checks (`tofu fmt`, `ansible-lint`)
 - [ ] All GitHub Issues associated with this milestone are closed
 - [ ] Disaster recovery / restoration path has been tested
+
+---
+
+## M2: Shared Storage Architecture
+
+> **Context:**
+> * **Goal:** Integrate two storage pools from NAS into both Proxmox nodes via NFS and dedicated SAN
+> * **Related ADRs:**
+### GitHub Sync Status
+
+- [x] **Milestone created:** [2](https://github.com/leloco/apokata/milestone/2)
+- [ ] **Issues created:**
+  - [] `TBD` Build NAS, configure storage and document important configurations
+  - [] `TBD` Integrate HDD Pool via NFS into both Proxmox hosts
+  - [] `TBD` Integrate SSD Pool via NFS into both Proxmox hosts
+  - [] `TBD` Create backup solution for NAS zfs snapshots on sentinel
+
+### Definition of Done (DoD)
+
+- [] Storage mounts verified on both PVE hosts (pvesm status, mount persistence checked after reboot)
+- [] NFS write performance & latency benchmarked under load (sync=disabled verified)
+- [] All GitHub Issues associated with this milestone are closed
+- [] Disaster recovery / restoration path has been tested
