@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   changes:
+    name: "Detect functional changes"
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.filter.outputs.code }}
