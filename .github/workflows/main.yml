@@ -22,15 +22,20 @@ jobs:
     outputs:
       code: ${{ steps.filter.outputs.code }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
             code:
-              - '!**.md'
-              - '!.github/ISSUE_TEMPLATE/**'
+              - '**'
               - '!docs/**'
+              - '!**.md'
+              - '!**.svg'
+              - '!.github/ISSUE_TEMPLATE/**'
   validate_deploy:
     needs: changes
     if: ${{ needs.changes.outputs.code == 'true' }}
