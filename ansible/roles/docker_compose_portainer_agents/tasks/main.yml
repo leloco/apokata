@@ -1,0 +1,31 @@
+---
+- name: Ensure target directory exists
+  ansible.builtin.file:
+    path: "{{ portainer_agent_base_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create docker-compose.yml from template
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ portainer_agent_base_dir }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Deploy and start Portainer Agent stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ portainer_agent_base_dir }}"
+    state: present
+
+- name: Register Agent environment in Portainer Server via HTTPS API
+  ansible.builtin.uri:
+    url: "https://{{ group_vars_vault_portainer_server_fqdn }}/api/endpoints"
+    method: POST
+    headers:
+      X-API-Key: "{{ group_vars_vault_portainer_access_token }}"
+    body_format: json
+    body:
+      Name: "{{ inventory_hostname }}"
+      EndpointCreationType: 2  # standard portainer agent
+      URL: "tcp://{{ ansible_default_ipv4.address }}:9001"
+    status_code: [200, 409]
+    validate_certs: true

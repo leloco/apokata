@@ -1,0 +1,3 @@
+---
+portainer_base_dir: "/opt/portainer"
+portainer_mount_base: "/opt/portainer-data"

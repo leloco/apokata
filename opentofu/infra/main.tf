@@ -104,6 +104,12 @@ locals {
        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_z1_npm_iid}"
     }
 
+    z1_portainer = {
+       hostname = "z1-portainer"
+       ipv4_address = cidrhost(local.vlans.core.network, var.infra_z1_portainer_host_id)
+       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_z1_portainer_iid}"
+    }
+
     shadow = {
        hostname = "shadow"
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_shadow_host_id)
@@ -155,6 +161,7 @@ ${local.mutable_hosts.tang.hostname} ansible_host=${local.mutable_hosts.tang.ipv
 ${local.mutable_hosts.prowl.hostname} ansible_host=${local.mutable_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.prowl.ipv6_address}
 ${local.mutable_hosts.unifi_controller.hostname} ansible_host=${local.mutable_hosts.unifi_controller.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.unifi_controller.ipv6_address}
 ${local.mutable_hosts.z1_npm.hostname} ansible_host=${local.mutable_hosts.z1_npm.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_npm.ipv6_address}
+${local.mutable_hosts.z1_portainer.hostname} ansible_host=${local.mutable_hosts.z1_portainer.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_portainer.ipv6_address}
 
 [proxmox_vm]
 ${local.mutable_hosts.runner_alpha.hostname} ansible_host=${local.mutable_hosts.runner_alpha.ipv4_address}  ansible_user=${local.mutable_hosts.runner_alpha.user}
@@ -178,6 +185,16 @@ ${local.mutable_hosts.unifi_controller.hostname}
 [proxy_group]
 ${local.mutable_hosts.z1_npm.hostname}
 
+[portainer_group]
+${local.mutable_hosts.z1_portainer.hostname}
+
+[docker_agents_group]
+${local.mutable_hosts.z1_npm.hostname}
+
+[docker_hosts_group:children]
+portainer_group
+docker_agents_group
+
 [all:children]
 proxmox_ve
 proxmox_bs
@@ -188,6 +205,7 @@ runner_group
 dns_group
 unifi_group
 proxy_group
+docker_hosts_group
 
 [all:vars]
 dns_gateway_ipv4=${local.vlans.core.gateway_ipv4}
@@ -292,6 +310,43 @@ module "unifi_controller" {
   start_on_boot    = var.shared_start_on_boot
 }
 
+module "z1_portainer" {
+  source = "../modules/proxmox/lxc"
+
+  pve_node         = var.shared_pve_node
+  vm_id            = 205
+  hostname         = local.mutable_hosts.z1_portainer.hostname
+  nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
+  searchdomain     = var.shared_searchdomain
+
+  memory_dedicated = 1024
+  memory_swap      = 512
+  cpu_cores        = 1
+
+  vlan_id          = local.vlans.core.id
+  template_file_id = var.shared_lxc_template_file_id
+
+  ipv4_address     = "${local.mutable_hosts.z1_portainer.ipv4_address}/24"
+  gateway          = local.vlans.core.gateway_ipv4
+
+  ipv6_address     = "${local.mutable_hosts.z1_portainer.ipv6_address}/64"
+  ipv6_gateway     = local.vlans.core.gateway_ipv6
+
+  ssh_public_key_file = var.shared_ssh_public_key_file
+
+  datastore_id     = var.shared_root_datastore_id
+  datastore_size   = var.shared_small_root_datastore_size
+  start_on_boot    = var.shared_start_on_boot
+
+  mount_points = [
+    {
+      volume = "wd-red-plus-1:subvol-103-disk-1"
+      path   = "/opt/portainer-data"
+      backup = true
+    }
+  ]
+}
+
 module "z1_npm" {
   source = "../modules/proxmox/lxc"
 
@@ -322,7 +377,6 @@ module "z1_npm" {
 
   mount_points = [
     {
-      //TODO: Define the right volume
       volume = "wd-red-plus-1:subvol-103-disk-2"
       path   = "/opt/npm-data"
       backup = true
