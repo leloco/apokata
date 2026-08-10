@@ -1,3 +1,4 @@
 ---
 portainer_base_dir: "/opt/portainer"
 portainer_mount_base: "/opt/portainer-data"
+portainer_bind_ip: "0.0.0.0"

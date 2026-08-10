@@ -18,14 +18,20 @@
 
 - name: Register Agent environment in Portainer Server via HTTPS API
   ansible.builtin.uri:
-    url: "https://{{ group_vars_vault_portainer_server_fqdn }}/api/endpoints"
+    url: "https://{{ hostvars['z1-portainer']['portainer_server_fqdn'] }}/api/endpoints"
     method: POST
     headers:
       X-API-Key: "{{ group_vars_vault_portainer_access_token }}"
-    body_format: json
+      Content-Type: "application/json"
+    body_format: form-multipart
     body:
       Name: "{{ inventory_hostname }}"
-      EndpointCreationType: 2  # standard portainer agent
+      EndpointCreationType: "2"
       URL: "tcp://{{ ansible_default_ipv4.address }}:9001"
-    status_code: [200, 409]
+      TLS: "true"
+      TLSSkipVerify: "true"
+      TLSSkipClientVerify: "true"
+    status_code: [200, 201, 409]
     validate_certs: true
+  register: portainer_agent_register
+  changed_when: portainer_agent_register.status in [200, 201]

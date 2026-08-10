@@ -1,6 +1,6 @@
 services:
   portainer_agent:
-    image: portainer/agent:{{ group_vars_portainer_version }}
+    image: portainer/agent:{{ hostvars['z1-portainer']['portainer_version'] }}
     container_name: portainer_agent
     restart: unless-stopped
     ports:

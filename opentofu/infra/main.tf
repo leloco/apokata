@@ -220,7 +220,7 @@ ansible_ssh_trusted_key_file=""
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 EOT
 
-depends_on = [ module.tang, module.prowl, module.unifi_controller, module.z1_npm ]
+depends_on = [ module.tang, module.prowl, module.unifi_controller, module.z1_npm, module.z1_portainer ]
 }
 
 resource "proxmox_virtual_environment_dns" "node_dns" {
