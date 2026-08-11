@@ -1,0 +1,16 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:{{ hostvars['z1-portainer']['portainer_version'] }}
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "{{ portainer_bind_ip | default('127.0.0.1') }}:9000:9000"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ portainer_mount_base }}:/data"
+    networks:
+      - portainer_default
+networks:
+  portainer_default:
+    name: portainer_default

@@ -23,12 +23,29 @@
     - { role: pihole, tags: ['pihole'] }
     - { role: keepalived_pihole, tags: ['pihole', 'keepalived'] }
 
+- name: Setup docker_hosts
+  hosts: docker_hosts_group
+  become: true
+  roles:
+    - { role: docker, tags: ['docker'] }
+
 - name: Setup proxy server
   hosts: proxy_group
   become: true
   roles:
-    - { role: docker, tags: ['docker'] }
     - { role: docker_compose_npm, tags: ['docker_compose_npm'] }
+
+- name: Setup portainer server
+  hosts: portainer_group
+  become: true
+  roles:
+    - { role: docker_compose_portainer, tags: ['docker_compose_portainer'] }
+
+- name: Setup portainer agents
+  hosts: docker_agents_group
+  become: true
+  roles:
+    - { role: docker_compose_portainer_agents, tags: ['docker_compose_portainer_agents'] }
 
 - name: Setup tang server
   hosts: tang_group

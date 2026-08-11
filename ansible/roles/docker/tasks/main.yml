@@ -40,6 +40,15 @@
 - name: Reset connection for group editing
   ansible.builtin.meta: reset_connection
 
+- name: Deploy hardened Docker daemon configuration
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Docker
+
 - name: Ensure Docker service is started and enabled
   ansible.builtin.systemd:
     name: docker
