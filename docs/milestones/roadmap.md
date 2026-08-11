@@ -11,7 +11,7 @@
 - [x] **Milestone created:** [1](https://github.com/leloco/apokata/milestone/1)
 - [ ] **Issues created:**
   - [x] Migrate `z1-npm` LXC -> https://github.com/leloco/apokata/issues/102
-  - [ ] `TBD` - Migrate `z1-portainer` LXC
+  - [ ] Migrate `z1-portainer` LXC -> https://github.com/leloco/apokata/issues/110
   - [ ] `TBD` - Migrate `z1-ejabberd` LXC
   - [ ] `TBD` - Migrate `z1-iobroker` LXC
   - [ ] `TBD` - Create `z1-rocketchat` LXC

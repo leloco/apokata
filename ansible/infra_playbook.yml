@@ -29,6 +29,12 @@
   roles:
     - { role: docker, tags: ['docker'] }
 
+- name: Setup proxy server
+  hosts: proxy_group
+  become: true
+  roles:
+    - { role: docker_compose_npm, tags: ['docker_compose_npm'] }
+
 - name: Setup portainer server
   hosts: portainer_group
   become: true
@@ -40,12 +46,6 @@
   become: true
   roles:
     - { role: docker_compose_portainer_agents, tags: ['docker_compose_portainer_agents'] }
-
-- name: Setup proxy server
-  hosts: proxy_group
-  become: true
-  roles:
-    - { role: docker_compose_npm, tags: ['docker_compose_npm'] }
 
 - name: Setup tang server
   hosts: tang_group

@@ -102,13 +102,16 @@ locals {
        hostname = "z1-npm"
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_z1_npm_host_id)
        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_z1_npm_iid}"
+       vm_id = 204
     }
 
     z1_portainer = {
        hostname = "z1-portainer"
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_z1_portainer_host_id)
        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_z1_portainer_iid}"
+       vm_id = 205
     }
+
 
     shadow = {
        hostname = "shadow"
@@ -314,7 +317,7 @@ module "z1_portainer" {
   source = "../modules/proxmox/lxc"
 
   pve_node         = var.shared_pve_node
-  vm_id            = 205
+  vm_id            = local.mutable_hosts.z1_portainer.vm_id
   hostname         = local.mutable_hosts.z1_portainer.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
@@ -340,8 +343,9 @@ module "z1_portainer" {
 
   mount_points = [
     {
-      volume = "wd-red-plus-1:subvol-103-disk-1"
+      volume = "local-lvm:vm-${local.mutable_hosts.z1_portainer.vm_id}-data"
       path   = "/opt/portainer-data"
+      size   = "8"
       backup = true
     }
   ]
@@ -351,7 +355,7 @@ module "z1_npm" {
   source = "../modules/proxmox/lxc"
 
   pve_node         = var.shared_pve_node
-  vm_id            = 204
+  vm_id            = local.mutable_hosts.z1_npm.vm_id
   hostname         = local.mutable_hosts.z1_npm.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
@@ -377,8 +381,9 @@ module "z1_npm" {
 
   mount_points = [
     {
-      volume = "wd-red-plus-1:subvol-103-disk-2"
+      volume = "local-lvm:vm-${local.mutable_hosts.z1_npm.vm_id}-data"
       path   = "/opt/npm-data"
+      size   = "1"
       backup = true
     }
   ]
