@@ -12,27 +12,26 @@
 - [ ] **Issues created:**
   - [x] Migrate `z1-npm` LXC -> https://github.com/leloco/apokata/issues/102
   - [ ] Migrate `z1-portainer` LXC -> https://github.com/leloco/apokata/issues/110
-  - [ ] `TBD` - Migrate `z1-ejabberd` LXC
-  - [ ] `TBD` - Migrate `z1-iobroker` LXC
-  - [ ] `TBD` - Create `z1-rocketchat` LXC
-  - [ ] `TBD` - Recreate `z1-tang` LXC
-  - [ ] `TBD` - Recreate `z1-prowl` LXC
-  - [ ] `TBD` - Recreate `z1-unifi` LXC
-  - [ ] `TBD` - Validate PBS snapshot job for all Zone 1 LXCs
-  - [ ] `TBD` - Automate proxy hosts config in z1-npm
-  - [ ] `TBD` - Deploy Ansible role for Cloudflare R2 encrypted config export for dedicated LXCs
+  - [ ] Migrate `z1-ejabberd` LXC -> https://github.com/leloco/apokata/issues/113
+  - [ ] Migrate `z1-iobroker` LXC -> https://github.com/leloco/apokata/issues/114
+  - [ ] Create `z1-rocketchat` LXC -> https://github.com/leloco/apokata/issues/112
+  - [ ] ~~`TBD` - Recreate `z1-tang` LXC~~ -> tang is really lightweight and socket-based, docker would be overkill
+  - [ ] Recreate `z1-prowl` LXC -> https://github.com/leloco/apokata/issues/115
+  - [ ] Recreate `shadow` (Raspberry PI) -> https://github.com/leloco/apokata/issues/116
+  - [ ] Recreate `z1-unifi` LXC -> https://github.com/leloco/apokata/issues/118
+  - [ ] ~~`TBD` - Validate PBS snapshot job for all Zone 1 LXCs~~ -> already working
+  - [ ] Automate proxy hosts config in z1-npm -> https://github.com/leloco/apokata/issues/119
+  - [ ] Deploy Ansible role for Cloudflare R2 encrypted config export for dedicated components -> https://github.com/leloco/apokata/issues/117
 
 ### Definition of Done (DoD)
-- [ ] Code is formatted and passes linter checks (`tofu fmt`, `ansible-lint`)
 - [ ] All GitHub Issues associated with this milestone are closed
-- [ ] Disaster recovery / restoration path has been tested
 
 ---
 
 ## M2: Shared Storage Architecture
 
 > **Context:**
-> * **Goal:** Integrate two storage pools from NAS into both Proxmox nodes via NFS and dedicated SAN
+> * **Goal:** Integrate two storage pools from NAS into both Proxmox nodes via NFS and separate network connnection
 > * **Related ADRs:**
 ### GitHub Sync Status
 
