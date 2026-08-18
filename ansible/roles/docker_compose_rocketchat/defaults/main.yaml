@@ -1,0 +1,15 @@
+---
+rocketchat_version: "8.7.0"
+mongodb_version: "8.2"
+
+rocketchat_image: "docker.io/rocketchat/rocket.chat@sha256:4bee1481cecee3e77207fb851743fabc829f0bacf0da1fc3141de3f41b34a4ab"
+mongodb_image: "docker.io/library/mongo@sha256:e0ce8c35124d4a9f9785532d1f268f39e9728ffa1cb38f46fa482436424c4bd3"
+
+rocketchat_base_dir: "/opt/rocketchat"
+rocketchat_mount_base: "/opt/rocketchat-data"
+rocketchat_root_url: "https://z1-rocketchat.x3dh.de"
+rocketchat_port: "3000"
+rocketchat_push_enable: true
+
+rocketchat_db_uid: 999
+rocketchat_db_gid: 999
