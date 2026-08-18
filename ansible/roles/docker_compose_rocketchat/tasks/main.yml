@@ -1,0 +1,26 @@
+---
+- name: Load secret variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
+- name: Ensure target and mount directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ rocketchat_base_dir }}"
+    - "{{ rocketchat_mount_base }}/uploads"
+    - "{{ rocketchat_mount_base }}/db"
+
+- name: Create docker-compose.yml from template
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ rocketchat_base_dir }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Deploy and start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ rocketchat_base_dir }}"
+    state: present
+

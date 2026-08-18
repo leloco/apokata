@@ -1,0 +1,63 @@
+services:
+  rocketchat:
+    image: {{ rocketchat_image }}
+    labels:
+      org.opencontainers.image.version: "{{ rocketchat_version }}"
+    container_name: rocketchat
+    restart: always
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/rocketchat?replicaSet=rs0&directConnection=true
+      - MONGO_OPLOG_URL=mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
+      - ROOT_URL={{ rocketchat_root_url }}
+      - PORT=3000
+      # TLS & Reverse Proxy Handling (Nginx Proxy Manager)
+      - HTTP_FORWARDED_COUNT=1
+      # Security & Setup Overwrites
+      - OVERWRITE_SETTING_Show_Setup_Wizard=completed
+      - OVERWRITE_SETTING_Accounts_AllowUserProfileChange=true
+      # Mobile Push Notifications
+      - OVERWRITE_SETTING_Push_enable={{ rocketchat_push_enable | default('true') | string | lower }}
+      - OVERWRITE_SETTING_Push_gateway=https://gateway.rocket.chat
+      - INITIAL_USER=true
+      - ADMIN_USERNAME={{ vault_rocketchat_admin_username }}
+      - ADMIN_NAME={{ vault_rocketchat_admin_name }}
+      - ADMIN_EMAIL={{ vault_rocketchat_admin_email }}
+      - ADMIN_PASS={{ vault_rocketchat_admin_password }}
+      - MAIL_URL={{ vault_rocketchat_mail_url }}
+      - SMTP_Host={{ vault_rocketchat_smtp_host }}
+      - SMTP_Port={{ vault_rocketchat_smtp_port }}
+      - SMTP_Username={{ vault_rocketchat_smtp_username }}
+      - SMTP_Password={{ vault_rocketchat_smtp_password }}
+      - SMTP_Protocol=smtp
+      - From_Email={{ vault_rocketchat_smtp_from_email }}
+    volumes:
+      - {{ rocketchat_mount_base }}/uploads:/app/uploads
+    ports:
+      - "{{ rocketchat_port | default('3000') }}:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  mongodb:
+    image: {{ mongodb_image }}
+    labels:
+      org.opencontainers.image.version: "{{ mongodb_version }}"
+    container_name: rocketchat_mongodb
+    restart: always
+    environment:
+      - MONGODB_REPLICA_SET_MODE=replicaset
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - MONGODB_PORT_NUMBER=27017
+      - MONGODB_DATABASE=rocketchat
+      - ALLOW_EMPTY_PASSWORD=yes
+      # Workaround for MongoDB 8.x startup check failure on Linux kernels >= 6.19 (SERVER-121912).
+      # Disables CET Shadow Stack (SHSTK) for the container process to prevent glibc/tcmalloc incompatibility crashes
+      - GLIBC_TUNABLES=glibc.cpu.hwcaps=-SHSTK
+    volumes:
+      - {{ rocketchat_mount_base }}/db:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "27017", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s

@@ -1,11 +1,12 @@
 ---
-- name: Setup ninja (Proxmox VE)
+- name: Setup Proxmox VE hosts
   hosts: proxmox_ve
   become: true
   roles:
     - { role: systemd_resolved, tags: ['systemd_resolved'] }
     - { role: duckdns, tags: ['duckdns'] }
     - { role: wireguard, tags: ['wireguard'] }
+    - { role: prepare_lxc_volume, tags: ['prepare_lxc_volume'] }
 
 - name: Setup Proxmox guests
   hosts:
@@ -34,6 +35,12 @@
   become: true
   roles:
     - { role: docker_compose_npm, tags: ['docker_compose_npm'] }
+
+- name: Setup rocketchat
+  hosts: z1-rocketchat
+  become: true
+  roles:
+    - { role: docker_compose_rocketchat, tags: ['docker_compose_rocketchat'] }
 
 - name: Setup portainer server
   hosts: portainer_group

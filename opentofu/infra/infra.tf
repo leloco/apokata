@@ -280,6 +280,17 @@ variable "infra_z1_npm_iid" {
   sensitive = true
 }
 # ----
+variable "infra_z1_rocketchat_host_id" {
+  type        = number
+  description = "The host id (ipv4) that identifies the host."
+  sensitive = true
+}
+variable "infra_z1_rocketchat_iid" {
+  type        = number
+  description = "The interface identifier (ipv6) that identifies the host."
+  sensitive = true
+}
+# ----
 variable "infra_z1_portainer_host_id" {
   type        = number
   description = "The host id (ipv4) that identifies the host."

@@ -1,0 +1,7 @@
+- name: Deploy LVM volume preparation script to Proxmox host
+  ansible.builtin.copy:
+    src: prepare-lxc-volume.sh
+    dest: /usr/local/bin/prepare-lxc-volume.sh
+    owner: root
+    group: root
+    mode: '0755'
