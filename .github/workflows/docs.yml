@@ -1,0 +1,29 @@
+name: Deploy MkDocs to Pages
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install MkDocs & Material Theme
+        run: pip install mkdocs-material
+
+      - name: Build & Deploy to gh-pages Branch
+        run: mkdocs gh-deploy --force
