@@ -6,23 +6,15 @@ theme:
   logo: assets/logo.svg
   favicon: assets/logo.svg
   palette:
-    - scheme: default
-      primary: slate
-      accent: deep orange
-      toggle:
-        icon: material/brightness-7
-        name: Switch to Dark Mode
-    - scheme: slate
-      primary: slate
-      accent: deep orange
-      toggle:
-        icon: material/brightness-4
-        name: Switch to Light Mode
+    scheme: default
+    primary: white
+    accent: slate
   features:
     - navigation.instant
     - navigation.tracking
     - navigation.sections
     - navigation.expand
+    - navigation.top
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -31,12 +23,16 @@ extra_css:
   - stylesheets/extra.css
 
 markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  - admonition
+  - pymdownx.snippets:
+      base_path: [".", "docs"]
   - tables
+  - attr_list
+  - md_in_html
