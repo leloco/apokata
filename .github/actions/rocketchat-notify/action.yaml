@@ -1,0 +1,90 @@
+name: "Rocket.Chat Notification"
+description: "Send status notification to Rocket.Chat incoming webhook"
+inputs:
+  webhook-url:
+    description: "Rocket.Chat Webhook URL"
+    required: true
+  job-status:
+    description: "Status of the calling job"
+    required: true
+  branch:
+    description: "Git Branch"
+    required: false
+    default: ""
+  commit-msg:
+    description: "Commit Message"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Send Payload
+      shell: bash
+      env:
+        ROCKETCHAT_WEBHOOK_URL: ${{ inputs.webhook-url }}
+        JOB_STATUS: ${{ inputs.job-status }}
+        INPUT_BRANCH: ${{ inputs.branch }}
+        INPUT_COMMIT_MSG: ${{ inputs.commit-msg }}
+        WORKFLOW_NAME: ${{ github.workflow }}
+        HEAD_REF: ${{ github.head_ref }}
+        REF_NAME: ${{ github.ref_name }}
+        EVENT_NAME: ${{ github.event_name }}
+        EVENT_COMMIT_MSG: ${{ github.event.head_commit.message }}
+        ACTOR: ${{ github.actor }}
+        REPO: ${{ github.repository }}
+        RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      run: |
+        # real branch name
+        if [ -n "$INPUT_BRANCH" ]; then
+          BRANCH="$INPUT_BRANCH"
+        elif [ -n "$HEAD_REF" ]; then
+          BRANCH="$HEAD_REF"
+        else
+          BRANCH="$REF_NAME"
+        fi
+
+        # latest commit message
+        if [ -n "$INPUT_COMMIT_MSG" ]; then
+          COMMIT_MSG="$INPUT_COMMIT_MSG"
+        elif [ -n "$EVENT_COMMIT_MSG" ]; then
+          # Push-Events directly from head
+          COMMIT_MSG="$EVENT_COMMIT_MSG"
+        else
+          # PR-Events: HEAD^2 is the Branch-Commit, HEAD is fallback
+          COMMIT_MSG=$(git log -1 --pretty=%B HEAD^2 2>/dev/null || git log -1 --pretty=%B 2>/dev/null || echo "No commit message")
+        fi
+
+        # only the first row of the commit msg
+        COMMIT_MSG=$(echo "$COMMIT_MSG" | head -n 1)
+
+        if [ "$JOB_STATUS" = "success" ]; then
+          COLOR="#2EB67D"
+          STATUS_EMOJI="🟢"
+        elif [ "$JOB_STATUS" = "cancelled" ]; then
+          COLOR="#FFA500"
+          STATUS_EMOJI="⚠️"
+        else
+          COLOR="#E01E5A"
+          STATUS_EMOJI="🔴"
+        fi
+
+        SAFE_COMMIT_MSG=$(printf '%s' "$COMMIT_MSG" | jq -Rsa . | sed 's/^"//;s/"$//')
+
+        PAYLOAD=$(cat <<EOF
+        {
+          "attachments": [
+            {
+              "title": "$STATUS_EMOJI $WORKFLOW_NAME $JOB_STATUS: $REPO",
+              "title_link": "$RUN_URL",
+              "color": "$COLOR",
+              "text": "*Branch:* \`$BRANCH\`\n*Commit:* $SAFE_COMMIT_MSG\n*Actor:* $ACTOR"
+            }
+          ]
+        }
+        EOF
+        )
+
+        curl -s -X POST -H 'Content-Type: application/json' \
+          --data "$PAYLOAD" \
+          "$ROCKETCHAT_WEBHOOK_URL"
