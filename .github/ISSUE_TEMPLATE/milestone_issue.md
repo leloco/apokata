@@ -15,7 +15,7 @@ assignees: 'leloco'
 ---
 
 ## 🔗 Architecture & Planning Context
-* **Related ADRs:** [ADR-0001](https://github.com/leloco/apokata/blob/main/docs/adr/0001-hybrid-architecture-with-two-zones.md), [ADR-0002](https://github.com/leloco/apokata/blob/main/docs/adr/0002-backup-strategy-of-zone-1-components.md)
+* **Related ADRs:** [ADR-0001](https://github.com/leloco/apokata/blob/main/docs/architecture/adr/0001-hybrid-architecture-with-two-zones.md), [ADR-0002](https://github.com/leloco/apokata/blob/main/docs/architecture/adr/0002-backup-strategy-of-zone-1-components.md)
 
 ---
 
