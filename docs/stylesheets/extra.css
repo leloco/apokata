@@ -12,8 +12,21 @@
   --md-typeset-a-color: #38bdf8;
 }
 
+.md-header {
+  background-color: #0f172a !important;
+}
+
+.md-tabs {
+  background-color: #1e293b !important;
+}
+
 .md-header__button.md-logo img,
 .md-header__button.md-logo svg {
-  height: 1.5rem;
-  width: auto;
+  height: 2.3rem !important;
+  width: auto !important;
+  margin: 0.1rem 0;
+}
+
+.md-header__inner {
+  align-items: center;
 }
