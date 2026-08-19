@@ -29,15 +29,17 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
+          # whitelisting
           filters: |
             code:
-              - '**'
-              - '!docs/**'
-              - '!**.md'
-              - '!*.md'
-              - '!**.svg'
-              - '!*.svg'
-              - '!.github/ISSUE_TEMPLATE/**'
+              - 'opentofu/**'
+              - 'ansible/**'
+              - 'scripts/**'
+              - '.github/actions/**'
+              - '.github/workflows/main.yml'
+              - '.github/workflows/upgrade.yml'
+              - '*.tfvars'
+              - '*.tf'
   validate_deploy:
     needs: changes
     if: ${{ needs.changes.outputs.code == 'true' }}
