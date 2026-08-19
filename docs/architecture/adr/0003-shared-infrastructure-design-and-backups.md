@@ -20,7 +20,7 @@ Relying solely on local storage creates a single point of failure (SPOF) and pre
 
 ## Decision
 
-![Shared-Storage-Architecture](../img/Shared-Storage-Architecture.drawio.svg)
+![Shared-Storage-Architecture](../../img/Shared-Storage-Architecture.drawio.svg)
 
 ### 1. Compute Topology
 

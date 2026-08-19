@@ -10,4 +10,4 @@ The current Homelab 2.0 needs to be improved due to new physical machines. A sec
 
 ## Decision
 
-![Homelab-Network](../img/Homelab-Network.drawio.svg)
+![Homelab-Network](../../img/Homelab-Network.drawio.svg)
