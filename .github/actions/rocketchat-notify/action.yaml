@@ -5,20 +5,20 @@ inputs:
     description: "Rocket.Chat Webhook URL"
     required: true
   job-status:
-    description: "Status of the calling job (e.g. ${{ job.status }})"
+    description: "Status of the calling job"
     required: true
   branch:
     description: "Git Branch"
     required: false
-    default: ${{ github.ref_name }}
+    default: ""
   commit-msg:
     description: "Commit Message"
     required: false
-    default: ${{ github.event.head_commit.message }}
+    default: ""
   sha:
     description: "Commit SHA"
     required: false
-    default: ${{ github.sha }}
+    default: ""
 
 runs:
   using: "composite"
@@ -28,13 +28,17 @@ runs:
       env:
         ROCKETCHAT_WEBHOOK_URL: ${{ inputs.webhook-url }}
         JOB_STATUS: ${{ inputs.job-status }}
-        BRANCH: ${{ inputs.branch }}
-        COMMIT_MSG: ${{ inputs.commit-msg }}
-        SHA: ${{ inputs.sha }}
+        INPUT_BRANCH: ${{ inputs.branch }}
+        INPUT_COMMIT_MSG: ${{ inputs.commit-msg }}
+        INPUT_SHA: ${{ inputs.sha }}
         ACTOR: ${{ github.actor }}
         REPO: ${{ github.repository }}
         RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       run: |
+        BRANCH="${INPUT_BRANCH:-${{ github.ref_name }}}"
+        SHA="${INPUT_SHA:-${{ github.sha }}}"
+        COMMIT_MSG="${INPUT_COMMIT_MSG:-${{ github.event.head_commit.message }}}"
+
         if [ "$JOB_STATUS" = "success" ]; then
           COLOR="#2EB67D"
           STATUS_EMOJI="🟢"
