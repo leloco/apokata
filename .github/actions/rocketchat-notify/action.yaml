@@ -31,12 +31,11 @@ runs:
         REF_NAME: ${{ github.ref_name }}
         EVENT_NAME: ${{ github.event_name }}
         EVENT_COMMIT_MSG: ${{ github.event.head_commit.message }}
-        PR_TITLE: ${{ github.event.pull_request.title }}
         ACTOR: ${{ github.actor }}
         REPO: ${{ github.repository }}
         RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       run: |
-        # 1. Echten Branch-Namen ermitteln (bei PRs ist HEAD_REF der Quell-Branch)
+        # real branch name
         if [ -n "$INPUT_BRANCH" ]; then
           BRANCH="$INPUT_BRANCH"
         elif [ -n "$HEAD_REF" ]; then
@@ -45,18 +44,20 @@ runs:
           BRANCH="$REF_NAME"
         fi
 
-        # 2. Commit Message auflösen (Push-Event -> Head Commit, PR-Event -> PR Title, Fallback -> Git Log)
+        # latest commit message
         if [ -n "$INPUT_COMMIT_MSG" ]; then
           COMMIT_MSG="$INPUT_COMMIT_MSG"
         elif [ -n "$EVENT_COMMIT_MSG" ]; then
+          # Push-Events directly from head
           COMMIT_MSG="$EVENT_COMMIT_MSG"
-        elif [ -n "$PR_TITLE" ]; then
-          COMMIT_MSG="$PR_TITLE"
         else
-          COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null | head -n 1 || echo "No commit message")
+          # PR-Events: HEAD^2 is the Branch-Commit, HEAD is fallback
+          COMMIT_MSG=$(git log -1 --pretty=%B HEAD^2 2>/dev/null || git log -1 --pretty=%B 2>/dev/null || echo "No commit message")
         fi
 
-        # 3. Status Styling festlegen
+        # only the first row of the commit msg
+        COMMIT_MSG=$(echo "$COMMIT_MSG" | head -n 1)
+
         if [ "$JOB_STATUS" = "success" ]; then
           COLOR="#2EB67D"
           STATUS_EMOJI="🟢"
@@ -68,7 +69,6 @@ runs:
           STATUS_EMOJI="🔴"
         fi
 
-        # 4. Message escapen (JSON safe)
         SAFE_COMMIT_MSG=$(printf '%s' "$COMMIT_MSG" | jq -Rsa . | sed 's/^"//;s/"$//')
 
         PAYLOAD=$(cat <<EOF
