@@ -1,0 +1,67 @@
+name: "Rocket.Chat Notification"
+description: "Send status notification to Rocket.Chat incoming webhook"
+inputs:
+  webhook-url:
+    description: "Rocket.Chat Webhook URL"
+    required: true
+  job-status:
+    description: "Status of the calling job (e.g. ${{ job.status }})"
+    required: true
+  branch:
+    description: "Git Branch"
+    required: false
+    default: ${{ github.ref_name }}
+  commit-msg:
+    description: "Commit Message"
+    required: false
+    default: ${{ github.event.head_commit.message }}
+  sha:
+    description: "Commit SHA"
+    required: false
+    default: ${{ github.sha }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Send Payload
+      shell: bash
+      env:
+        ROCKETCHAT_WEBHOOK_URL: ${{ inputs.webhook-url }}
+        JOB_STATUS: ${{ inputs.job-status }}
+        BRANCH: ${{ inputs.branch }}
+        COMMIT_MSG: ${{ inputs.commit-msg }}
+        SHA: ${{ inputs.sha }}
+        ACTOR: ${{ github.actor }}
+        REPO: ${{ github.repository }}
+        RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      run: |
+        if [ "$JOB_STATUS" = "success" ]; then
+          COLOR="#2EB67D"
+          STATUS_EMOJI="🟢"
+        elif [ "$JOB_STATUS" = "cancelled" ]; then
+          COLOR="#FFA500"
+          STATUS_EMOJI="⚠️"
+        else
+          COLOR="#E01E5A"
+          STATUS_EMOJI="🔴"
+        fi
+
+        SAFE_COMMIT_MSG=$(printf '%s' "$COMMIT_MSG" | jq -Rsa . | sed 's/^"//;s/"$//')
+
+        PAYLOAD=$(cat <<EOF
+        {
+          "attachments": [
+            {
+              "title": "$STATUS_EMOJI Workflow $JOB_STATUS: $REPO",
+              "title_link": "$RUN_URL",
+              "color": "$COLOR",
+              "text": "*Branch:* \`$BRANCH\`\n*Commit:* $SAFE_COMMIT_MSG (\`${SHA:0:7}\`)\n*Actor:* $ACTOR"
+            }
+          ]
+        }
+        EOF
+        )
+
+        curl -s -X POST -H 'Content-Type: application/json' \
+          --data "$PAYLOAD" \
+          "$ROCKETCHAT_WEBHOOK_URL"
