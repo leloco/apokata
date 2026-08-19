@@ -70,3 +70,9 @@ jobs:
           playbook_name: 'apt_upgrade_playbook.yml'
           working_dir: ${{ env.ANSIBLE_WORKING_DIR }}
 
+      - name: Notify Rocket.Chat
+        if: always()
+        uses: ./.github/actions/rocketchat-notify
+        with:
+          webhook-url: ${{ secrets.ROCKETCHAT_WEBHOOK_URL }}
+          job-status: ${{ job.status }}

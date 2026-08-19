@@ -27,3 +27,10 @@ jobs:
 
       - name: Build & Deploy to gh-pages Branch
         run: mkdocs gh-deploy --force
+
+      - name: Notify Rocket.Chat
+        if: always()
+        uses: ./.github/actions/rocketchat-notify
+        with:
+          webhook-url: ${{ secrets.ROCKETCHAT_WEBHOOK_URL }}
+          job-status: ${{ job.status }}
