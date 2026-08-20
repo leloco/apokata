@@ -247,6 +247,28 @@ variable "infra_ninja_iid" {
   sensitive = true
 }
 # ----
+variable "infra_primus_host_id" {
+  type        = number
+  description = "The host id (ipv4) that identifies the host."
+  sensitive = true
+}
+variable "infra_primus_iid" {
+  type        = number
+  description = "The interface identifier (ipv6) that identifies the host."
+  sensitive = true
+}
+# ----
+variable "infra_metroplex_host_id" {
+  type        = number
+  description = "The host id (ipv4) that identifies the host."
+  sensitive = true
+}
+variable "infra_metroplex_iid" {
+  type        = number
+  description = "The interface identifier (ipv6) that identifies the host."
+  sensitive = true
+}
+# ----
 variable "infra_ironhide_host_id" {
   type        = number
   description = "The host id (ipv4) that identifies the host."

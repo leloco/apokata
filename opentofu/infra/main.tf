@@ -138,6 +138,18 @@ locals {
       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_ninja_iid}"
     }
 
+    primus = {
+      hostname = "primus"
+      ipv4_address = cidrhost(local.vlans.core.network, var.infra_primus_host_id)
+      ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_primus_iid}"
+    }
+
+    metroplex = {
+      hostname = "metroplex"
+      ipv4_address = cidrhost(local.vlans.core.network, var.infra_metroplex_host_id)
+      ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_metroplex_iid}"
+    }
+
     ironhide = {
       hostname = "ironhide"
       ipv4_address = cidrhost(local.vlans.trusted.network, var.infra_ironhide_host_id)
@@ -162,9 +174,13 @@ resource "local_file" "ansible_inventory" {
 # ---------------------------------------------------------
 [proxmox_ve]
 ${local.mutable_hosts.ninja.hostname} ansible_host=${local.mutable_hosts.ninja.ipv4_address}
+${local.mutable_hosts.primus.hostname} ansible_host=${local.mutable_hosts.primus.ipv4_address}
 
 [proxmox_bs]
 ${local.mutable_hosts.sentinel.hostname} ansible_host=${local.mutable_hosts.sentinel.ipv4_address}
+
+[truenas]
+${local.mutable_hosts.metroplex.hostname} ansible_host=${local.mutable_hosts.metroplex.ipv4_address}
 
 [proxmox_lxc]
 ${local.mutable_hosts.tang.hostname} ansible_host=${local.mutable_hosts.tang.ipv4_address}
@@ -218,6 +234,7 @@ dns_group
 unifi_group
 proxy_group
 docker_hosts_group
+truenas
 
 [all:vars]
 dns_gateway_ipv4=${local.vlans.core.gateway_ipv4}

@@ -57,7 +57,7 @@
    - Path: `bulk/k8s`
    - Advanced Options: Set **Sync** to **Standard** (optional: set `recordsize=1M` for large media files/backups).
 
-- [x] Initialized on
+- [x] Initialized on 08/20/2026
 
 ## Shares & Protocols (NFS for Kubernetes)
 
