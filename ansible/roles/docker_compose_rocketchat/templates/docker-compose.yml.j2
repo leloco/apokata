@@ -37,6 +37,8 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+      mongo-init-replica:
+        condition: service_completed_successfully
 
   mongodb:
     image: {{ mongodb_image }}
@@ -44,12 +46,8 @@ services:
       org.opencontainers.image.version: "{{ mongodb_version }}"
     container_name: rocketchat_mongodb
     restart: always
+    command: ["mongod", "--replSet", "rs0", "--oplogSize", "128", "--bind_ip_all"]
     environment:
-      - MONGODB_REPLICA_SET_MODE=replicaset
-      - MONGODB_REPLICA_SET_NAME=rs0
-      - MONGODB_PORT_NUMBER=27017
-      - MONGODB_DATABASE=rocketchat
-      - ALLOW_EMPTY_PASSWORD=yes
       # Workaround for MongoDB 8.x startup check failure on Linux kernels >= 6.19 (SERVER-121912).
       # Disables CET Shadow Stack (SHSTK) for the container process to prevent glibc/tcmalloc incompatibility crashes
       - GLIBC_TUNABLES=glibc.cpu.hwcaps=-SHSTK
@@ -61,3 +59,27 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
+  mongo-init-replica:
+    image: {{ mongodb_image }}
+    container_name: rocketchat_mongo_init
+    restart: "no"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    entrypoint: >
+      bash -c "
+        echo 'Initializing Replica Set...';
+        mongosh --host mongodb:27017 --eval '
+          try {
+            rs.status();
+            console.log(\"Replica Set already initialized.\");
+          } catch (e) {
+            rs.initiate({
+              _id: \"rs0\",
+              members: [{ _id: 0, host: \"mongodb:27017\" }]
+            });
+            console.log(\"Replica Set successfully initialized.\");
+          }
+        ';
+      "
