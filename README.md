@@ -1,16 +1,6 @@
 <div align="center">
-<table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin: 0 auto; padding: 0; border: none; background: transparent; max-width: 100%;">
-  <tr>
-    <td valign="middle" style="border: none; padding: 0 15px 0 0; background: transparent;">
-      <img src="docs/assets/logo.svg" alt="Apokata Logo" width="64" height="64" style="display: block; width: 64px; height: 64px; border: none; margin: 0; padding: 0;" />
-    </td>
-    <td valign="top" style="border: none; padding: 0; background: transparent; white-space: nowrap;">
-      <h1 style="border: none; margin: 0; padding: 0; font-size: 2.25rem; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: transparent;">
-        apokata
-      </h1>
-    </td>
-  </tr>
-</table>
+  <img src="docs/assets/logo.svg" alt="Apokata Logo" width="64" height="64" align="center" />
+  <b style="padding-left: 10px; font-size: 40px; color:black;"> apokata</font></b>
 </div>
 
 <br>
@@ -61,3 +51,7 @@ It demonstrates enterprise-grade platform engineering patterns on physical hardw
 │   └── runner/           # Dedicated CI/CD Runner Environment
 └── scripts/              # Pre-commit hooks & Notification Utilities
 ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
