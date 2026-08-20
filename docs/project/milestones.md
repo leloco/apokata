@@ -4,12 +4,11 @@
 
 > **Context:**
 > * **Goal:** Provision core LXC services and establish PBS and Cloudflare R2 backup pipelines.
-> * **Related ADRs:** [ADR-0001](../adr/0001-hybrid-architecture-with-two-zones.md), [ADR-0002](../adr/0002-backup-strategy-of-zone-1-components.md)
+> * **Related ADRs:** [ADR-0001](../architecture/adr/0001-hybrid-architecture-with-two-zones.md), [ADR-0002](../architecture/adr/0002-backup-strategy-of-zone-1-components.md)
 
 ### GitHub Sync Status
 
 - [x] **Milestone created:** [1](https://github.com/leloco/apokata/milestone/1)
-- [ ] **Issues created:**
 - [x] Migrate `z1-npm` LXC -> https://github.com/leloco/apokata/issues/102
 - [ ] Migrate `z1-portainer` LXC -> https://github.com/leloco/apokata/issues/110
 - [ ] Migrate `z1-ejabberd` LXC -> https://github.com/leloco/apokata/issues/113
@@ -32,15 +31,17 @@
 
 > **Context:**
 > * **Goal:** Integrate two storage pools from NAS into both Proxmox nodes via NFS and separate network connnection
-> * **Related ADRs:**
+> * **Related ADRs:** [ADR-0003](../architecture/adr/0003-shared-infrastructure-design-and-backups.md)
+
 ### GitHub Sync Status
 
 - [x] **Milestone created:** [2](https://github.com/leloco/apokata/milestone/2)
-- [ ] **Issues created:**
-  - [] `TBD` Build NAS, configure storage and document important configurations
-  - [] `TBD` Integrate HDD Pool via NFS into both Proxmox hosts
-  - [] `TBD` Integrate SSD Pool via NFS into both Proxmox hosts
-  - [] `TBD` Create backup solution for NAS zfs snapshots on sentinel
+- [ ] Build NAS, install TrueNAS, configure storage pools and document important configurations -> external task
+- [ ] Upgrade Proxmox VE nodes hardware with dedicated ethernet port for NFS connection -> external task
+- [ ] Add metroplex (TrueNAS) and primus (2nd Proxmox VE server) to OpenTofu and Ansible ->  https://github.com/leloco/apokata/issues/129
+- [ ] `TBD` Integrate HDD Pool via NFS into both Proxmox hosts
+- [ ] `TBD` Integrate SSD Pool via NFS into both Proxmox hosts
+- [ ] `TBD` Create backup solution for NAS with zfs snapshots on sentinel
 
 ### Definition of Done (DoD)
 
@@ -48,3 +49,20 @@
 - [] NFS write performance & latency benchmarked under load (sync=disabled verified)
 - [] All GitHub Issues associated with this milestone are closed
 - [] Disaster recovery / restoration path has been tested
+
+---
+
+## M3: Monitoring Stack
+
+> **Context:**
+* **Goal:** Deploy a standalone out-of-cluster monitoring stack (Prometheus, Grafana, Alertmanager in an LXC) to collect host/network metrics and ingest Kubernetes telemetry via remote write, with alerts routed to Rocket.Chat and Email fallback.
+> * **Related ADRs:** [ADR-0006](../architecture/adr/0006-monitoring-stack.md)
+
+### GitHub Sync Status
+
+- [] **Milestone created:** [3](https://github.com/leloco/apokata/milestone/3)
+- []
+
+### Definition of Done (DoD)
+
+- [] All GitHub Issues associated with this milestone are closed
