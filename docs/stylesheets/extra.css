@@ -1,7 +1,7 @@
 :root {
-  --md-primary-fg-color: #334155 !important;        /* Neutrales Schiefergrau */
+  --md-primary-fg-color: #334155 !important; /* Neutrales Schiefergrau */
   --md-accent-fg-color: #475569 !important;
-  --md-typeset-a-color: #2563eb !important;         /* Sauberes Link-Blau */
+  --md-typeset-a-color: #2563eb !important; /* Sauberes Link-Blau */
 }
 
 .md-header {
@@ -42,7 +42,7 @@
 
 .md-header__button.md-logo img,
 .md-header__button.md-logo svg {
-  height: 2.4rem !important;
+  height: 1.8rem !important;
   width: auto !important;
   display: block;
 }

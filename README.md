@@ -1,6 +1,8 @@
 <div align="center">
-  <img src="docs/assets/logo.svg" alt="Apokata Logo" width="64" height="64" align="center" />
-  <b style="padding-left: 10px; font-size: 40px; color:black;"> apokata</font></b>
+  <h1>
+    <img src="docs/assets/logo.svg" alt="Apokata Logo" width="48" height="48" valign="middle" />
+    <span>apokata</span>
+  </h1>
 </div>
 
 <br>
