@@ -22,8 +22,8 @@ resource "cloudflare_r2_bucket" "backups" {
 }
 
 resource "cloudflare_r2_bucket_lifecycle" "backup_retention" {
-  for_each   = cloudflare_r2_bucket.backups
-  account_id = var.cloudflare_account_id
+  for_each    = cloudflare_r2_bucket.backups
+  account_id  = var.cloudflare_account_id
   bucket_name = each.value.name
 
   rules = [
@@ -33,8 +33,11 @@ resource "cloudflare_r2_bucket_lifecycle" "backup_retention" {
       conditions = {
         prefix = "daily/"
       }
-      expire = {
-        days = 30
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = 2592000 # 30 days in seconds
+        }
       }
     },
     {
@@ -43,8 +46,11 @@ resource "cloudflare_r2_bucket_lifecycle" "backup_retention" {
       conditions = {
         prefix = "monthly/"
       }
-      expire = {
-        days = 365
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = 31536000 # 365 days in seconds
+        }
       }
     }
   ]
