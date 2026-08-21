@@ -67,7 +67,7 @@ jobs:
       - name: Run Ansible Playbook
         uses: ./.github/actions/run-ansible
         with:
-          playbook_name: 'upload_backups_r2.yml'
+          playbook_name: 'cloudflare_r2_backups_playbook.yml'
           working_dir: ${{ env.ANSIBLE_WORKING_DIR }}
 
       - name: Notify Rocket.Chat
