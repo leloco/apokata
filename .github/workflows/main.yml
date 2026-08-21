@@ -38,6 +38,7 @@ jobs:
               - '.github/actions/**'
               - '.github/workflows/main.yml'
               - '.github/workflows/upgrade.yml'
+              - '.github/workflows/backup.yml'
               - '*.tfvars'
               - '*.tf'
   validate_deploy:
