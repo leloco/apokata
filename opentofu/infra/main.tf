@@ -224,6 +224,15 @@ ${local.mutable_hosts.z1_rocketchat.hostname}
 portainer_group
 docker_agents_group
 
+[cloudflare_r2_backups]
+localhost ansible_connection=local
+
+[cloudflare_r2_backups:vars]
+r2_endpoint=https://${var.cloudflare_account_id}.r2.cloudflarestorage.com
+r2_bucket_opnsense=${cloudflare_r2_bucket.backups["opnsense"].name}
+r2_bucket_truenas=${cloudflare_r2_bucket.backups["truenas"].name}
+r2_bucket_unifi=${cloudflare_r2_bucket.backups["unifi"].name}
+
 [all:children]
 proxmox_ve
 proxmox_bs
@@ -236,6 +245,7 @@ unifi_group
 proxy_group
 docker_hosts_group
 truenas
+cloudflare_r2_backups
 
 [all:vars]
 dns_gateway_ipv4=${local.vlans.core.gateway_ipv4}
@@ -249,17 +259,6 @@ ansible_user=root
 ansible_ssh_trusted_key_file=""
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
-[cloudflare_r2_backups:vars]
-r2_endpoint=https://${var.cloudflare_account_id}.r2.cloudflarestorage.com
-r2_bucket_opnsense=${cloudflare_r2_bucket.backups["opnsense"].name}
-r2_bucket_truenas=${cloudflare_r2_bucket.backups["truenas"].name}
-r2_bucket_unifi=${cloudflare_r2_bucket.backups["unifi"].name}
-
-[local_backup_runners]
-localhost ansible_connection=local
-
-[local_backup_runners:children]
-cloudflare_r2_backups
 EOT
 
 depends_on = [ module.tang, module.prowl, module.unifi_controller, module.z1_npm, module.z1_portainer, module.z1_rocketchat ]
