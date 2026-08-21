@@ -1,0 +1,27 @@
+---
+- name: TrueNAS | Define local temporary backup path
+  ansible.builtin.set_fact:
+    truenas_temp_backup_file: "{{ backup_temp_dir }}/truenas_{{ backup_timestamp }}.tar"
+
+- name: TrueNAS | Generate and download configuration archive
+  ansible.builtin.uri:
+    url: "https://{{ vault_truenas_url }}/api/v2.0/config/save"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ vault_truenas_api_key }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      secretseed: true
+    validate_certs: false
+    dest: "{{ truenas_temp_backup_file }}"
+    mode: '0600'
+    status_code: 200
+  no_log: true
+
+- name: TrueNAS | Encrypt and upload backup to Cloudflare R2
+  ansible.builtin.include_tasks: upload_r2.yml
+  vars:
+    backup_src_file: "{{ truenas_temp_backup_file }}"
+    backup_target_bucket: "{{ r2_bucket_truenas }}"
+    backup_target_filename: "truenas_{{ backup_timestamp }}.tar"
