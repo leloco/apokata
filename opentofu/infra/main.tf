@@ -224,7 +224,7 @@ ${local.mutable_hosts.z1_rocketchat.hostname}
 portainer_group
 docker_agents_group
 
-[local_backup_runners]
+[cloudflare_r2_backups]
 localhost ansible_connection=local
 
 [cloudflare_r2_backups:vars]
