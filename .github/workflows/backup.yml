@@ -1,0 +1,78 @@
+name: "Upload backups to Cloudflare R2 Object Storage"
+
+env:
+  OPENTOFU_WORKING_DIR: "./opentofu/infra"
+  ANSIBLE_WORKING_DIR: "./ansible"
+  OPENTOFU_VERSION: 1.10.7
+
+on:
+  schedule:
+    - cron: '0 22 * * *'
+  workflow_dispatch:
+concurrency:
+  group: r2-backups
+  cancel-in-progress: false
+
+jobs:
+  cloudflare_r2_backups:
+    name: "Upload backups to Cloudflare R2 Object Storage"
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 60
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
+
+      - name: Decrypt Secrets
+        uses: ./.github/actions/decrypt-secrets
+        with:
+          gpg_key: ${{ secrets.GPG_KEY }}
+
+      - name: Setup Ansible Tools
+        uses: ./.github/actions/install-ansible
+        with:
+          ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+
+      - name: Setup OpenTofu Tools
+        uses: ./.github/actions/opentofu-prep
+        with:
+          ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+
+      - name: Install OpenTofu CLI
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.OPENTOFU_VERSION }}
+
+      - name: OpenTofu Init
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu init
+
+      - name: OpenTofu Generate inventory.ini
+        working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
+        run: tofu apply -var-file="../shared.tfvars" -target=local_file.ansible_inventory -replace=local_file.ansible_inventory -auto-approve -lock=false
+
+      - name: Install SSH Private Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "unnecessary"
+          if_key_exists: fail
+
+      - name: Run Ansible Playbook
+        uses: ./.github/actions/run-ansible
+        with:
+          playbook_name: 'cloudflare_r2_backups_playbook.yml'
+          working_dir: ${{ env.ANSIBLE_WORKING_DIR }}
+
+      - name: Notify Rocket.Chat
+        if: always()
+        uses: ./.github/actions/rocketchat-notify
+        with:
+          webhook-url: ${{ secrets.ROCKETCHAT_WEBHOOK_URL }}
+          job-status: ${{ job.status }}

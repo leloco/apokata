@@ -1,0 +1,9 @@
+---
+- name: Appliance Backups and Encrypted Upload to Cloudflare R2
+  hosts: cloudflare_r2_backups
+  become: true
+  roles:
+    - { role: cloudflare_r2_backups, tags: ['cloudflare_r2_backups'] }
+  connection: local
+  gather_facts: true
+

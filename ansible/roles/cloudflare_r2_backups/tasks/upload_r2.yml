@@ -1,0 +1,25 @@
+---
+- name: Encrypt backup file with age (Client-Side Encryption)
+  ansible.builtin.command:
+    cmd: "age -r {{ backup_age_public_key }} -o {{ backup_src_file }}.age {{ backup_src_file }}"
+  changed_when: true
+  no_log: true
+
+# The following env variables need to exist:
+# - AWS_ACCESS_KEY_ID: Cloudflare R2 S3 Access Key
+# - AWS_SECRET_ACCESS_KEY: Cloudflare R2 S3 Secret Key
+- name: Upload encrypted backup to Cloudflare R2
+  amazon.aws.s3_object:
+    endpoint_url: "{{ cloudflare_r2_endpoint }}"
+    bucket: "{{ backup_target_bucket }}"
+    object: "{{ backup_prefix }}{{ backup_target_filename }}.age"
+    src: "{{ backup_src_file }}.age"
+    mode: put
+
+- name: Clean up temporary unencrypted and encrypted files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ backup_src_file }}"
+    - "{{ backup_src_file }}.age"

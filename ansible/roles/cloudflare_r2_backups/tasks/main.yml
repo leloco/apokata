@@ -1,0 +1,21 @@
+---
+- name: Ensure age encryption tool is installed
+  ansible.builtin.package:
+    name: age
+    state: present
+  become: true
+
+- name: Ensure local temporary backup directory exists
+  ansible.builtin.file:
+    path: "{{ backup_temp_dir }}"
+    state: directory
+    mode: '0700'
+
+- name: Execute TrueNAS backup
+  ansible.builtin.include_tasks: truenas.yml
+  when: vault_truenas_api_key is defined and vault_truenas_api_key | length > 0
+
+- name: Clean up temporary backup directory
+  ansible.builtin.file:
+    path: "{{ backup_temp_dir }}"
+    state: absent
