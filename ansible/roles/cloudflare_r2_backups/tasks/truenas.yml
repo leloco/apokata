@@ -1,4 +1,8 @@
 ---
+- name: Load secret variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
 - name: TrueNAS | Define local temporary backup path
   ansible.builtin.set_fact:
     truenas_temp_backup_file: "{{ backup_temp_dir }}/truenas_{{ backup_timestamp }}.tar"

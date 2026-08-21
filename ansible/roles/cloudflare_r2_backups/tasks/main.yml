@@ -1,4 +1,8 @@
 ---
+- name: Load secret variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
 - name: Ensure age encryption tool is installed
   ansible.builtin.package:
     name: age
