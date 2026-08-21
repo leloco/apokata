@@ -11,6 +11,7 @@
 
 [![Infrastructure Deployment](https://github.com/leloco/apokata/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/leloco/apokata/actions/workflows/main.yml)
 [![Infrastructure Package Upgrades](https://github.com/leloco/apokata/actions/workflows/upgrade.yml/badge.svg?branch=main)](https://github.com/leloco/apokata/actions/workflows/upgrade.yml)
+[![Upload backups to Cloudflare R2 Object Storage](https://github.com/leloco/apokata/actions/workflows/backup.yml/badge.svg)](https://github.com/leloco/apokata/actions/workflows/backup.yml)
 [![Deploy MkDocs to Pages](https://github.com/leloco/apokata/actions/workflows/docs.yml/badge.svg)](https://github.com/leloco/apokata/actions/workflows/docs.yml)
 
 ---
