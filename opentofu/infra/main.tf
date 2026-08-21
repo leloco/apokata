@@ -174,7 +174,8 @@ resource "local_file" "ansible_inventory" {
 # ---------------------------------------------------------
 [proxmox_ve]
 ${local.mutable_hosts.ninja.hostname} ansible_host=${local.mutable_hosts.ninja.ipv4_address}
-${local.mutable_hosts.primus.hostname} ansible_host=${local.mutable_hosts.primus.ipv4_address}
+# //TODO: Wait for completion of Milestone 2
+# ${local.mutable_hosts.primus.hostname} ansible_host=${local.mutable_hosts.primus.ipv4_address}
 
 [proxmox_bs]
 ${local.mutable_hosts.sentinel.hostname} ansible_host=${local.mutable_hosts.sentinel.ipv4_address}
