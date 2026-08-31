@@ -9,7 +9,7 @@
 
 - name: TrueNAS | Generate and download configuration archive
   ansible.builtin.uri:
-    url: "https://{{ vault_truenas_url }}/api/v2.0/config/save"
+    url: "{{ vault_truenas_url }}/api/v2.0/config/save"
     method: POST
     headers:
       Authorization: "Bearer {{ vault_truenas_api_key }}"

@@ -1,3 +1,4 @@
 backup_temp_dir: "/tmp/backups"
 backup_timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
 backup_prefix: "{{ 'monthly/' if (ansible_date_time.day == '01') else 'daily/' }}"
+backup_age_public_key: "age1g7q763y55r3yzlzwy0755ea05k8fxlmw6fr6m997jw85974p23esxrvp49"
