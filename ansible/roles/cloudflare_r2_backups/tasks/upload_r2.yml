@@ -5,16 +5,32 @@
   changed_when: true
   no_log: true
 
-# The following env variables need to exist:
-# - AWS_ACCESS_KEY_ID: Cloudflare R2 S3 Access Key
-# - AWS_SECRET_ACCESS_KEY: Cloudflare R2 S3 Secret Key
+
+- name: Ensure AWS CLI is installed (on Debian)
+  ansible.builtin.apt:
+    name: awscli
+    state: present
+    update_cache: true
+  become: true
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure AWS CLI is installed (on RHEL/Fedora)
+  ansible.builtin.dnf:
+    name: awscli
+    state: present
+  become: true
+  when: ansible_os_family == 'RedHat'
+
 - name: Upload encrypted backup to Cloudflare R2
-  amazon.aws.s3_object:
-    endpoint_url: "{{ cloudflare_r2_endpoint }}"
-    bucket: "{{ backup_target_bucket }}"
-    object: "{{ backup_prefix }}{{ backup_target_filename }}.age"
-    src: "{{ backup_src_file }}.age"
-    mode: put
+  ansible.builtin.command: >
+    aws s3 cp "{{ backup_src_file }}.age"
+    "s3://{{ backup_target_bucket }}/{{ backup_prefix }}{{ backup_target_filename }}.age"
+    --endpoint-url "{{ r2_endpoint }}"
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+    AWS_DEFAULT_REGION: "auto"
+  changed_when: true
 
 - name: Clean up temporary unencrypted and encrypted files
   ansible.builtin.file:
