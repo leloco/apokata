@@ -5,21 +5,31 @@
   changed_when: true
   no_log: true
 
+- name: Download AWS CLI v2 installer
+  ansible.builtin.get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: "/tmp/awscliv2.zip"
+    mode: "0644"
 
-- name: Ensure AWS CLI is installed (on Debian)
-  ansible.builtin.apt:
-    name: awscli
-    state: present
-    update_cache: true
-  become: true
-  when: ansible_os_family == 'Debian'
+- name: Unpack AWS CLI v2 installer
+  ansible.builtin.unarchive:
+    src: "/tmp/awscliv2.zip"
+    dest: "/tmp"
+    remote_src: true
 
-- name: Ensure AWS CLI is installed (on RHEL/Fedora)
-  ansible.builtin.dnf:
-    name: awscli
-    state: present
+- name: Run AWS CLI installer
+  ansible.builtin.command: /tmp/aws/install --update
+  args:
+    creates: /usr/local/bin/aws
   become: true
-  when: ansible_os_family == 'RedHat'
+
+- name: Clean up temporary installer files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/awscliv2.zip
+    - /tmp/aws
 
 - name: Upload encrypted backup to Cloudflare R2
   ansible.builtin.command: >
