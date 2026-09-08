@@ -195,7 +195,7 @@ ${local.mutable_hosts.z1_unifi.hostname} ansible_host=${local.mutable_hosts.z1_u
 ${local.mutable_hosts.runner_alpha.hostname} ansible_host=${local.mutable_hosts.runner_alpha.ipv4_address}  ansible_user=${local.mutable_hosts.runner_alpha.user}
 
 [dns_group]
-${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=MASTER keepalived_priority=100 ansible_user=${local.mutable_hosts.shadow.user}
+# ${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=MASTER keepalived_priority=100 ansible_user=${local.mutable_hosts.shadow.user}
 ${local.mutable_hosts.prowl.hostname} keepalived_role=BACKUP keepalived_priority=80
 
 [dns_group:vars]
