@@ -1,0 +1,33 @@
+---
+- name: Load secret variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
+- name: Ensure target and mount directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ unifi_base_dir }}"
+    - "{{ unifi_mount_base }}"
+    - "{{ unifi_mount_base }}/config"
+    - "{{ unifi_mount_base }}/db"
+
+- name: Create init-mongo.js from template
+  ansible.builtin.template:
+    src: init-mongo.js.j2
+    dest: "{{ unifi_mount_base }}/init-mongo.js"
+    mode: '0644'
+
+- name: Create docker-compose.yml from template
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ unifi_base_dir }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Deploy and start stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ unifi_base_dir }}"
+    state: present
+

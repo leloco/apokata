@@ -19,6 +19,10 @@
   ansible.builtin.include_tasks: truenas.yml
   when: vault_truenas_api_key is defined and vault_truenas_api_key | length > 0
 
+- name: Execute Unifi backup
+  ansible.builtin.include_tasks: unifi.yml
+  when: vault_unifi_password is defined and vault_unifi_password | length > 0
+
 - name: Clean up temporary backup directory
   ansible.builtin.file:
     path: "{{ backup_temp_dir }}"

@@ -1,0 +1,71 @@
+---
+- name: UniFi | Define local temporary backup path
+  ansible.builtin.set_fact:
+    unifi_temp_backup_file: "{{ backup_temp_dir }}/unifi_{{ backup_timestamp }}.unf"
+
+- name: UniFi | Execute backup procedure
+  block:
+    - name: UniFi | Authenticate and obtain session cookie
+      ansible.builtin.uri:
+        url: "{{ vault_unifi_url }}/api/login"
+        method: POST
+        body_format: json
+        body:
+          username: "{{ vault_unifi_user }}"
+          password: "{{ vault_unifi_password }}"
+        validate_certs: false
+        status_code: 200
+      register: unifi_login
+      no_log: true
+
+    - name: UniFi | Trigger backup generation
+      ansible.builtin.uri:
+        url: "{{ vault_unifi_url }}/api/s/default/cmd/backup"
+        method: POST
+        headers:
+          Cookie: "{{ unifi_login.set_cookie }}"
+          X-CSRF-Token: "{{ unifi_login.x_csrf_token | default(omit) }}"
+        body_format: json
+        body:
+          cmd: "backup"
+          days: 0  # only config without stats
+        validate_certs: false
+        status_code: 200
+      register: unifi_backup_meta
+      no_log: true
+
+    - name: UniFi | Download .unf configuration archive
+      ansible.builtin.uri:
+        url: "{{ vault_unifi_url }}/{{ unifi_backup_meta.json.data[0].url }}"
+        method: GET
+        headers:
+          Cookie: "{{ unifi_login.set_cookie }}"
+        validate_certs: false
+        dest: "{{ unifi_temp_backup_file }}"
+        mode: '0600'
+        status_code: 200
+
+    - name: UniFi | Encrypt and upload backup to Cloudflare R2
+      ansible.builtin.include_tasks: upload_r2.yml
+      vars:
+        backup_src_file: "{{ unifi_temp_backup_file }}"
+        backup_target_bucket: "{{ r2_bucket_unifi }}"
+        backup_target_filename: "unifi_{{ backup_timestamp }}.unf"
+
+  always:
+    - name: UniFi | Invalidate session via logout
+      ansible.builtin.uri:
+        url: "{{ vault_unifi_url }}/api/logout"
+        method: POST
+        headers:
+          Cookie: "{{ unifi_login.set_cookie }}"
+        validate_certs: false
+        status_code: [200, 302]
+      when: unifi_login is defined and 'set_cookie' in unifi_login
+      no_log: true
+
+    - name: UniFi | Clean up local temporary file
+      ansible.builtin.file:
+        path: "{{ unifi_temp_backup_file }}"
+        state: absent
+      when: unifi_temp_backup_file is defined
