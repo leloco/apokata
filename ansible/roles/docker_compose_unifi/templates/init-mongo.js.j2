@@ -1,0 +1,9 @@
+db.getSiblingDB("unifi").createUser({
+  user: "{{ vault_unifi_mongo_user }}",
+  pwd: "{{ vault_unifi_mongo_password }}",
+  roles: [
+    { role: "root", db: "admin" },
+    { role: "dbOwner", db: "unifi" },
+    { role: "dbOwner", db: "unifi_stat" }
+  ]
+});

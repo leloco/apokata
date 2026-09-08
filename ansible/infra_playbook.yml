@@ -36,6 +36,12 @@
   roles:
     - { role: docker_compose_npm, tags: ['docker_compose_npm'] }
 
+- name: Setup unifi
+  hosts: z1-unifi
+  become: true
+  roles:
+    - { role: docker_compose_unifi, tags: ['docker_compose_unifi'] }
+
 - name: Setup rocketchat
   hosts: z1-rocketchat
   become: true

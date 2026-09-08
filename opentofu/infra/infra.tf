@@ -280,12 +280,12 @@ variable "infra_ironhide_iid" {
   sensitive = true
 }
 # ----
-variable "infra_unifi_controller_host_id" {
+variable "infra_z1_unifi_host_id" {
   type        = number
   description = "The host id (ipv4) that identifies the host."
   sensitive = true
 }
-variable "infra_unifi_controller_iid" {
+variable "infra_z1_unifi_iid" {
   type        = number
   description = "The interface identifier (ipv6) that identifies the host."
   sensitive = true

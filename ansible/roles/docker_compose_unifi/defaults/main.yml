@@ -1,0 +1,7 @@
+mongo_image: "docker.io/library/mongo@sha256:b6421fd6d1c5ded6377b397d8983e2f82e2100dc5123332dcfda2065a472be5b" # 7.0
+unifi_image: "lscr.io/linuxserver/unifi-network-application@sha256:26670e20c554256d55ee67847fb7e71f177bdb706646886b2ca5276ee9ae3961" # 10.1.89
+unifi_mount_base: "/opt/unifi-data"
+unifi_base_dir: "/opt/unifi"
+unifi_puid: 1000
+unifi_pgid: 1000
+

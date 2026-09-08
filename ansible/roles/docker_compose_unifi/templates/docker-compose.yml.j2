@@ -1,0 +1,44 @@
+services:
+  unifi-db:
+    image: "{{ mongo_image }}"
+    container_name: unifi-db
+    restart: unless-stopped
+    networks:
+      - unifi-net
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "{{ vault_unifi_mongo_root_user }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ vault_unifi_mongo_root_password }}"
+      MONGO_INITDB_DATABASE: unifi
+    volumes:
+      - "{{ unifi_mount_base }}/db:/data/db"
+      - "{{ unifi_mount_base }}/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro"
+
+  unifi-network-application:
+    image: "{{ unifi_image }}"
+    container_name: unifi-network-application
+    restart: unless-stopped
+    depends_on:
+      - unifi-db
+    networks:
+      - unifi-net
+    ports:
+      - "8443:8443"       # Web-UI / Controller
+      - "8080:8080"       # Device Inform (AP -> Controller)
+      - "3478:3478/udp"   # STUN
+      - "10001:10001/udp" # AP Discovery
+    environment:
+      PUID: "{{ unifi_puid }}"
+      PGID: "{{ unifi_pgid }}"
+      TZ: "{{ unifi_timezone | default('Europe/Berlin') }}"
+      MONGO_USER: "{{ vault_unifi_mongo_user }}"
+      MONGO_PASS: "{{ vault_unifi_mongo_password }}"
+      MONGO_HOST: "unifi-db"
+      MONGO_PORT: 27017
+      MONGO_DBNAME: unifi
+      MEM_LIMIT: "1024"
+    volumes:
+      - "{{ unifi_mount_base }}/config:/config"
+
+networks:
+  unifi-net:
+    driver: bridge

@@ -92,12 +92,6 @@ locals {
        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_prowl_iid}"
     }
 
-    unifi_controller = {
-       hostname = "unifi-controller"
-       ipv4_address = cidrhost(local.vlans.core.network, var.infra_unifi_controller_host_id)
-       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_unifi_controller_iid}"
-    }
-
     z1_npm = {
        hostname = "z1-npm"
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_z1_npm_host_id)
@@ -119,6 +113,12 @@ locals {
        vm_id = 206
     }
 
+    z1_unifi = {
+       hostname = "z1-unifi"
+       ipv4_address = cidrhost(local.vlans.core.network, var.infra_z1_unifi_host_id)
+       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_z1_unifi_iid}"
+       vm_id = 207
+    }
 
     shadow = {
        hostname = "shadow"
@@ -186,10 +186,10 @@ ${local.mutable_hosts.metroplex.hostname} ansible_host=${local.mutable_hosts.met
 [proxmox_lxc]
 ${local.mutable_hosts.tang.hostname} ansible_host=${local.mutable_hosts.tang.ipv4_address}
 ${local.mutable_hosts.prowl.hostname} ansible_host=${local.mutable_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.prowl.ipv6_address}
-${local.mutable_hosts.unifi_controller.hostname} ansible_host=${local.mutable_hosts.unifi_controller.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.unifi_controller.ipv6_address}
 ${local.mutable_hosts.z1_npm.hostname} ansible_host=${local.mutable_hosts.z1_npm.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_npm.ipv6_address}
 ${local.mutable_hosts.z1_portainer.hostname} ansible_host=${local.mutable_hosts.z1_portainer.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_portainer.ipv6_address}
 ${local.mutable_hosts.z1_rocketchat.hostname} ansible_host=${local.mutable_hosts.z1_rocketchat.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_rocketchat.ipv6_address}
+${local.mutable_hosts.z1_unifi.hostname} ansible_host=${local.mutable_hosts.z1_unifi.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_unifi.ipv6_address}
 
 [proxmox_vm]
 ${local.mutable_hosts.runner_alpha.hostname} ansible_host=${local.mutable_hosts.runner_alpha.ipv4_address}  ansible_user=${local.mutable_hosts.runner_alpha.user}
@@ -208,7 +208,7 @@ ${local.mutable_hosts.tang.hostname}
 ${local.mutable_hosts.runner_alpha.hostname}
 
 [unifi_group]
-${local.mutable_hosts.unifi_controller.hostname}
+${local.mutable_hosts.z1_unifi.hostname}
 
 [proxy_group]
 ${local.mutable_hosts.z1_npm.hostname}
@@ -219,6 +219,7 @@ ${local.mutable_hosts.z1_portainer.hostname}
 [docker_agents_group]
 ${local.mutable_hosts.z1_npm.hostname}
 ${local.mutable_hosts.z1_rocketchat.hostname}
+${local.mutable_hosts.z1_unifi.hostname}
 
 [docker_hosts_group:children]
 portainer_group
@@ -261,7 +262,7 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 EOT
 
-depends_on = [ module.tang, module.prowl, module.unifi_controller, module.z1_npm, module.z1_portainer, module.z1_rocketchat ]
+depends_on = [ module.tang, module.prowl, module.z1_unifi, module.z1_npm, module.z1_portainer, module.z1_rocketchat ]
 }
 
 resource "proxmox_virtual_environment_dns" "node_dns" {
@@ -322,12 +323,12 @@ module "prowl" {
 }
 
 
-module "unifi_controller" {
+module "z1_unifi" {
   source = "../modules/proxmox/lxc"
 
   pve_node         = var.shared_pve_node
-  vm_id            = 203
-  hostname         = local.mutable_hosts.unifi_controller.hostname
+  vm_id            = local.mutable_hosts.z1_unifi.vm_id
+  hostname         = local.mutable_hosts.z1_unifi.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
   searchdomain     = var.shared_searchdomain
 
@@ -338,10 +339,10 @@ module "unifi_controller" {
   vlan_id          = local.vlans.core.id
   template_file_id = var.shared_lxc_template_file_id
 
-  ipv4_address     = "${local.mutable_hosts.unifi_controller.ipv4_address}/24"
+  ipv4_address     = "${local.mutable_hosts.z1_unifi.ipv4_address}/24"
   gateway          = local.vlans.core.gateway_ipv4
 
-  ipv6_address     = "${local.mutable_hosts.unifi_controller.ipv6_address}/64"
+  ipv6_address     = "${local.mutable_hosts.z1_unifi.ipv6_address}/64"
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file
@@ -349,6 +350,14 @@ module "unifi_controller" {
   datastore_id     = var.shared_root_datastore_id
   datastore_size   = var.shared_medium_root_datastore_size
   start_on_boot    = var.shared_start_on_boot
+  mount_points = [
+  {
+    volume = "local-lvm:vm-207-data"
+    path   = "/opt/unifi-data"
+    size   = "10G"
+    backup = true
+  }
+]
 }
 
 module "z1_portainer" {
