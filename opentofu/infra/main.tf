@@ -92,6 +92,12 @@ locals {
        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_prowl_iid}"
     }
 
+    hound = {
+       hostname = "hound"
+       ipv4_address = cidrhost(local.vlans.core.network, var.infra_hound_host_id)
+       ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_hound_iid}"
+    }
+
     z1_npm = {
        hostname = "z1-npm"
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_z1_npm_host_id)
@@ -185,6 +191,7 @@ ${local.mutable_hosts.metroplex.hostname} ansible_host=${local.mutable_hosts.met
 [proxmox_lxc]
 ${local.mutable_hosts.tang.hostname} ansible_host=${local.mutable_hosts.tang.ipv4_address}
 ${local.mutable_hosts.prowl.hostname} ansible_host=${local.mutable_hosts.prowl.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.prowl.ipv6_address}
+${local.mutable_hosts.hound.hostname} ansible_host=${local.mutable_hosts.hound.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.hound.ipv6_address}
 ${local.mutable_hosts.z1_npm.hostname} ansible_host=${local.mutable_hosts.z1_npm.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_npm.ipv6_address}
 ${local.mutable_hosts.z1_portainer.hostname} ansible_host=${local.mutable_hosts.z1_portainer.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_portainer.ipv6_address}
 ${local.mutable_hosts.z1_rocketchat.hostname} ansible_host=${local.mutable_hosts.z1_rocketchat.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.z1_rocketchat.ipv6_address}
@@ -194,8 +201,9 @@ ${local.mutable_hosts.z1_unifi.hostname} ansible_host=${local.mutable_hosts.z1_u
 ${local.mutable_hosts.runner_alpha.hostname} ansible_host=${local.mutable_hosts.runner_alpha.ipv4_address}  ansible_user=${local.mutable_hosts.runner_alpha.user}
 
 [dns_group]
-# ${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=MASTER keepalived_priority=100 ansible_user=${local.mutable_hosts.shadow.user}
-${local.mutable_hosts.prowl.hostname} keepalived_role=BACKUP keepalived_priority=80
+# ${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=BACKUP keepalived_priority=60 ansible_user=${local.mutable_hosts.shadow.user}
+${local.mutable_hosts.prowl.hostname} keepalived_role=MASTER keepalived_priority=100
+${local.mutable_hosts.hound.hostname} keepalived_role=BACKUP keepalived_priority=80
 
 [dns_group:vars]
 network_interface=eth0
@@ -261,7 +269,7 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 EOT
 
-depends_on = [ module.tang, module.prowl, module.z1_unifi, module.z1_npm, module.z1_portainer, module.z1_rocketchat ]
+depends_on = [ module.tang, module.prowl, module.hound, module.z1_unifi, module.z1_npm, module.z1_portainer, module.z1_rocketchat ]
 }
 
 resource "proxmox_virtual_environment_dns" "node_dns" {
@@ -311,6 +319,30 @@ module "prowl" {
   gateway          = local.vlans.core.gateway_ipv4
 
   ipv6_address     = "${local.mutable_hosts.prowl.ipv6_address}/64"
+  ipv6_gateway     = local.vlans.core.gateway_ipv6
+
+  ssh_public_key_file = var.shared_ssh_public_key_file
+
+  datastore_id     = var.shared_root_datastore_id
+  datastore_size   = var.shared_small_root_datastore_size
+  start_on_boot    = var.shared_start_on_boot
+}
+
+module "hound" {
+  source = "../modules/proxmox/lxc"
+  pve_node         = "primus"
+  vm_id            = 202
+  hostname         = local.mutable_hosts.hound.hostname
+  nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
+  searchdomain     = var.shared_searchdomain
+
+  vlan_id          = local.vlans.core.id
+  template_file_id = var.shared_lxc_template_file_id
+
+  ipv4_address     = "${local.mutable_hosts.hound.ipv4_address}/24"
+  gateway          = local.vlans.core.gateway_ipv4
+
+  ipv6_address     = "${local.mutable_hosts.hound.ipv6_address}/64"
   ipv6_gateway     = local.vlans.core.gateway_ipv6
 
   ssh_public_key_file = var.shared_ssh_public_key_file

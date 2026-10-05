@@ -220,6 +220,17 @@ variable "infra_prowl_iid" {
   sensitive = true
 }
 # ----
+variable "infra_hound_host_id" {
+  type        = number
+  description = "The host id (ipv4) that identifies the host."
+  sensitive = true
+}
+variable "infra_hound_iid" {
+  type        = number
+  description = "The interface identifier (ipv6) that identifies the host."
+  sensitive = true
+}
+# ----
 variable "infra_shadow_host_id" {
   type        = number
   description = "The host id (ipv4) that identifies the host."
