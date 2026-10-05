@@ -30,7 +30,7 @@
 
 1. Navigate to **Network** -> **Interfaces**.
 2. Edit the secondary physical interface (`NIC 2`).
-3. Set **IP Address** to `10.0.99.3/29`.
+3. Set **IP Address** to `10.0.99.8/24`.
 4. Set **MTU** to `9000` (Enables Jumbo Frames for lower CPU overhead during heavy NFS traffic; requires end-to-end support across all nodes and the intermediate switch).
 5. Leave **Gateway** empty.
 6. Click **Apply Changes**.
@@ -57,17 +57,17 @@
    - Path: `bulk/k8s`
    - Advanced Options: Set **Sync** to **Standard** (optional: set `recordsize=1M` for large media files/backups).
 
-- [x] Initialized on
+- [x] Initialized on 08/20/2026
 
 ## Shares & Protocols (NFS for Kubernetes)
 
 1. **Enable Service:** Navigate to **System Settings** -> **Services** -> Enable **NFS** and toggle **Start Automatically**.
 2. **Configure Shares:** Navigate to **Shares** -> **Unix Shares (NFS)** -> **Add**:
-   - **Path:** `/mnt/fast/k8s` (and repeat for `/mnt/bulk/k8s`)
-   - **Networks:** `10.0.99.0/29`
+   - **Path:** `/mnt/bulk/proxmox/nfs`)
+   - **Networks:** `10.0.99.0/24`
    - **Advanced Options:** Set **Maproot User** to `root` and **Maproot Group** to `root`
 
-- [ ] Initialized on
+- [ ] Initialized on 10/05/2026
 
 ## Maintenance & Data Protection
 
