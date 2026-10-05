@@ -1,0 +1,20 @@
+---
+- name: Ensure corosync-qnetd is installed
+  ansible.builtin.apt:
+    name: corosync-qnetd
+    state: present
+    update_cache: yes
+
+- name: Ensure corosync-qnetd service is enabled and running
+  ansible.builtin.systemd:
+    name: corosync-qnetd
+    enabled: yes
+    state: started
+
+- name: Temporarily allow root SSH login for certificate exchange
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin yes'
+  notify: Restart SSH
+

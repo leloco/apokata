@@ -172,10 +172,9 @@ resource "local_file" "ansible_inventory" {
 # Any manual changes to this file will be overwritten during the next run of tofu apply.
 # Generated on: ${timestamp()}
 # ---------------------------------------------------------
-[proxmox_ve]
+[proxmox_cluster]
 ${local.mutable_hosts.ninja.hostname} ansible_host=${local.mutable_hosts.ninja.ipv4_address}
-# //TODO: Wait for completion of Milestone 2
-# ${local.mutable_hosts.primus.hostname} ansible_host=${local.mutable_hosts.primus.ipv4_address}
+${local.mutable_hosts.primus.hostname} ansible_host=${local.mutable_hosts.primus.ipv4_address}
 
 [proxmox_bs]
 ${local.mutable_hosts.sentinel.hostname} ansible_host=${local.mutable_hosts.sentinel.ipv4_address}
@@ -195,7 +194,7 @@ ${local.mutable_hosts.z1_unifi.hostname} ansible_host=${local.mutable_hosts.z1_u
 ${local.mutable_hosts.runner_alpha.hostname} ansible_host=${local.mutable_hosts.runner_alpha.ipv4_address}  ansible_user=${local.mutable_hosts.runner_alpha.user}
 
 [dns_group]
-# ${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=MASTER keepalived_priority=100 ansible_user=${local.mutable_hosts.shadow.user}
+${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=MASTER keepalived_priority=100 ansible_user=${local.mutable_hosts.shadow.user}
 ${local.mutable_hosts.prowl.hostname} keepalived_role=BACKUP keepalived_priority=80
 
 [dns_group:vars]
@@ -235,7 +234,7 @@ r2_bucket_truenas=${cloudflare_r2_bucket.backups["truenas"].name}
 r2_bucket_unifi=${cloudflare_r2_bucket.backups["unifi"].name}
 
 [all:children]
-proxmox_ve
+proxmox_cluster
 proxmox_bs
 proxmox_lxc
 proxmox_vm
@@ -266,15 +265,15 @@ depends_on = [ module.tang, module.prowl, module.z1_unifi, module.z1_npm, module
 }
 
 resource "proxmox_virtual_environment_dns" "node_dns" {
-  node_name = local.mutable_hosts.ninja.hostname
-  servers = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4]
-  domain  = var.shared_searchdomain
+  for_each = toset(["ninja", "primus"])
+  node_name = each.value
+  servers   = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4]
+  domain    = var.shared_searchdomain
 }
 
 module "tang" {
   source = "../modules/proxmox/lxc"
-
-  pve_node         = var.shared_pve_node
+  pve_node         = "ninja"
   vm_id            = 200
   hostname         = local.mutable_hosts.tang.hostname
 
@@ -299,8 +298,7 @@ module "tang" {
 
 module "prowl" {
   source = "../modules/proxmox/lxc"
-
-  pve_node         = var.shared_pve_node
+  pve_node         = "ninja"
   vm_id            = 201
   hostname         = local.mutable_hosts.prowl.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
@@ -325,8 +323,7 @@ module "prowl" {
 
 module "z1_unifi" {
   source = "../modules/proxmox/lxc"
-
-  pve_node         = var.shared_pve_node
+  pve_node         = "ninja"
   vm_id            = local.mutable_hosts.z1_unifi.vm_id
   hostname         = local.mutable_hosts.z1_unifi.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
@@ -362,8 +359,7 @@ module "z1_unifi" {
 
 module "z1_portainer" {
   source = "../modules/proxmox/lxc"
-
-  pve_node         = var.shared_pve_node
+  pve_node         = "ninja"
   vm_id            = local.mutable_hosts.z1_portainer.vm_id
   hostname         = local.mutable_hosts.z1_portainer.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
@@ -400,8 +396,7 @@ module "z1_portainer" {
 
 module "z1_npm" {
   source = "../modules/proxmox/lxc"
-
-  pve_node         = var.shared_pve_node
+  pve_node         = "ninja"
   vm_id            = local.mutable_hosts.z1_npm.vm_id
   hostname         = local.mutable_hosts.z1_npm.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
@@ -438,8 +433,7 @@ module "z1_npm" {
 
 module "z1_rocketchat" {
   source = "../modules/proxmox/lxc"
-
-  pve_node         = var.shared_pve_node
+  pve_node         = "ninja"
   vm_id            = local.mutable_hosts.z1_rocketchat.vm_id
   hostname         = local.mutable_hosts.z1_rocketchat.hostname
   nameservers       = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4, local.vlans.core.gateway_ipv6]
