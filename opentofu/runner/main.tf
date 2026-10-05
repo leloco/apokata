@@ -8,7 +8,7 @@ module "vm" {
   ipv6_gateway = var.runner_gateway_ipv6
   cpu_cores = var.runner_cpu_cores
   os = var.runner_os
-  memory = var.runner_memory
+  memory = "5120"
   storage = var.runner_storage
   size = var.runner_size
   username = var.runner_username
