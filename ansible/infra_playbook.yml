@@ -5,6 +5,7 @@
   roles:
     - { role: systemd_resolved, tags: ['systemd_resolved'] }
     - { role: proxmox_qdevice, tags: ['qdevice'] }
+    - { role: proxmox_storage, tags: ['truenas'] }
     - { role: duckdns, tags: ['duckdns'] }
     - { role: wireguard, tags: ['wireguard'] }
     - { role: prepare_lxc_volume, tags: ['prepare_lxc_volume'] }

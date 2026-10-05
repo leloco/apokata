@@ -1,0 +1,40 @@
+---
+- name: Download and install TrueNAS Proxmox plugin non-interactively
+  ansible.builtin.shell: |
+    bash <(curl -sSL https://raw.githubusercontent.com/truenas/truenas-proxmox-plugin/alpha/install.sh) --non-interactive --apt-install
+  args:
+    executable: /bin/bash
+  register: plugin_install
+  changed_when: "'Successfully installed' in plugin_install.stdout or plugin_install.rc == 0"
+
+- name: Install nvme-cli
+  ansible.builtin.apt:
+    name: nvme-cli
+    state: present
+
+- name: Configure TrueNAS Nvme-oF storage in Proxmox cluster (storage.cfg)
+  ansible.builtin.blockinfile:
+    path: /etc/pve/storage.cfg
+    marker: "# {mark} ANSIBLE MANAGED: TrueNAS Storage"
+    block: |
+
+      truenasplugin: truenas-nvme
+          content images,rootdir
+          tn_api_host {{ vault_truenas_storage_endpoint }}
+          tn_api_key {{ vault_truenas_api_key }}
+          tn_dataset {{ vault_truenas_dataset }}
+          tn_api_insecure 1
+          shared 1
+          tn_transport_mode nvme-tcp
+          tn_discovery_portal {{ vault_truenas_discovery_portal }}
+          tn_subsystem_nqn {{ vault_truenas_subsystem_nqn }}
+          nodes {{ groups['proxmox_cluster'] | join(',') }}
+
+      nfs: truenas-bulk-nfs
+          path /mnt/pve/truenas-bulk-nfs
+          server {{ vault_truenas_storage_endpoint }}
+          export {{ vault_truenas_nfs_path }}
+          content vztmpl,backup,iso,rootdir
+          options vers=3
+          nodes {{ groups['proxmox_cluster'] | join(',') }}
+  run_once: true
