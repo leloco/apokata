@@ -1,0 +1,7 @@
+---
+- name: Ensure corosync-qdevice is installed
+  ansible.builtin.apt:
+    name: corosync-qdevice
+    state: present
+    update_cache: yes
+

@@ -1,9 +1,10 @@
 ---
 - name: Setup Proxmox VE hosts
-  hosts: proxmox_ve
+  hosts: proxmox_cluster
   become: true
   roles:
     - { role: systemd_resolved, tags: ['systemd_resolved'] }
+    - { role: proxmox_qdevice, tags: ['qdevice'] }
     - { role: duckdns, tags: ['duckdns'] }
     - { role: wireguard, tags: ['wireguard'] }
     - { role: prepare_lxc_volume, tags: ['prepare_lxc_volume'] }
@@ -23,6 +24,12 @@
     - { role: common, tags: ['common'] }
     - { role: pihole, tags: ['pihole'] }
     - { role: keepalived_pihole, tags: ['pihole', 'keepalived'] }
+
+- name: Setup Raspberry PI
+  hosts: shadow
+  become: true
+  roles:
+    - { role: pi_qdevice, tags: ['qdevice'] }
 
 - name: Setup docker_hosts
   hosts: docker_hosts_group
