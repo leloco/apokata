@@ -25,7 +25,6 @@
       RUNNER_NAME: "runner-alpha"
       RUNNER_OPTIMIZE_REPOSITORY_CACHE: "true"
       EPHEMERAL: "false"
-      LABELS: "linux"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/actions-runner:/tmp/runner
