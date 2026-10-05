@@ -180,6 +180,14 @@ variable "infra_work_gateway_iid" {
   sensitive = true
 }
 # ----------------------- VLANS end -----------------------------
+# ----------------------- STORAGE start -----------------------------
+variable "infra_storage_cidr" {
+  type        = string
+  description = "The CIDR id for the Dedicated Storage Network."
+  sensitive = true
+}
+
+# ----------------------- STORAGE end -----------------------------
 # ----------------------- HOSTS start -----------------------------
 variable "infra_runner_alpha_host_id" {
   type        = number
@@ -193,6 +201,38 @@ variable "infra_runner_alpha_iid" {
 }
 
 variable "infra_runner_alpha_user" {
+  type        = string
+  description = "The username of the host."
+  sensitive = true
+}
+# ----
+variable "infra_cluster1_controlplane1_host_id" {
+  type        = number
+  description = "The host id (ipv4) that identifies the host."
+  sensitive = true
+}
+variable "infra_cluster1_controlplane1_iid" {
+  type        = number
+  description = "The interface identifier (ipv6) that identifies the host."
+  sensitive = true
+}
+variable "infra_cluster1_controlplane1_user" {
+  type        = string
+  description = "The username of the host."
+  sensitive = true
+}
+# ----
+variable "infra_cluster1_worker1_host_id" {
+  type        = number
+  description = "The host id (ipv4) that identifies the host."
+  sensitive = true
+}
+variable "infra_cluster1_worker1_iid" {
+  type        = number
+  description = "The interface identifier (ipv6) that identifies the host."
+  sensitive = true
+}
+variable "infra_cluster1_worker1_user" {
   type        = string
   description = "The username of the host."
   sensitive = true
@@ -381,3 +421,4 @@ variable "backup_notification_email" {
   description = "Email address list for backup job reports and notifications."
   sensitive = true
 }
+

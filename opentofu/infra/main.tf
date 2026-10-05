@@ -6,6 +6,7 @@ locals {
     lab = var.infra_lab_cidr
     guest = var.infra_guest_cidr
     work = var.infra_work_cidr
+    storage = var.infra_storage_cidr
   }
 
   _ula_prefixes = {
@@ -67,6 +68,7 @@ locals {
     }
   }
 
+
   mutable_hosts = {
     # ----------------------- WARNING -------------------------
     # Runners are primarily configured in /runner where their configuration actually live. Changes here require changes inside /runner and vice versa.
@@ -79,6 +81,23 @@ locals {
        user = var.infra_runner_alpha_user
     }
     # ---------------------------------------------------------
+
+    cluster1_controlplane1 = {
+       hostname = "cluster1-controlplane1"
+       user = var.infra_cluster1_controlplane1_user
+       ipv4_address = cidrhost(local.vlans.lab.network, var.infra_cluster1_controlplane1_host_id)
+       ipv6_address = "${local.vlans.lab.ula_prefix}${var.infra_cluster1_controlplane1_iid}"
+       ipv4_address_storage = cidrhost(local._networks.storage, var.infra_cluster1_controlplane1_host_id)
+       vm_id = 210
+    }
+
+    cluster1_worker1 = {
+       hostname = "cluster1-worker1"
+       user = var.infra_cluster1_worker1_user
+       ipv4_address = cidrhost(local.vlans.lab.network, var.infra_cluster1_worker1_host_id)
+       ipv6_address = "${local.vlans.lab.ula_prefix}${var.infra_cluster1_worker1_iid}"
+       vm_id = 211
+    }
 
     tang = {
        hostname = "tang"
@@ -200,6 +219,16 @@ ${local.mutable_hosts.z1_unifi.hostname} ansible_host=${local.mutable_hosts.z1_u
 [proxmox_vm]
 ${local.mutable_hosts.runner_alpha.hostname} ansible_host=${local.mutable_hosts.runner_alpha.ipv4_address}  ansible_user=${local.mutable_hosts.runner_alpha.user}
 
+[k8s_cluster1_controlplanes]
+${local.mutable_hosts.cluster1_controlplane1.hostname} ansible_host=${local.mutable_hosts.cluster1_controlplane1.ipv4_address} ansible_user=${local.mutable_hosts.cluster1_controlplane1.user}
+
+[k8s_cluster1_workers]
+${local.mutable_hosts.cluster1_worker1.hostname} ansible_host=${local.mutable_hosts.cluster1_worker1.ipv4_address} ansible_user=${local.mutable_hosts.cluster1_worker1.user}
+
+[k8s_nodes:children]
+k8s_cluster1_controlplanes
+k8s_cluster1_workers
+
 [dns_group]
 # ${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=BACKUP keepalived_priority=60 ansible_user=${local.mutable_hosts.shadow.user}
 ${local.mutable_hosts.prowl.hostname} keepalived_role=MASTER keepalived_priority=100
@@ -268,8 +297,6 @@ ansible_ssh_trusted_key_file=""
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 EOT
-
-depends_on = [ module.tang, module.prowl, module.hound, module.z1_unifi, module.z1_npm, module.z1_portainer, module.z1_rocketchat ]
 }
 
 resource "proxmox_virtual_environment_dns" "node_dns" {
@@ -277,6 +304,43 @@ resource "proxmox_virtual_environment_dns" "node_dns" {
   node_name = each.value
   servers   = [local.virtual.ipv4_address, local.virtual.ipv6_address, local.vlans.core.gateway_ipv4]
   domain    = var.shared_searchdomain
+}
+
+resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1_primus" {
+  node_name = "primus"
+  name      = "vmbr1"
+  address   = "${cidrhost(local._networks.storage, var.infra_primus_host_id)}/24"
+  comment   = "Dedicated Storage Network"
+  ports     = ["enp1s0"]
+}
+
+module "cluster1_controlplane1" {
+  source           = "../modules/proxmox/vm"
+  pve_node         = "primus"
+  vm_name          = local.mutable_hosts.cluster1_controlplane1.hostname
+  vm_id            = local.mutable_hosts.cluster1_controlplane1.vm_id
+  hostname         = local.mutable_hosts.cluster1_controlplane1.hostname
+  username         = local.mutable_hosts.cluster1_controlplane1.user
+  cpu_cores        = 4
+  memory           = 6144
+  size             = "30"
+  os               = "l26"
+  storage          = "local-lvm"
+
+  public_ssh_key   = var.shared_ssh_public_key_file
+  template_id      = 9001
+  nameservers      = var.shared_nameservers
+  searchdomain     = var.shared_searchdomain
+
+  vlan_id          = local.vlans.lab.id
+  bridge_frontend  = "vmbr0"
+  ipv4_address     = "${local.mutable_hosts.cluster1_controlplane1.ipv4_address}/24"
+  ipv4_gateway     = local.vlans.lab.gateway_ipv4
+  ipv6_address     = "${local.mutable_hosts.cluster1_controlplane1.ipv6_address}/64"
+  ipv6_gateway     = local.vlans.lab.gateway_ipv6
+
+  bridge_storage       = "vmbr1"
+  storage_ipv4_address = "${local.mutable_hosts.cluster1_controlplane1.ipv4_address_storage}/24"
 }
 
 module "tang" {

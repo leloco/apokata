@@ -13,6 +13,12 @@ variable "ipv4_address" {
   description = "The IPv4 address including CIDR suffix (e.g., 10.0.20.10/24)."
 }
 
+variable "storage_ipv4_address" {
+  type        = string
+  description = "The IPv4 address including CIDR suffix (e.g., 10.0.20.10/24) for the Dedicated Storage Network."
+  default = null
+}
+
 variable "ipv4_gateway" {
   type        = string
   description = "The IPv4 address of the default gateway."
@@ -92,3 +98,15 @@ variable "searchdomain" {
   type        = string
   description = "The DNS search domain for the system (e.g., x3dh.de)."
 }
+
+variable "bridge_frontend" {
+  type    = string
+  default = "vmbr0"
+}
+
+variable "bridge_storage" {
+  type    = string
+  default = null
+}
+
+

@@ -40,15 +40,15 @@ EOF
 }
 
 resource "proxmox_virtual_environment_vm" "vm" {
-  name      = var.vm_name
+  name        = var.vm_name
   description = "Managed by OpenTofu"
-  node_name = var.pve_node
-  vm_id     = var.vm_id
+  node_name   = var.pve_node
+  vm_id       = var.vm_id
 
   scsi_hardware = "virtio-scsi-single"
 
   operating_system {
-    type = "l26"
+    type = var.os
   }
 
   cpu {
@@ -67,8 +67,15 @@ resource "proxmox_virtual_environment_vm" "vm" {
   }
 
   network_device {
-    bridge = "vmbr0"
+    bridge  = var.bridge_frontend
     vlan_id = var.vlan_id
+  }
+
+  dynamic "network_device" {
+    for_each = var.bridge_storage != null ? [var.bridge_storage] : []
+    content {
+      bridge = network_device.value
+    }
   }
 
   agent {
@@ -78,7 +85,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   initialization {
     user_data_file_id = proxmox_virtual_environment_file.user_data.id
-    interface = "ide2"
+    interface         = "ide2"
 
     dns {
       servers = var.nameservers
@@ -93,6 +100,16 @@ resource "proxmox_virtual_environment_vm" "vm" {
       ipv6 {
         address = var.ipv6_address
         gateway = var.ipv6_gateway
+      }
+    }
+
+    dynamic "ip_config" {
+      for_each = var.storage_ipv4_address != null ? [var.storage_ipv4_address] : []
+      content {
+        ipv4 {
+          address = ip_config.value
+          # No gateway! Layer-2 Routing for Dedicated Storage Network
+        }
       }
     }
   }
