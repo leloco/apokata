@@ -9,8 +9,9 @@ skip_list:
   - args[module]
 
 exclude_paths:
-  - ".ansible"
+  - ".ansible/"
   - ".venv"
+  - "collections/"
   - "**/vars/secrets.yml"
   - "**/vars/vault.yml"
   - "**/vars/vault.yaml"

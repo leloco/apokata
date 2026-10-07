@@ -8,33 +8,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Ansible Pip packages
+    - name: Cache Ansible environment
       uses: actions/cache@v4
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('./ansible/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
-    - name: Install Ansible Pip packages
-      shell: bash
-      run: pip install --break-system-packages -r ./ansible/requirements.txt
-
-    - name: Cache Ansible collections
-      uses: actions/cache@v4
-      id: cache-ansible
-      with:
-        path: ~/.ansible/collections
-        key: ${{ runner.os }}-ansible-${{ hashFiles('./ansible/requirements.yml') }}
+        path: |
+          ./ansible/.venv
+          ./ansible/collections
+        key: ${{ runner.os }}-ansible-${{ hashFiles('./ansible/requirements.txt', './ansible/requirements.yml') }}
         restore-keys: |
           ${{ runner.os }}-ansible-
 
-    - name: Install Ansible Collections
+    - name: Run Ansible Setup Script
       shell: bash
-      run: |
-        if [ -f "./ansible/requirements.yml" ]; then
-          ansible-galaxy collection install -r ./ansible/requirements.yml
-        fi
+      run: ./scripts/ansible.sh
 
     - name: Create Ansible Vault Pass File
       shell: bash
