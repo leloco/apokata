@@ -7,6 +7,8 @@
 terraform.tfvars
 .api_url
 ansible/inventory.ini
+ansible/collections/
+.ansible/lock
 **/*.jwk
 !**/*.jwk.enc
 **/*.tfplan

@@ -109,7 +109,7 @@ jobs:
 
       - name: Lint Ansible
         working-directory: ${{ env.ANSIBLE_WORKING_DIR }}
-        run: ansible-lint infra_playbook.yml --force-color
+        run: .venv/bin/ansible-lint infra_playbook.yml --force-color
 
       - name: OpenTofu Init
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
