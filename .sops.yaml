@@ -3,3 +3,6 @@ creation_rules:
     pgp: "640170DE796E3CC2C1EA7E9D4DA395A9634B5E40"
   - path_regex: ansible/roles/tang/files/tang-keys/.*\.jwk$
     pgp: "640170DE796E3CC2C1EA7E9D4DA395A9634B5E40"
+  - path_regex: gitops/.*\.sops\.ya?ml$
+    age: "age1erlt7mzurdy2mzyytm57ycxq4jl6yp8f7eq73pfvxcyc89kxafrs6reesp"
+    encrypted_regex: '^(data|stringData)$'

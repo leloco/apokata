@@ -1,0 +1,113 @@
+---
+- name: Add ArgoCD Helm repository
+  kubernetes.core.helm_repository:
+    name: argo
+    repo_url: https://argoproj.github.io/argo-helm
+
+- name: Install ArgoCD via Helm
+  kubernetes.core.helm:
+    name: argocd
+    chart_ref: argo/argo-cd
+    chart_version: "{{ argocd_chart_version }}"
+    release_namespace: argocd
+    create_namespace: yes
+    kubeconfig: /etc/kubernetes/admin.conf
+    values:
+      configs:
+        cmp:
+          create: true
+          plugins:
+            sops-decrypter:
+              allowConcurrency: true
+              discover:
+                find:
+                  command: [sh, -c, "find . -name '*.sops.yaml'"]
+              generate:
+                command: [sh, -c]
+                args:
+                  - |
+                    find . -name '*.yaml' ! -name '*.sops.yaml' -exec cat {} \; -exec echo "---" \;
+                    find . -name '*.sops.yaml' -exec sops -d {} \; -exec echo "---" \;
+      repoServer:
+        dnsConfig:
+          options:
+            - name: ndots
+              value: "1"
+        volumes:
+          - name: custom-tools
+            emptyDir: {}
+          - name: sops-age
+            secret:
+              secretName: sops-age
+          - name: cmp-plugin
+            configMap:
+              name: argocd-cmp-cm
+        initContainers:
+          - name: download-sops
+            image: "alpine:{{ argocd_alpine_version }}"
+            command: [sh, -c]
+            args:
+              - >-
+                wget -O /custom-tools/sops https://github.com/getsops/sops/releases/download/{{ argocd_sops_version }}/sops-{{ argocd_sops_version }}.linux.amd64
+                && chmod +x /custom-tools/sops
+            volumeMounts:
+              - name: custom-tools
+                mountPath: /custom-tools
+        extraContainers:
+          - name: sops-cmp
+            command: [/var/run/argocd/argocd-cmp-server]
+            image: "alpine:{{ argocd_alpine_version }}"
+            env:
+              - name: SOPS_AGE_KEY_FILE
+                value: /sops-age/keys.txt
+            volumeMounts:
+              - name: var-files
+                mountPath: /var/run/argocd
+              - name: plugins
+                mountPath: /home/argocd/cmp-server/plugins
+              - name: cmp-plugin
+                mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: sops-decrypter.yaml
+              - name: custom-tools
+                mountPath: /usr/local/bin/sops
+                subPath: sops
+              - name: sops-age
+                mountPath: /sops-age
+                readOnly: true
+
+- name: Deploy Git repository credentials for ArgoCD
+  kubernetes.core.k8s:
+    kubeconfig: /etc/kubernetes/admin.conf
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: apokata-repo
+        namespace: argocd
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      stringData:
+        type: git
+        url: "{{ github_repo_url }}"
+        password: "{{ vault_github_token }}"
+        username: "git"
+
+- name: Deploy SOPS/Age decryption key
+  kubernetes.core.k8s:
+    kubeconfig: /etc/kubernetes/admin.conf
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: sops-age
+        namespace: argocd
+      stringData:
+        keys.txt: "{{ vault_sops_age_key }}"
+
+- name: Apply GitOps root application (App of Apps)
+  kubernetes.core.k8s:
+    kubeconfig: /etc/kubernetes/admin.conf
+    state: present
+    template: "cluster1-root-app.yml.j2"

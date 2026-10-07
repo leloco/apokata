@@ -3,33 +3,6 @@
   ansible.builtin.include_vars:
     file: secrets.yml
 
-- name: "Configure Netplan for static IPv4 and IPv6"
-  ansible.builtin.copy:
-    dest: /etc/netplan/01-netcfg.yaml
-    owner: root
-    group: root
-    mode: '0600'
-    content: |
-      network:
-        version: 2
-        renderer: networkd
-        ethernets:
-          eth0:
-            addresses:
-              - {{ hostvars['shadow']['ansible_host'] }}/24
-              - {{ hostvars['shadow']['ansible_host_ipv6'] }}/64
-            routes:
-              - to: default
-                via: {{ dns_gateway_ipv4 }}
-              - to: default
-                via: {{ dns_gateway_ipv6 }}
-  notify: "Apply netplan"
-  when: inventory_hostname == 'shadow'
-
-- name: "Apply netplan immediately if changed"
-  ansible.builtin.meta: flush_handlers
-  when: inventory_hostname == 'shadow'
-
 - name: "Disable systemd-resolved"
   ansible.builtin.service:
     name: systemd-resolved
