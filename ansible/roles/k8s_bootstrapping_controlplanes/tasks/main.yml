@@ -1,0 +1,44 @@
+---
+- name: Check if Kubernetes control plane is already initialized
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_init_stat
+
+- name: Initialize Kubernetes control plane
+  ansible.builtin.command: >
+    kubeadm init
+    --kubernetes-version={{ k8s_version }}
+    --pod-network-cidr={{ pod_network_cidr }}
+    --skip-phases=addon/kube-proxy
+  register: kubeadm_init_output
+  when: not kubeadm_init_stat.stat.exists
+  changed_when: true
+
+- name: Create .kube directory for the current user
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.kube"
+    state: directory
+    mode: '0755'
+
+- name: Copy admin.conf to user's kube config
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ ansible_env.HOME }}/.kube/config"
+    remote_src: yes
+    mode: '0600'
+
+- name: Fetch kubeconfig to the Ansible controller (only if running locally on ironhide)
+  ansible.builtin.fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: "~/.kube/config-cluster1"
+    flat: yes
+  when: lookup('pipe', 'hostname -s') == 'ironhide'
+
+- name: Generate join command for worker nodes
+  ansible.builtin.command: kubeadm token create --print-join-command
+  register: kubeadm_join_cmd
+  changed_when: false
+
+- name: Store join command as a fact for workers
+  ansible.builtin.set_fact:
+    kubernetes_join_command: "{{ kubeadm_join_cmd.stdout }}"

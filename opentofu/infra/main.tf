@@ -75,13 +75,13 @@ locals {
       pve_node = "primus"
       user         = var.infra_cluster1_controlplane1_user
       cpu_cores    = 4
-      memory       = 6144
+      memory       = 8192
       disk_size    = "20"
       ipv4_address = cidrhost(local.vlans.lab.network, var.infra_cluster1_controlplane1_host_id)
       ipv6_address = "${local.vlans.lab.ula_prefix}${var.infra_cluster1_controlplane1_iid}"
       bridge_storage = "vmbr1"
       template_id  = 9001
-      storage_ipv4_address = cidrhost(local._networks.storage, var.infra_cluster1_controlplane1_host_id)
+      storage_ipv4_address = cidrhost(local._networks.storage, 80)
     }
 
     worker1 = {
@@ -96,7 +96,7 @@ locals {
       ipv6_address = "${local.vlans.lab.ula_prefix}${var.infra_cluster1_worker1_iid}"
       bridge_storage = "vmbr1"
       template_id  = 9001
-      storage_ipv4_address = cidrhost(local._networks.storage, var.infra_cluster1_worker1_host_id)
+      storage_ipv4_address = cidrhost(local._networks.storage, 81)
     }
   }
 
@@ -163,7 +163,6 @@ locals {
        hostname = "shadow"
        ipv4_address = cidrhost(local.vlans.core.network, var.infra_shadow_host_id)
        ipv6_address = "${local.vlans.core.ula_prefix}${var.infra_shadow_iid}"
-       user = var.infra_shadow_user
     }
 
     sentinel = {
@@ -239,14 +238,18 @@ ${local.cluster1_nodes.controlplane1.hostname} ansible_host=${local.cluster1_nod
 [k8s_cluster1_workers]
 ${local.cluster1_nodes.worker1.hostname} ansible_host=${local.cluster1_nodes.worker1.ipv4_address} ansible_user=${local.cluster1_nodes.worker1.user}
 
-[k8s_nodes:children]
+
+[k8s_cluster1_nodes:children]
 k8s_cluster1_controlplanes
 k8s_cluster1_workers
 
+[k8s_nodes:children]
+k8s_cluster1_nodes
+
 [dns_group]
-# ${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=BACKUP keepalived_priority=60 ansible_user=${local.mutable_hosts.shadow.user}
 ${local.mutable_hosts.prowl.hostname} keepalived_role=MASTER keepalived_priority=100
 ${local.mutable_hosts.hound.hostname} keepalived_role=BACKUP keepalived_priority=80
+# ${local.mutable_hosts.shadow.hostname} ansible_host=${local.mutable_hosts.shadow.ipv4_address} ansible_host_ipv6=${local.mutable_hosts.shadow.ipv6_address} keepalived_role=BACKUP keepalived_priority=60
 
 [dns_group:vars]
 network_interface=eth0

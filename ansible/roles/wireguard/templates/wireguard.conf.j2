@@ -3,7 +3,9 @@
 [Interface]
 PrivateKey = {{ vault_local_private_key }}
 Address = {{ vault_address }}
+{% if vault_postup is defined and vault_postup != "" %}
 PostUp = {{ vault_postup }}
+{% endif %}
 
 [Peer]
 PublicKey = {{ vault_remote_public_key }}

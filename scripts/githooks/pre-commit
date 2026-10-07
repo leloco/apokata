@@ -3,6 +3,7 @@
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
 CONFIG_PATH="$PROJECT_ROOT/.sops.yaml"
 
+# Encrypt specific file types based on directory and extension
 encrypt_files() {
     local rel_dir=$1
     local extension=$2
@@ -17,20 +18,18 @@ encrypt_files() {
         target_file="$file.enc"
         filename=$(basename "$file")
 
-        # Check for empty source files
+        # Skip empty files
         if [ ! -s "$file" ]; then
             echo "ERROR: Skipping empty file $filename."
             exit 1
         fi
 
-        # only encrypt when timestamp of source file is newer than the encrypted version (target_file)
+        # Skip if encrypted file is newer than source file
         if [ -f "$target_file" ] && [ "$file" -ot "$target_file" ]; then
-            echo "No changes in $rel_dir/$filename. No need to encrypt again."
             continue
         fi
 
         echo "Encrypting file: $rel_dir/$filename (Type: $sops_type)"
-
 
         if sops --encrypt \
              --config "$CONFIG_PATH" \
@@ -38,7 +37,6 @@ encrypt_files() {
              --output-type "$sops_type" \
              --output "$target_file" \
              "$file"; then
-
             git add "$target_file"
         else
             echo "ERROR: Encryption failed for $filename. Check your .sops.yaml!"
@@ -47,21 +45,82 @@ encrypt_files() {
     done
 }
 
+# Scan the gitops directory for Kubernetes Secrets and encrypt them dynamically
+encrypt_gitops_secrets() {
+    local rel_dir="gitops"
+
+    if [ ! -d "$PROJECT_ROOT/$rel_dir" ]; then
+        return
+    fi
+
+    # Find all yaml files, excluding already encrypted .sops.yaml files
+    find "$PROJECT_ROOT/$rel_dir" -type f \( -name "*.yml" -o -name "*.yaml" \) ! -name "*.sops.y*ml" | while read -r file; do
+        # Check if the file content defines a Kubernetes Secret
+        if grep -qE "^kind:\s*Secret" "$file"; then
+            local ext="${file##*.}"
+            local base="${file%.*}"
+            local target_file="${base}.sops.${ext}"
+            local filename=$(basename "$file")
+
+            # Skip empty files
+            if [ ! -s "$file" ]; then
+                echo "ERROR: Skipping empty file $filename."
+                exit 1
+            fi
+
+            # Skip if encrypted file is newer than source file
+            if [ -f "$target_file" ] && [ "$file" -ot "$target_file" ]; then
+                continue
+            fi
+
+            echo "Encrypting Kubernetes Secret based on content: $filename -> $(basename "$target_file")"
+
+            if sops --encrypt \
+                 --config "$CONFIG_PATH" \
+                 --input-type yaml \
+                 --output-type yaml \
+                 --output "$target_file" \
+                 "$file"; then
+                git add "$target_file"
+            else
+                echo "ERROR: SOPS encryption failed for $filename. Check your .sops.yaml!"
+                exit 1
+            fi
+        fi
+    done
+}
+
+# Run encryption routines
 encrypt_files "opentofu" "tfvars" "dotenv"
 encrypt_files "ansible/roles/tang/files/tang-keys" "jwk" "json"
-
+encrypt_gitops_secrets
 
 echo "Starting security check for unencrypted secrets..."
 
-UNENCRYPTED_FILES=$(git diff --cached --name-only --diff-filter=d | grep -E "\.(tfvars|jwk)$" | grep -v "\.enc$")
+SECURITY_FAILED=0
 
+# Check for staged but unencrypted tfvars and jwk files
+UNENCRYPTED_FILES=$(git diff --cached --name-only --diff-filter=d | grep -E "\.(tfvars|jwk)$" | grep -v "\.enc$")
 if [ -n "$UNENCRYPTED_FILES" ]; then
+    echo "Unencrypted tfvars/jwk found:"
+    echo "$UNENCRYPTED_FILES"
+    SECURITY_FAILED=1
+fi
+
+# Check for staged plaintext Kubernetes Secrets in the gitops directory
+STAGED_YAMLS=$(git diff --cached --name-only --diff-filter=d | grep -E "^gitops/.*\.(yml|yaml)$" | grep -v "\.sops\.")
+for f in $STAGED_YAMLS; do
+    if grep -qE "^kind:\s*Secret" "$PROJECT_ROOT/$f"; then
+        echo "Plaintext Kubernetes Secret found in staging: $f"
+        SECURITY_FAILED=1
+    fi
+done
+
+# Block the commit if any plaintext secrets are in the staging area
+if [ $SECURITY_FAILED -eq 1 ]; then
     echo "######################################################################"
     echo "ATTENTION: SECURITY RISK DETECTED!"
-    echo "The following files are unencrypted in the staging area:"
-    echo "$UNENCRYPTED_FILES"
-    echo "----------------------------------------------------------------------"
-    echo "Committing these files is NOT permitted."
+    echo "Committing plaintext secrets is NOT permitted."
     echo "Please remove them with: git restore --staged <file>"
     echo "######################################################################"
     exit 1

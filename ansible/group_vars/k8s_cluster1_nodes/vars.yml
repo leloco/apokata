@@ -1,0 +1,7 @@
+k8s_version: "1.37.1"
+pod_network_cidr: "10.244.0.0/16"
+helm_version: "v3.16.2"
+argocd_chart_version: "10.9.2"
+argocd_sops_version: "v3.8.1"
+argocd_alpine_version: "3.20"
+github_repo_url: "https://github.com/leloco/apokata.git"
