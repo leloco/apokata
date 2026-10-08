@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: '{{ github_repo_url }}'
     targetRevision: main
-    path: clusters/cluster1/config
+    path: gitops/clusters/cluster1/config
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd
@@ -32,7 +32,7 @@ spec:
   source:
     repoURL: '{{ github_repo_url }}'
     targetRevision: main
-    path: clusters/cluster1/apps
+    path: gitops/clusters/cluster1/apps
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd
