@@ -10,6 +10,17 @@
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
 
+- name: Install nvme-cli and linux-modules-extra for NVMe-oF support
+  ansible.builtin.apt:
+    name:
+      - "linux-modules-extra-{{ ansible_kernel }}"
+      - nvme-cli
+    state: present
+  notify: Reboot node
+
+- name: Flush handlers to apply kernel modules package
+  ansible.builtin.meta: flush_handlers
+
 - name: Load required kernel modules
   community.general.modprobe:
     name: "{{ item }}"
