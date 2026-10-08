@@ -1,4 +1,25 @@
 ---
+- name: Create argocd namespace
+  kubernetes.core.k8s:
+    name: argocd
+    api_version: v1
+    kind: Namespace
+    state: present
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Deploy SOPS/Age decryption key
+  kubernetes.core.k8s:
+    kubeconfig: /etc/kubernetes/admin.conf
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: sops-age
+        namespace: argocd
+      stringData:
+        keys.txt: "{{ vault_sops_age_key }}"
+
 - name: Add ArgoCD Helm repository
   kubernetes.core.helm_repository:
     name: argo
@@ -93,21 +114,9 @@
         password: "{{ vault_github_token }}"
         username: "git"
 
-- name: Deploy SOPS/Age decryption key
-  kubernetes.core.k8s:
-    kubeconfig: /etc/kubernetes/admin.conf
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: sops-age
-        namespace: argocd
-      stringData:
-        keys.txt: "{{ vault_sops_age_key }}"
 
 - name: Apply GitOps root application (App of Apps)
   kubernetes.core.k8s:
     kubeconfig: /etc/kubernetes/admin.conf
     state: present
-    template: "cluster1-root-app.yml.j2"
+    template: "cluster1-root-app.yaml.j2"

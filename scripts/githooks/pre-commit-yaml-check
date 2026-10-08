@@ -1,0 +1,23 @@
+#!/bin/bash
+
+GITOPS_DIR="gitops"
+
+# Find all staged files inside the GitOps directory ending with .yml
+INVALID_FILES=$(git diff --cached --name-only | grep -iE "^${GITOPS_DIR}/.*\.yml$")
+
+if [ -n "$INVALID_FILES" ]; then
+    echo -e "\033[0;31mERROR: Commit blocked! Invalid file extension detected.\033[0m"
+    echo -e "\033[1;33mConvention:\033[0m Inside the GitOps directory ('${GITOPS_DIR}/'), \033[1;31mONLY .yaml\033[0m files are allowed (no .yml)."
+    echo ""
+    echo "The following files violate this rule:"
+    echo "$INVALID_FILES" | sed 's/^/  - /'
+    echo ""
+    echo "Solution:"
+    echo "Run the following command to automatically rename and stage all affected files:"
+    echo ""
+    echo -e "\033[0;36mgit diff --cached --name-only | grep -iE \"^${GITOPS_DIR}/.*\.yml$\" | while read file; do git mv \"\$file\" \"\${file%.yml}.yaml\"; done\033[0m"
+    echo ""
+    echo "After running the command, simply execute your commit again."
+    exit 1
+fi
+exit 0
