@@ -1,0 +1,12 @@
+- name: Ensure Kubernetes CSI Snapshot Controller and CRDs are installed
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ item }}"
+    kubeconfig: /etc/kubernetes/admin.conf
+  loop:
+    - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/{{ external_snapshoter_version }}/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+    - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/{{ external_snapshoter_version }}/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+    - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/{{ external_snapshoter_version }}/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
+    - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/{{ external_snapshoter_version }}/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml
+    - https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/{{ external_snapshoter_version }}/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml
+  run_once: true

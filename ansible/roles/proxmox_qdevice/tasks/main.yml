@@ -1,6 +1,0 @@
----
-- name: Ensure corosync-qdevice is not installed
-  ansible.builtin.apt:
-    name: corosync-qdevice
-    state: absent
-    update_cache: yes

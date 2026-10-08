@@ -1,3 +1,4 @@
+fail_fast: true
 repos:
   - repo: local
     hooks:
@@ -15,3 +16,4 @@ repos:
         language: script
         always_run: true
         pass_filenames: false
+        verbose: true

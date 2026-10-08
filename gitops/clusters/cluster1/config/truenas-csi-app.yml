@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: truenas-csi-driver
+  namespace: truenas-csi
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  project: default
+  source:
+    repoURL: 'https://raw.githubusercontent.com/truenas/truenas-csi/master/charts'
+    chart: truenas-csi
+    targetRevision: "1.4.0"
+    helm:
+      values: |
+        truenas:
+          url: "wss://10.0.99.8"
+          defaultPool: "bulk"
+          insecureSkipTLS: true
+          existingSecret: "truenas-creds"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: truenas-csi
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

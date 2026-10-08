@@ -12,14 +12,6 @@
     mode: '0755'
     remote_src: yes
 
-- name: Install Python dependencies for Ansible Kubernetes module
-  ansible.builtin.apt:
-    name:
-      - python3-kubernetes
-      - python3-yaml
-    state: present
-    update_cache: yes
-
 - name: Add Cilium Helm repository
   kubernetes.core.helm_repository:
     name: cilium

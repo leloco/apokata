@@ -16,3 +16,9 @@ ansible/collections/
 **/*.plan
 *.plan
 *.env
+*-secret.yaml
+secrets.yaml
+!*.sops.yaml
+*-secret.yml
+secrets.yml
+!*.sops.yml

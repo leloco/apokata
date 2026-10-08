@@ -10,6 +10,17 @@
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
 
+- name: Install nvme-cli and linux-modules-extra for NVMe-oF support
+  ansible.builtin.apt:
+    name:
+      - "linux-modules-extra-{{ ansible_kernel }}"
+      - nvme-cli
+    state: present
+  notify: Reboot node
+
+- name: Flush handlers to apply kernel modules package
+  ansible.builtin.meta: flush_handlers
+
 - name: Load required kernel modules
   community.general.modprobe:
     name: "{{ item }}"
@@ -17,6 +28,8 @@
   loop:
     - overlay
     - br_netfilter
+    - nvme_tcp
+    - nvme_fabrics
 
 - name: Ensure kernel modules load on boot
   ansible.builtin.copy:
@@ -24,9 +37,20 @@
     content: |
       overlay
       br_netfilter
+      nvme_tcp
+      nvme_fabrics
     mode: '0644'
     owner: root
     group: root
+
+- name: Install required storage client packages (NFS, NVMe-oF, iSCSI)
+  ansible.builtin.apt:
+    name:
+      - nfs-common    # for NFS PVCs
+      - nvme-cli      # for NVMe-oF
+      - lsscsi
+    state: present
+    update_cache: yes
 
 - name: Set sysctl parameters for Kubernetes networking
   ansible.posix.sysctl:
@@ -119,3 +143,10 @@
     - kubelet
     - kubeadm
     - kubectl
+
+- name: Install python dependencies for Kubernetes modules
+  ansible.builtin.apt:
+    name:
+      - python3-kubernetes
+      - python3-yaml
+    state: present

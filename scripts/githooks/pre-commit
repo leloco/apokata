@@ -14,7 +14,7 @@ encrypt_files() {
         return
     fi
 
-    find "$PROJECT_ROOT/$rel_dir" -type f -name "*.$extension" | while read -r file; do
+    while read -r file; do
         target_file="$file.enc"
         filename=$(basename "$file")
 
@@ -42,7 +42,7 @@ encrypt_files() {
             echo "ERROR: Encryption failed for $filename. Check your .sops.yaml!"
             exit 1
         fi
-    done
+    done < <(find "$PROJECT_ROOT/$rel_dir" -type f -name "*.$extension")
 }
 
 # Scan the gitops directory for Kubernetes Secrets and encrypt them dynamically
@@ -53,8 +53,7 @@ encrypt_gitops_secrets() {
         return
     fi
 
-    # Find all yaml files, excluding already encrypted .sops.yaml files
-    find "$PROJECT_ROOT/$rel_dir" -type f \( -name "*.yml" -o -name "*.yaml" \) ! -name "*.sops.y*ml" | while read -r file; do
+    while read -r file; do
         # Check if the file content defines a Kubernetes Secret
         if grep -qE "^kind:\s*Secret" "$file"; then
             local ext="${file##*.}"
@@ -73,7 +72,7 @@ encrypt_gitops_secrets() {
                 continue
             fi
 
-            echo "Encrypting Kubernetes Secret based on content: $filename -> $(basename "$target_file")"
+            echo "Encrypting: $filename -> $(basename "$target_file")"
 
             if sops --encrypt \
                  --config "$CONFIG_PATH" \
@@ -82,20 +81,33 @@ encrypt_gitops_secrets() {
                  --output "$target_file" \
                  "$file"; then
                 git add "$target_file"
+
+                if [ -f "$file" ]; then
+                    rm -f "$file"
+                    echo "INFO: Removed local plaintext file: $filename"
+                fi
             else
                 echo "ERROR: SOPS encryption failed for $filename. Check your .sops.yaml!"
                 exit 1
             fi
         fi
-    done
+    done < <(find "$PROJECT_ROOT/$rel_dir" -type f \( -name "*.yml" -o -name "*.yaml" \) ! -name "*.sops.y*ml")
 }
 
 # Run encryption routines
+echo "Encrypting opentofu, tfvars and dotenv..."
 encrypt_files "opentofu" "tfvars" "dotenv"
-encrypt_files "ansible/roles/tang/files/tang-keys" "jwk" "json"
-encrypt_gitops_secrets
+echo "Done!"
 
-echo "Starting security check for unencrypted secrets..."
+echo "Encrypting tang keys..."
+encrypt_files "ansible/roles/tang/files/tang-keys" "jwk" "json"
+echo "Done!"
+
+echo "Encrypting k8s secrets inside gitops/"
+encrypt_gitops_secrets
+echo "Done!"
+
+echo "Now starting security check for unencrypted secrets..."
 
 SECURITY_FAILED=0
 
