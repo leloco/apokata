@@ -10,9 +10,18 @@ repos:
         pass_filenames: false
   - repo: local
     hooks:
+      - id: gitops-yaml-check
+        name: gitops-yaml-check
+        entry: ./scripts/githooks/pre-commit-yaml-check
+        language: script
+        always_run: true
+        pass_filenames: false
+        verbose: true
+  - repo: local
+    hooks:
       - id: encrypted-secrets-check
         name: encrypted-secrets-check
-        entry: ./scripts/githooks/pre-commit
+        entry: ./scripts/githooks/pre-commit-secrets-check
         language: script
         always_run: true
         pass_filenames: false
