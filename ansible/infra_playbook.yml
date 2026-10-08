@@ -3,7 +3,6 @@
   hosts: proxmox_cluster
   become: true
   roles:
-    - { role: proxmox_qdevice, tags: ['qdevice'] }
     - { role: proxmox_storage, tags: ['truenas'] }
     - { role: prepare_lxc_volume, tags: ['prepare_lxc_volume'] }
 
@@ -87,14 +86,13 @@
     - { role: common, tags: ['common', 'unifi_group'] }
     - { role: install_unifi, tags: ['install_unifi', 'unifi_group'] }
 
-
 - name: Bootstrap K8s cluster1 nodes
   hosts: k8s_cluster1_nodes
   become: true
   roles:
-    - { role: k8s_bootstrapping_common, tags: ['k8s', 'k8s-cluster1', 'k8s-cluster1-common'] }
+    - { role: k8s_bootstrapping_presetup, tags: ['k8s', 'k8s-cluster1', 'k8s-cluster1-presetup'] }
 
-- name: Bootstrap K8s cluster1 controlplanes
+- name: Pre Bootstrap K8s cluster1 controlplanes
   hosts: k8s_cluster1_controlplanes
   become: true
   roles:
@@ -117,3 +115,9 @@
   become: true
   roles:
     - { role: k8s_bootstrapping_argocd, tags: ['k8s', 'k8s-cluster1', 'k8s-cluster1-argocd'] }
+
+- name: Post Bootstrap K8s cluster1 controlplanes
+  hosts: k8s_cluster1_controlplanes
+  become: true
+  roles:
+    - { role: k8s_bootstrapping_postsetup, tags: ['k8s', 'k8s-cluster1', 'k8s-cluster1-postsetup'] }

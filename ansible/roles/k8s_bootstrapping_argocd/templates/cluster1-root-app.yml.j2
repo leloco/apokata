@@ -1,14 +1,38 @@
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cluster1-root
+  name: cluster1-config
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   project: default
   source:
-    repoURL: "{{ github_repo_url }}"
+    repoURL: '{{ github_repo_url }}'
     targetRevision: main
-    path: gitops/config/cluster1
+    path: clusters/cluster1/config
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster1-apps
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: '{{ github_repo_url }}'
+    targetRevision: main
+    path: clusters/cluster1/apps
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd

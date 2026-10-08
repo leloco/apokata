@@ -1,0 +1,14 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: bulk-shared
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+provisioner: csi.truenas.io
+parameters:
+  protocol: nfs
+  datasetPath: "k8s/nfs"
+  nfs.rootSquash: "false" # Allows the Kubelet, to edit permissions for directories for non-root Pods per fsGroup
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
