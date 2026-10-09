@@ -95,7 +95,7 @@ jobs:
       - name: Decrypt Secrets
         uses: ./.github/actions/decrypt-secrets
         with:
-          age-key: ${{ secrets.SOPS_AGE_KEY }}
+          sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: Setup OpenTofu Tools
         uses: ./.github/actions/opentofu-prep
