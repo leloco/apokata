@@ -1,5 +1,5 @@
-name: 'Install Ansible'
-description: 'Installs Pip packages and Ansible collections'
+name: 'Install Environment'
+description: 'Installs venv, pip packages, other binaries and Ansible collections'
 inputs:
   ansible_vault_password:
     description: 'Vault password'
@@ -8,19 +8,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Ansible environment
+    - name: Cache Environment
       uses: actions/cache@v4
       with:
         path: |
-          ./ansible/.venv
+          .venv
           ./ansible/collections
-        key: ${{ runner.os }}-ansible-${{ hashFiles('./ansible/requirements.txt', './ansible/requirements.yml') }}
+        key: ${{ runner.os }}-ansible-${{ hashFiles('./requirements.txt', './ansible/requirements.yml') }}
         restore-keys: |
           ${{ runner.os }}-ansible-
 
-    - name: Run Ansible Setup Script
+    - name: Run Install Script
       shell: bash
-      run: ./scripts/ansible.sh
+      run: ./scripts/install.sh
 
     - name: Create Ansible Vault Pass File
       shell: bash

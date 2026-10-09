@@ -18,7 +18,7 @@ runs:
         export ANSIBLE_HOST_KEY_CHECKING=False
         LOG_FILE="ansible_run_${{ github.run_number }}_id_${{ github.run_id }}.log"
 
-        .venv/bin/ansible-playbook -i inventory.ini ${{ inputs.playbook_name }} > "$LOG_FILE" 2>&1
+        ../.venv/bin/ansible-playbook -i inventory.ini ${{ inputs.playbook_name }} > "$LOG_FILE" 2>&1
       continue-on-error: false
 
     - name: Display Ansible PLAY RECAP

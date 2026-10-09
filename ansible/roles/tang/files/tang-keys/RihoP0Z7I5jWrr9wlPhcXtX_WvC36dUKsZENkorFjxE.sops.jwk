@@ -1,0 +1,29 @@
+{
+	"alg": "ENC[AES256_GCM,data:K6GM7W8=,iv:gJiUnbDBZbv3np4FK8915potTfdFD5MDJxDcRHA8380=,tag:gZa4uzxKa8+r21WmJl8Xdw==,type:str]",
+	"kty": "ENC[AES256_GCM,data:7AA=,iv:r9DDCd2qrWumMgT3h8K69TAFX+2W9DgDCJCHIkbhMUM=,tag:dbrkaTqkvM0lUIdswN6V1w==,type:str]",
+	"crv": "ENC[AES256_GCM,data:ERk04RM=,iv:AFBzZ1vpSCZf1EBOIqar7l1gePCxHfE1kwdsefNtYoQ=,tag:P1Dlq/b6SBypvOZ0UzdmFQ==,type:str]",
+	"x": "ENC[AES256_GCM,data:wik3y5pAoLwNh3wMeMEF1xNblzPL/sCyp2r/YLOK7kWGjXme1iZOLdOoS/n4JurGEzNrOUNZdwzozhAOdtkOCleqTVZxnw4ZXF7+7f8sJgwNOdEzrgVEoA==,iv:tjAU4rVo/nNbVL3jWa8OwgG9M2ZIQHJTiFc0TqMxYGY=,tag:GZm/B3xrdoMI25LyTW4Vnw==,type:str]",
+	"y": "ENC[AES256_GCM,data:WRVfw23LEJ0ENQZmQUqVU7wYut+eQi3zJLSh1xTBHF+fL0yHzQaQOEa0d9mp4VdrXuCHm8ooJllifWqlAIWnMtBLapumob1H+KIFK7dgC+bMPFDCA+g2Ng==,iv:hBtJDd5AMrnG91B3ZGIWfmUA9Y85KXiuhwLKI0zLIrY=,tag:oPgUHgKW5RhpD36qFTf9+A==,type:str]",
+	"d": "ENC[AES256_GCM,data:dTcJ4/YenYIFLPmsLoYDQFk0L1b+Z6Ew6Aum/jSrUtYmR4+kGJnTP8W46Tw5bHj6s/fYA96WFJ/83geDmgUpF8rP2j99QO4mpXH6zRidQyOcdfXXq9rXOg==,iv:RwidIsdm/TjJMYRv8uY2Pe3+jVnPLQmNL5R8UDAsx68=,tag:uKND7J2/ullUk9dk9VIu5A==,type:str]",
+	"key_ops": [
+		"ENC[AES256_GCM,data:af6JyQ==,iv:p4kLq+8+lz/PlVP9YZbciIVhPN1Z+ISdizcke/fFKyU=,tag:EqZHh5NkmiTQwkNlw0D1hg==,type:str]",
+		"ENC[AES256_GCM,data:TadCYDdq,iv:ksDvml37J7bLQSC2fR9n9a1uk6mEGNugG3TF3X2bYl4=,tag:dX4Gsu7NSTdpAe68/8gKSA==,type:str]"
+	],
+	"sops": {
+		"kms": null,
+		"gcp_kms": null,
+		"azure_kv": null,
+		"hc_vault": null,
+		"age": [
+			{
+				"recipient": "age1erlt7mzurdy2mzyytm57ycxq4jl6yp8f7eq73pfvxcyc89kxafrs6reesp",
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBtTm4xS1NqczBNeHBSSTJr\ncE1rUVpaYkJaZEZFRTE0UGZPdm9mYTl1dWlZCithL05aV1BHM2UzZW91YmRUamNG\nSWZ0WU9NcVd0NG54U2ozWlZRbC9WNDgKLS0tIElpdURHc1lsamMvdDNWM1czQ1Ax\ndDZKSTNCdUdTV3Q1eUVwTlZjdi8xV2MKpMlU7JGIT87SJ5dHeznIfd7fWamMTnFc\npV19Y++QSrzKK0g/Qvp2pwOxE4SznvKovWhNgu3+3yJJJGTHkfZnMg==\n-----END AGE ENCRYPTED FILE-----\n"
+			}
+		],
+		"lastmodified": "2026-10-09T10:21:44Z",
+		"mac": "ENC[AES256_GCM,data:uy88Of1oscf3BVpXx8EL+ZYBig/pySh4VFaq3GG82boR+FU2AhU8cORUhk8YE+Oa6eirswJzk69Bf4ZMaFZMDGWzUKu9O1T9MDEXKctTZVHRlsfx6P5COzuEew87gqTbkFGkMBumbLT69WhE6wp+j+4Jtojcux0JWFRxEMOaCZA=,iv:7feNnsLYcG6kYkE/bowTypdwxOPzNoXb8OTJyMZSF5o=,tag:BkwEx7Bzkx5id7nlRP/gBw==,type:str]",
+		"pgp": null,
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.9.0"
+	}
+}
