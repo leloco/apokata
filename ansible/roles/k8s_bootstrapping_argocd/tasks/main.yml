@@ -115,9 +115,14 @@
         password: "{{ vault_github_token }}"
         username: "git"
 
+- name: Apply GitOps app project
+  kubernetes.core.k8s:
+    kubeconfig: /etc/kubernetes/admin.conf
+    state: present
+    template: "{{ cluster_name }}-app-project.yaml.j2"
 
 - name: Apply GitOps root application (App of Apps)
   kubernetes.core.k8s:
     kubeconfig: /etc/kubernetes/admin.conf
     state: present
-    template: "cluster1-root-app.yaml.j2"
+    template: "{{ cluster_name }}-root-app.yaml.j2"
