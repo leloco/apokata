@@ -20,7 +20,7 @@ runs:
 
     - name: Run Install Script
       shell: bash
-      run: ./scripts/install
+      run: ./scripts/install.sh
 
     - name: Create Ansible Vault Pass File
       shell: bash
