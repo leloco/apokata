@@ -8,19 +8,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Ansible environment
+    - name: Cache Environment
       uses: actions/cache@v4
       with:
         path: |
           .venv
           ./ansible/collections
-        key: ${{ runner.os }}-ansible-${{ hashFiles('./ansible/requirements.txt', './ansible/requirements.yml') }}
+        key: ${{ runner.os }}-ansible-${{ hashFiles('./requirements.txt', './ansible/requirements.yml') }}
         restore-keys: |
           ${{ runner.os }}-ansible-
 
     - name: Run Install Script
       shell: bash
-      run: ./scripts/ansible.sh
+      run: ./scripts/install
 
     - name: Create Ansible Vault Pass File
       shell: bash
