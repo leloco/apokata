@@ -13,10 +13,3 @@ spec:
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
-  syncOptions:
-    - RespectIgnoreDifferences=true
-  ignoreDifferences:
-    - group: ""
-      kind: Secret
-      jsonPointers:
-        - /sops

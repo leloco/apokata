@@ -35,6 +35,10 @@
     kubeconfig: /etc/kubernetes/admin.conf
     values:
       configs:
+        cm:
+          resource.customizations.ignoreDifferences.Secret: |
+            jsonPointers:
+            - /sops
         cmp:
           create: true
           plugins:
