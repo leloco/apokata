@@ -7,7 +7,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
 spec:
-  project: default
+  project: apokata
   source:
     repoURL: '{{ github_repo_url }}'
     targetRevision: main
@@ -28,7 +28,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
-  project: default
+  project: apokata
   source:
     repoURL: '{{ github_repo_url }}'
     targetRevision: main
