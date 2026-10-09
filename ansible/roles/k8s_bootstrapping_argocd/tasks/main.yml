@@ -48,7 +48,8 @@
                 args:
                   - |
                     find . -name '*.yaml' ! -name '*.sops.yaml' -exec cat {} \; -exec echo "---" \;
-                    find . -name '*.sops.yaml' -exec sops -d {} \; -exec echo "---" \;
+                    # Remove metadata block from final secret manifest
+                    find . -name '*.sops.yaml' -exec sh -c 'sops -d "$1" | sed "/^sops:/,\$d"' _ {} \; -exec echo "---" \;
       repoServer:
         dnsConfig:
           options:
