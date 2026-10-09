@@ -1,49 +1,55 @@
 name: 'Decrypt secrets'
-description: 'Imports GPG, installs SOPS and decrypt secrets'
+description: 'Decrypt secrets (everything outside of gitops/)'
+
 inputs:
-  gpg_key:
-    description: 'The GPG private key to import'
+  sops-age-key:
+    description: 'The private Age key content'
     required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Import GPG Key
+    - name: Setup Age Key
       shell: bash
       run: |
-        echo "${{ inputs.gpg_key }}" | gpg --batch --import
-        KEY_FP=$(gpg --list-secret-keys --with-colons | grep "^fpr" | cut -d: -f10 | head -n 1)
-        echo "${KEY_FP}:6:" | gpg --batch --import-ownertrust
+        # Create a temporary key file from the GitHub secret input
+        echo "${{ inputs.sops-age-key }}" > /tmp/sops-age-key.txt
+        echo "SOPS_AGE_KEY_FILE=/tmp/sops-age-key.txt" >> $GITHUB_ENV
 
-    - name: Install SOPS
+    - name: Decrypt secrets
       shell: bash
       run: |
-        if ! command -v sops &> /dev/null; then
-          curl -LO https://github.com/getsops/sops/releases/download/v3.9.0/sops-v3.9.0.linux.amd64
-          sudo install -m 0755 sops-v3.9.0.linux.amd64 /usr/local/bin/sops
-        fi
+        echo "==> Starting decryption of secrets..."
 
-    - name: Decrypt
-      shell: bash
-      run: |
-        echo "Starting decryption of secrets..."
-
-        TF_FILES=$(find . -name "*.tfvars.enc")
+        # 1. Decrypt OpenTofu tfvars files
+        TF_FILES=$(find . -name "*.sops.tfvars")
         if [ -n "$TF_FILES" ]; then
           for f in $TF_FILES; do
-            echo "Decrypting OpenTofu file: $f"
-            sops --decrypt --input-type dotenv --output-type dotenv "$f" > "${f%.enc}"
+            output_file="${f//.sops/}"
+            echo "Decrypting OpenTofu file: $f -> $output_file"
+            .venv/bin/sops --decrypt --input-type dotenv --output-type dotenv "$f" > "$output_file"
           done
         else
-          echo "Warning: No .tfvars.enc files found."
+          echo "Warning: No *.sops.tfvars files found."
         fi
 
-        JWK_FILES=$(find . -name "*.jwk.enc")
+        # 2. Decrypt Tang JWK keys
+        JWK_FILES=$(find . -name "*.sops.jwk")
         if [ -n "$JWK_FILES" ]; then
           for f in $JWK_FILES; do
-            echo "Decrypting Tang key: $f"
-            sops --decrypt --input-type json --output-type json "$f" > "${f%.enc}"
+            output_file="${f//.sops/}"
+            echo "Decrypting Tang key: $f -> $output_file"
+            .venv/bin/sops --decrypt --input-type json --output-type json "$f" > "$output_file"
           done
         else
-          echo "Warning: No .jwk.enc files found."
+          echo "Warning: No *.sops.jwk files found."
         fi
+
+        echo "==> Decryption completed successfully!"
+
+    - name: Cleanup Age Key
+      if: always()
+      shell: bash
+      run: |
+        # Securely remove the private key file from the runner workspace
+        rm -f /tmp/sops-age-key.txt

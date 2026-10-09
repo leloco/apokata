@@ -1,0 +1,8 @@
+shared_pve_endpoint =ENC[AES256_GCM,data:6lH5g2v8ofABFLIoKqxORwvKbXwL4QhMrOs=,iv:jI2HDULONBcrlQqLhfLem1ucC/w22aOywFK+BWiNTLY=,tag:iLsbvfgAwbwNEWxD7nbf9g==,type:str]
+shared_pve_api_token =ENC[AES256_GCM,data:u+dMN7cWZ9t2GTJjBnIFGdnjHP9FH9QOv/oL3c+DTROelvH5dUglwWjHapcX4YWtBw2PMjwhoi1YtQ==,iv:hQpBfuMHC8BBZZ5f0+o0OJCjLvEtquglW3MnKjzbstg=,tag:Ph0H+mW7JdPI/WpmjhGTDA==,type:str]
+sops_age__list_0__map_enc=-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBIUG1hcGtWRVhwNk9HUy9S\ndmpFaFduYlhnYVZmczYzQTZ0aDl5MkZ2a0VJClpOWWFVLzFCbjJuTEVjdG1KNXFy\nd0x0VWtSOWJ4L1RBbXFGZzVDbit5alUKLS0tIDNxc3YrVkw5YTRubzdpa2pxeXJV\nLzQ4dFd6MGRNeC9Pc2NvRFkvQ3d2UzAKx40Z0pIFfYQVe+JfeV2/A/DJbaYkny0k\nLbNb8FbhjCk7XbsiMsmaAYxFxjCvQxkfooDPPHfAIUVi43/WYP8Qyg==\n-----END AGE ENCRYPTED FILE-----\n
+sops_age__list_0__map_recipient=age1erlt7mzurdy2mzyytm57ycxq4jl6yp8f7eq73pfvxcyc89kxafrs6reesp
+sops_lastmodified=2026-10-09T10:21:44Z
+sops_mac=ENC[AES256_GCM,data:JPKzUr0Tmy5HsltV6YjV1oMiGQyTr0tZlP7izjViU1EIA9n/iIGOGdtMgZ12BVecwmTBcaOWLFwJ4i6UnIylGUlX/w/J+aJly+sI50YIS5O1yPcgU2BME2Qt7L+5rwJhErxhtxBOfU2w5++TzDFWV6ebp9x7xLC4dytVqEscrVQ=,iv:lsFwL6D0wtwyInshXXM7W/J/IE0sJbH1R/rbu7Zk+jQ=,tag:1B3rAVhayBEC6GJOS80Z1A==,type:str]
+sops_unencrypted_suffix=_unencrypted
+sops_version=3.9.0

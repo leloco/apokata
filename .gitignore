@@ -3,14 +3,14 @@
 *.tfstate.backup
 *.tfvars
 *.auto.tfvars
-!*.tfvars.enc
+!*.sops.tfvars
 terraform.tfvars
 .api_url
 ansible/inventory.ini
 ansible/collections/
 .ansible/lock
 **/*.jwk
-!**/*.jwk.enc
+!**/*.sops.jwk
 **/*.tfplan
 *.tfplan
 **/*.plan

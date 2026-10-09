@@ -1,9 +1,9 @@
 creation_rules:
   - path_regex: opentofu/.*\.tfvars$
-    pgp: "640170DE796E3CC2C1EA7E9D4DA395A9634B5E40"
+    age: "age1erlt7mzurdy2mzyytm57ycxq4jl6yp8f7eq73pfvxcyc89kxafrs6reesp"
 
   - path_regex: ansible/roles/tang/files/tang-keys/.*\.jwk$
-    pgp: "640170DE796E3CC2C1EA7E9D4DA395A9634B5E40"
+    age: "age1erlt7mzurdy2mzyytm57ycxq4jl6yp8f7eq73pfvxcyc89kxafrs6reesp"
 
     # filtering only files of 'kind: Secret' happens inside the pre-commit script
   - path_regex: gitops/.*\.ya?ml$
