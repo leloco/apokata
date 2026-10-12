@@ -4,6 +4,8 @@ inputs:
   ansible_vault_password:
     description: 'Vault password'
     required: true
+  ssh_public_key:
+    required: true
 
 runs:
   using: "composite"
@@ -27,3 +29,9 @@ runs:
       run: |
         echo "${{ inputs.ansible_vault_password }}" > /root/.ansible_vault_pass
         chmod 600 /root/.ansible_vault_pass
+
+    - name: Create SSH Public Key File
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ inputs.ssh_public_key }}" > ~/.ssh/id_rsa.pub
