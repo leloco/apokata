@@ -3,7 +3,6 @@ name: "Infrastructure Package Upgrades"
 env:
   OPENTOFU_WORKING_DIR: "./opentofu/infra"
   ANSIBLE_WORKING_DIR: "./ansible"
-  OPENTOFU_VERSION: 1.10.7
 
 on:
   schedule:
@@ -35,29 +34,20 @@ jobs:
         uses: ./.github/actions/install
         with:
           ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
 
       - name: Decrypt Secrets
         uses: ./.github/actions/decrypt-secrets
         with:
           sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
 
-      - name: Setup OpenTofu Tools
-        uses: ./.github/actions/opentofu-prep
-        with:
-          ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
-
-      - name: Install OpenTofu CLI
-        uses: opentofu/setup-opentofu@v1
-        with:
-          tofu_version: ${{ env.OPENTOFU_VERSION }}
-
       - name: OpenTofu Init
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
-        run: tofu init
+        run: ../../.venv/bin/tofu init
 
       - name: OpenTofu Generate inventory.ini
         working-directory: ${{ env.OPENTOFU_WORKING_DIR }}
-        run: tofu apply -var-file="../shared.tfvars" -target=local_file.ansible_inventory -replace=local_file.ansible_inventory -auto-approve -lock=false
+        run: ../../.venv/bin/tofu apply -var-file="../shared.tfvars" -target=local_file.ansible_inventory -replace=local_file.ansible_inventory -auto-approve -lock=false
 
       - name: Install SSH Private Key
         uses: shimataro/ssh-key-action@v2
