@@ -1,55 +1,48 @@
+# Entrypoint for ansible configuration
 ---
 - name: Setup Proxmox VE hosts
-  hosts: proxmox_cluster
+  pre_tasks:
+    - name: End play if not prod environment
+      ansible.builtin.meta: end_play
+      when: env != "prod"
+  hosts: proxmox_servers
   become: true
   roles:
     - { role: proxmox_storage, tags: ['truenas'] }
     - { role: prepare_lxc_volume, tags: ['prepare_lxc_volume'] }
-
-# //TODO: Temporary until primus has dedicated vpn connection to sentinel with updated host_vars/primus.yml
-- name: Setup Proxmox VE hosts
-  hosts: ninja
-  become: true
-  roles:
     - { role: duckdns, tags: ['duckdns'] }
     - { role: wireguard, tags: ['wireguard'] }
 
 - name: Setup Proxmox guests
   hosts:
-  - proxmox_lxc
-  - proxmox_vm
+  - proxmox_lxcs
+  - proxmox_vms
   become: true
   roles:
     - { role: proxmox_guests, tags: ['proxmox_guests'] }
 
 - name: Setup DNS servers
-  hosts: dns_group
+  hosts: dns_servers
   become: true
   roles:
     - { role: common, tags: ['common'] }
     - { role: pihole, tags: ['pihole'] }
     - { role: keepalived_pihole, tags: ['pihole', 'keepalived'] }
 
-- name: Setup Raspberry PI
-  hosts: shadow
-  become: true
-  roles:
-    - { role: pi_qdevice, tags: ['qdevice'] }
-
 - name: Setup docker_hosts
-  hosts: docker_hosts_group
+  hosts: docker_hosts
   become: true
   roles:
     - { role: docker, tags: ['docker'] }
 
-- name: Setup proxy server
-  hosts: proxy_group
+- name: Setup proxy servers
+  hosts: proxy_servers
   become: true
   roles:
     - { role: docker_compose_npm, tags: ['docker_compose_npm'] }
 
-- name: Setup unifi
-  hosts: z1-unifi
+- name: Setup unifi servers
+  hosts: unifi_servers
   become: true
   roles:
     - { role: docker_compose_unifi, tags: ['docker_compose_unifi'] }
@@ -60,8 +53,8 @@
   roles:
     - { role: docker_compose_rocketchat, tags: ['docker_compose_rocketchat'] }
 
-- name: Setup portainer server
-  hosts: portainer_group
+- name: Setup portainer servers
+  hosts: portainer_servers
   become: true
   roles:
     - { role: docker_compose_portainer, tags: ['docker_compose_portainer'] }
@@ -72,15 +65,19 @@
   roles:
     - { role: docker_compose_portainer_agents, tags: ['docker_compose_portainer_agents'] }
 
-- name: Setup tang server
-  hosts: tang_group
+- name: Setup tang servers
+  pre_tasks:
+    - name: End play if not production environment
+      ansible.builtin.meta: end_play
+      when: env != "prod"
+  hosts: tang_servers
   become: true
   roles:
     - { role: common, tags: ['common'] }
     - { role: tang, tags: ['tang'] }
 
 - name: Setup unifi-controller
-  hosts: unifi_group
+  hosts: unifi_servers
   become: true
   roles:
     - { role: common, tags: ['common', 'unifi_group'] }

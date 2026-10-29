@@ -1,2 +1,0 @@
-github_access_token: "{{ vault_github_access_token }}"
-github_repo_url: "{{ vault_github_repo_url }}"
