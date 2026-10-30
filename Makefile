@@ -44,12 +44,12 @@ tofu\:plan\:infra\:staging:
 # <tool>:<action>:<domain>:<env>
 tofu\:apply\:infra\:staging:
 	@cd $(PROJECT_ROOT)/opentofu/infra/staging && \
-	if [ -n "$(PLAN)" ]; then \
+		if [ -n "$(PLAN)" ]; then \
 		echo "Applying saved plan: $(PLAN)"; \
 		$(VENV_BIN)/tofu apply $(PLAN); \
-	else \
+		else \
 		$(VENV_BIN)/tofu apply -var-file=<(sops -d $(STAGING_INFRA_ENV)) -var-file=<(sops -d $(STAGING_SHARED_ENV)) $(TOFU_APPLY_FLAGS); \
-	fi
+		fi
 
 # <tool>:<action>:<domain>:<env>
 tofu\:plan\:infra\:prod:
@@ -58,12 +58,12 @@ tofu\:plan\:infra\:prod:
 # <tool>:<action>:<domain>:<env>
 tofu\:apply\:infra\:prod:
 	@cd $(PROJECT_ROOT)/opentofu/infra/prod && \
-	if [ -n "$(PLAN)" ]; then \
+		if [ -n "$(PLAN)" ]; then \
 		echo "Applying saved plan: $(PLAN)"; \
 		$(VENV_BIN)/tofu apply $(PLAN); \
-	else \
-	$(VENV_BIN)/tofu apply -var-file=<(sops -d $(STAGING_INFRA_ENV)) -var-file=<(sops -d $(STAGING_SHARED_ENV)) $(TOFU_APPLY_FLAGS); \
-    fi
+		else \
+		$(VENV_BIN)/tofu apply -var-file=<(sops -d $(STAGING_INFRA_ENV)) -var-file=<(sops -d $(STAGING_SHARED_ENV)) $(TOFU_APPLY_FLAGS); \
+		fi
 
 # <tool>:<action>:<domain>:<env>
 tofu\:plan\:runner\:prod:
@@ -72,24 +72,22 @@ tofu\:plan\:runner\:prod:
 # <tool>:<action>:<domain>:<env>
 tofu\:apply\:runner\:prod:
 	@cd $(PROJECT_ROOT)/opentofu/runner && \
-	if [ -n "$(PLAN)" ]; then \
+		if [ -n "$(PLAN)" ]; then \
 		echo "Applying saved plan: $(PLAN)"; \
 		$(VENV_BIN)/tofu apply $(PLAN); \
-	else \
-	$(VENV_BIN)/tofu apply -var-file=<(sops -d $(PROD_RUNNER_ENV)) -var-file=<(sops -d $(PROD_SHARED_ENV)) $(TOFU_APPLY_FLAGS); \
-    fi
+		else \
+		$(VENV_BIN)/tofu apply -var-file=<(sops -d $(PROD_RUNNER_ENV)) -var-file=<(sops -d $(PROD_SHARED_ENV)) $(TOFU_APPLY_FLAGS); \
+		fi
 
-# //TODO
 # <tool>:<domain>:<env>
 ansible\:infra\:staging:
-	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventory.ini playbook.yml
+	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventories/staging/inventory.ini infra_playbook.yml
 	#
-# //TODO
-# <tool>:<domain>:<env>
-ansible\:infra\:prod:
-	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventory.ini playbook.yml
+	# <tool>:<domain>:<env>
+	ansible\:infra\:prod:
+	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventories/prod/inventory.ini infra_playbook.yml
 
 # //TODO
-# <tool>:<domain>:<env>
+# <tool>:<domain>
 ansible\:runner\:prod:
-	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventory.ini playbook.yml
+	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventories/prod/runner_inventory.ini runner_playbook.yml

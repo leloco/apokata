@@ -142,22 +142,6 @@ locals {
     }
   }
 
-  # The state of runners is not managed here. They are separately provisioned in opentofu/runner/main.tf.
-  # Attribute changes here require changes inside opentofu/runner and vice versa.
-  runner_instances = {
-    # ----------------------- RUNNERS start -------------------------
-    //TODO: Runners should be immutable (See `/docs/ard/0001.md`)
-    gh_runner1 = {
-       hostname = "gh-runner1"
-       ipv4_address = cidrhost(local.vlans.lab.network, var.infra_gh_runner1_host_id)
-       ipv6_address = "${local.vlans.lab.ula_prefix}${var.infra_gh_runner1_iid}"
-       user = var.infra_gh_runner1_user
-       enabled = var.is_prod
-      groups       = ["gh_runners"]
-    }
-    # ----------------------- RUNNERS end -------------------------
-  }
-
   k8s_nodes = {
     controlplane1 = {
       vm_id        = 210
@@ -391,7 +375,7 @@ locals {
 
   # For Ansible inventory.ini
   # Merge all hosts into centralized map
-  # Except: runner_instances, vm_instances
+  # Except: vm_instances
   all_hosts = merge(
     local.standalone_instances,
     local.pve_nodes,

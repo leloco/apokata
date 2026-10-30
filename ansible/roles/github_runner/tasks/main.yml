@@ -1,8 +1,4 @@
 ---
-- name: Load secret variables
-  ansible.builtin.include_vars:
-    file: secrets.yml
-
 - name: Ensure runner work directory exists
   ansible.builtin.file:
     path: /opt/actions-runner
@@ -11,7 +7,7 @@
 
 - name: Start GitHub Runner Container
   community.docker.docker_container:
-    name: "github-runner-alpha"
+    name: "gh-runner1"
     image: myoung34/github-runner:ubuntu-noble
     network_mode: "host"
     image_name_mismatch: recreate
@@ -22,7 +18,7 @@
     env:
       REPO_URL: "{{ github_repo_url }}"
       ACCESS_TOKEN: "{{ github_access_token }}"
-      RUNNER_NAME: "runner-alpha"
+      RUNNER_NAME: "gh-runner1"
       RUNNER_OPTIMIZE_REPOSITORY_CACHE: "true"
       EPHEMERAL: "false"
     volumes:

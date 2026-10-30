@@ -48,5 +48,6 @@
 - name: Reboot the server if kernel was updated
   ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible"
+    post_reboot_delay: 30
   when: apt_upgrade_reboot_required_file.stat.exists
   become: true

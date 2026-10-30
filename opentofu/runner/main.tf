@@ -20,3 +20,5 @@ module "vm" {
   pve_node       = var.runner_pve_node
   template_id    = var.shared_vm_template_id
 }
+
+
