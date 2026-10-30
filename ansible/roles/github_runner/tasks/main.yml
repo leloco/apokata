@@ -5,6 +5,12 @@
     state: directory
     mode: '0755'
 
+- name: Ensure make is installed
+  ansible.builtin.apt:
+    name: make
+    state: present
+    update_cache: true
+
 - name: Start GitHub Runner Container
   community.docker.docker_container:
     name: "gh-runner1"

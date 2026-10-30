@@ -1,0 +1,157 @@
+name: "CD"
+
+env:
+  OPENTOFU_WORKING_DIR: "./opentofu/infra"
+  ANSIBLE_WORKING_DIR: "./ansible"
+
+on:
+  push:
+    branches: [main]
+concurrency:
+  group: cd
+  cancel-in-progress: false
+
+jobs:
+  changes:
+    name: "Detect functional changes"
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # whitelisting
+          filters: |
+            code:
+              - 'opentofu/**'
+              - 'ansible/**'
+              - 'scripts/**'
+              - '.github/actions/**'
+              - '.github/workflows/main.yml'
+              - '.github/workflows/upgrade.yml'
+              - '.github/workflows/backup.yml'
+              - '*.sops.env'
+              - '*.tf'
+  deploy_staging:
+    environment: staging
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
+    name: "Deploy changes (staging)"
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
+
+      - name: Install environment
+        uses: ./.github/actions/install
+        with:
+          ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          env: "staging:"
+
+      - name: Decrypt Secrets
+        uses: ./.github/actions/decrypt-secrets
+        with:
+          sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
+
+      - name: Lint Ansible
+        run:  "make ansible:lint:infra"
+
+      - name: Extract Git Metadata (PUSH)
+        shell: bash
+        run: |
+            echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+            echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+            echo "SHA=${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Prepare staging
+        run: ./scripts/staging.sh
+
+      - name: OpenTofu Init
+        run: "make tofu:init:infra:staging"
+
+      - name: OpenTofu Plan
+        run: "make tofu:plan:infra:staging OUT=tfplan"
+
+      - name: OpenTofu Apply
+        run: "make tofu:apply:infra:staging PLAN=tfplan AUTO_APPROVE=1"
+
+      - name: Install SSH Private Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "unnecessary"
+          if_key_exists: fail
+
+      - name: Ansible Run
+        run:  "make ansible:infra:staging"
+
+      - name: Destroy staging
+        run: ./scripts/staging.sh
+
+  deploy_prod:
+    environment: prod
+    needs: deploy_staging
+    name: "Deploy changes (prod)"
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 10
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_tofu_state_passphrase: ${{ secrets.TF_VAR_TOFU_STATE_PASSPHRASE }}
+      TF_VAR_cloudflare_account_id: ${{ secrets.TF_VAR_CLOUDFLARE_ACCOUNT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
+
+      - name: Install environment
+        uses: ./.github/actions/install
+        with:
+          ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          env: "prod:"
+
+      - name: Decrypt Secrets
+        uses: ./.github/actions/decrypt-secrets
+        with:
+          sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
+
+      - name: Extract Git Metadata (PUSH)
+        shell: bash
+        run: |
+            echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+            echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+            echo "SHA=${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: OpenTofu Init
+        run: "make tofu:init:infra:prod"
+
+      - name: OpenTofu Plan
+        run: "make tofu:plan:infra:prod OUT=tfplan"
+
+      - name: OpenTofu Apply
+        run: "make tofu:apply:infra:prod PLAN=tfplan AUTO_APPROVE=1"
+
+      - name: Install SSH Private Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: "unnecessary"
+          if_key_exists: fail
+
+      - name: Ansible Run
+        run:  "make ansible:infra:prod"
+

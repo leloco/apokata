@@ -7,7 +7,7 @@ STAGING_SHARED_ENV  := $(PROJECT_ROOT)/opentofu/envs/staging.shared.sops.env
 PROD_RUNNER_ENV  := $(PROJECT_ROOT)/opentofu/envs/prod.runner.sops.env
 PROD_SHARED_ENV  := $(PROJECT_ROOT)/opentofu/envs/prod.shared.sops.env
 
-.PHONY: install encrypt tofu\:plan\:infra\:staging tofu\:apply\:infra\:staging tofu\:plan\:infra\:prod tofu\:apply\:infra\:prod tofu\:plan\:runner\:prod tofu\:apply\:runner\:prod ansible\:infra\:staging ansible\:infra\:prod ansible\:runner\:prod
+.PHONY: install encrypt tofu\:plan\:infra\:staging tofu\:init\:infra\:staging tofu\:init\:infra\:prod tofu\:apply\:infra\:staging tofu\:plan\:infra\:prod tofu\:apply\:infra\:prod tofu\:plan\:runner\:prod tofu\:apply\:runner\:prod ansible\:lint ansible\:play\:infra\:staging ansible\:play\:infra\:prod ansible\:play\:runner\:prod
 
 install:
 	@cd $(PROJECT_ROOT)/scripts && ./install.sh
@@ -36,6 +36,14 @@ endif
 ifneq ($(TARGET),)
 	TOFU_APPLY_FLAGS += -target=$(TARGET)
 endif
+
+# <tool>:<action>:<domain>:<env>
+tofu\:init\:infra\:staging:
+	@cd $(PROJECT_ROOT)/opentofu/infra/staging && $(VENV_BIN)/tofu init
+
+# <tool>:<action>:<domain>:<env>
+tofu\:init\:infra\:prod:
+	@cd $(PROJECT_ROOT)/opentofu/infra/prod && $(VENV_BIN)/tofu init
 
 # <tool>:<action>:<domain>:<env>
 tofu\:plan\:infra\:staging:
@@ -79,15 +87,18 @@ tofu\:apply\:runner\:prod:
 		$(VENV_BIN)/tofu apply -var-file=<(sops -d $(PROD_RUNNER_ENV)) -var-file=<(sops -d $(PROD_SHARED_ENV)) $(TOFU_APPLY_FLAGS); \
 		fi
 
-# <tool>:<domain>:<env>
-ansible\:infra\:staging:
+# <tool>:<action>
+ansible\:lint:
+	ANSIBLE_CONFIG=ansible/ansible.cfg $(VENV_BIN)/ansible-lint -c ansible/.ansible-lint --force-color ansible/
+
+# <tool>:<action>:<domain>:<env>
+ansible\:play\:infra\:staging:
 	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventories/staging/inventory.ini infra_playbook.yml
 	#
-	# <tool>:<domain>:<env>
-	ansible\:infra\:prod:
+# <tool>:<domain>:<env>
+ansible\:play\:infra\:prod:
 	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventories/prod/inventory.ini infra_playbook.yml
 
-# //TODO
-# <tool>:<domain>
-ansible\:runner\:prod:
+# <tool>:<domain>:<env>
+ansible\:play\:runner\:prod:
 	@cd $(PROJECT_ROOT)/ansible && $(VENV_BIN)/ansible-playbook -i inventories/prod/runner_inventory.ini runner_playbook.yml
