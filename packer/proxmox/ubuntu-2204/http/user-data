@@ -1,0 +1,32 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  identity:
+    hostname: ubuntu-base
+    username: ubuntu
+    # ubuntu
+    password: "$6$rounds=4096$rounds=4096$1V9XqW4x0rC8P4M6$w91yqX8zO8b/5I8kF.dG8iYhW3o6k2V4tL6j9yX0rC8P4M6w91yqX8zO8b/5I8kF.dG8iYhW3o6k2V4tL6"
+  ssh:
+    install-server: true
+    authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQChxyS6NntMVwcSFfE6r5GcrS7/ByAQ6ZBkI2U3fl9/7+WM413lVzDWZCytJ5VVwQJGaTnj3v+PH6X1vFNkOWQYdCG1e9WFHIW8ImXBMmULSMYQZMIw61tZb0EmAysgweluNr3c+WOrYKp/mEu8ZlZIXU+HoAfWYmm/YA33scq0xGAnE9KjgxKV0S6gE+CQKHjEamnpg5QzHlNyj56jr3Ek55CZZZ404Q82jKKYmDB31VuQwOYnW190tR5fBkA503TnvXiC1TRBHufWrKaGYQ96lVi7OS31q/QdGAVYYEcOCRvD10g4vDYVcd+8S6bZ6vKC1f31ysIOGFOGivdKzUPxJh4boCnHBPdi1nvLoWBjfpXhnBZAKZEbM8Q+UVdQdoOpV3hA79RzW/uhIAZ0aKX1JkxuDDWFLLuaCgwmZkzN6kQ1CN3ELPzlOzq4a2sEw678AiITiVeSHALzXVkwfeYulqRoPUSzX6w8JklrTkvQ/k/yFqPjvPvqV3aTWzN8+gA4CLaBYQ3De6YUQL3mQ5l/uQhmq5CDPcG4AK8WlKOMLiRQfaj6cB9JKNdkdWICvueBQuEU3d3fYQTiapYapLujDQjZZ7tYTPYvKK1GxDAngMC3ghUZMDtsr9Mc8nREarCW2024OK8XGNZT4+BxK5+r2MUlm00GtsLWk6hE6o1N0w== leoneifler@proton.me
+    allow-pw: false
+  packages:
+    - qemu-guest-agent
+    - sudo
+  storage:
+    layout:
+      name: lvm
+  network:
+    network:
+      version: 2
+      ethernets:
+        ens18:
+          dhcp4: true
+  late-commands:
+    - curtin in-target --target=/target -- systemctl enable qemu-guest-agent
+    - echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /target/etc/sudoers.d/ubuntu
+    - chmod 440 /target/etc/sudoers.d/ubuntu

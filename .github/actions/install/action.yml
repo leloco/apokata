@@ -6,6 +6,8 @@ inputs:
     required: true
   ssh_public_key:
     required: true
+  env:
+    required: true
 
 runs:
   using: "composite"
@@ -26,9 +28,11 @@ runs:
 
     - name: Create Ansible Vault Pass File
       shell: bash
+      env:
+        VAULT_PASS_FILE: "/root/.ansible_vault_pass_${{ inputs.env }}"
       run: |
-        echo "${{ inputs.ansible_vault_password }}" > /root/.ansible_vault_pass
-        chmod 600 /root/.ansible_vault_pass
+        echo "${{ inputs.ansible_vault_password }}" > "$VAULT_PASS_FILE"
+        chmod 600 "$VAULT_PASS_FILE"
 
     - name: Create SSH Public Key File
       shell: bash

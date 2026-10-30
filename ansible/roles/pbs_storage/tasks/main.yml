@@ -1,8 +1,4 @@
 ---
-- name: Load secret variables
-  ansible.builtin.include_vars:
-    file: secrets.yml
-
 - name: Check if device has a LUKS header
   ansible.builtin.command: "cryptsetup isLuks {{ vault_disk_device }}"
   register: pbs_storage_vault_is_luks

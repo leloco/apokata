@@ -1,8 +1,4 @@
 ---
-- name: Load secret variables
-  ansible.builtin.include_vars:
-    file: secrets.yml
-
 - name: "Disable systemd-resolved"
   ansible.builtin.service:
     name: systemd-resolved

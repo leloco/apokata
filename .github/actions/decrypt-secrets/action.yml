@@ -3,53 +3,31 @@ description: 'Decrypt secrets (everything outside of gitops/)'
 
 inputs:
   sops-age-key:
-    description: 'The private Age key content'
+    description: 'The private Age key'
+    required: true
+  env:
     required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Setup Age Key
-      shell: bash
-      run: |
-        # Create a temporary key file from the GitHub secret input
-        echo "${{ inputs.sops-age-key }}" > /tmp/sops-age-key.txt
-        echo "SOPS_AGE_KEY_FILE=/tmp/sops-age-key.txt" >> $GITHUB_ENV
-
     - name: Decrypt secrets
       shell: bash
+      env:
+        SOPS_AGE_KEY: ${{ inputs.sops-age-key }}
       run: |
         echo "==> Starting decryption of secrets..."
 
-        # 1. Decrypt OpenTofu tfvars files
-        TF_FILES=$(find . -name "*.sops.tfvars")
-        if [ -n "$TF_FILES" ]; then
-          for f in $TF_FILES; do
+        # Decrypt OpenTofu sops.env files
+        ENV_FILES=$(find opentofu/ -type f -name "*${{ inputs.env }}*.sops.env")
+        if [ -n "$ENV_FILES" ]; then
+          for f in $ENV_FILES; do
             output_file="${f//.sops/}"
             echo "Decrypting OpenTofu file: $f -> $output_file"
             .venv/bin/sops --decrypt --input-type dotenv --output-type dotenv "$f" > "$output_file"
           done
         else
-          echo "Warning: No *.sops.tfvars files found."
-        fi
-
-        # 2. Decrypt Tang JWK keys
-        JWK_FILES=$(find . -name "*.sops.jwk")
-        if [ -n "$JWK_FILES" ]; then
-          for f in $JWK_FILES; do
-            output_file="${f//.sops/}"
-            echo "Decrypting Tang key: $f -> $output_file"
-            .venv/bin/sops --decrypt --input-type json --output-type json "$f" > "$output_file"
-          done
-        else
-          echo "Warning: No *.sops.jwk files found."
+          echo "Warning: No *.sops.env files found."
         fi
 
         echo "==> Decryption completed successfully!"
-
-    - name: Cleanup Age Key
-      if: always()
-      shell: bash
-      run: |
-        # Securely remove the private key file from the runner workspace
-        rm -f /tmp/sops-age-key.txt

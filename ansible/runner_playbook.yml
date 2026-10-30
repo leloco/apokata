@@ -1,6 +1,6 @@
 ---
-- name: Setup lxc "runner-alpha"
-  hosts: runner_group
+- name: Setup GitHub runners
+  hosts: gh_runners
   become: yes
   roles:
     - { role: apt_upgrade, tags: ['apt_upgrade'] }

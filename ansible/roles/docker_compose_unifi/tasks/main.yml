@@ -1,8 +1,4 @@
 ---
-- name: Load secret variables
-  ansible.builtin.include_vars:
-    file: secrets.yml
-
 - name: Ensure target and mount directories exist
   ansible.builtin.file:
     path: "{{ item }}"

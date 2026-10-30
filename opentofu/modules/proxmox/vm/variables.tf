@@ -109,4 +109,7 @@ variable "bridge_storage" {
   default = null
 }
 
+variable "on_boot" {
+  type    = bool
+}
 

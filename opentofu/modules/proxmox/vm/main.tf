@@ -20,8 +20,8 @@ user: ${var.username}
 ssh_authorized_keys:
   - ${file(var.public_ssh_key)}
 sudo: ALL=(ALL) NOPASSWD:ALL
-packages:
-  - qemu-guest-agent
+
+package_upgrade: false
 
 # Ensure the root partition and filesystem expand to fill the available disk space
 growpart:
@@ -32,11 +32,12 @@ growpart:
 resize_rootfs: true
 
 runcmd:
-  - systemctl enable --now qemu-guest-agent
+  - systemctl mask systemd-networkd-wait-online.service
 EOF
 
     file_name = "${var.vm_name}-cloud-config.yaml"
   }
+
 }
 
 resource "proxmox_virtual_environment_vm" "vm" {
@@ -44,6 +45,8 @@ resource "proxmox_virtual_environment_vm" "vm" {
   description = "Managed by OpenTofu"
   node_name   = var.pve_node
   vm_id       = var.vm_id
+
+  on_boot = var.on_boot
 
   scsi_hardware = "virtio-scsi-single"
 
@@ -72,7 +75,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   }
 
   dynamic "network_device" {
-    for_each = var.bridge_storage != null ? [var.bridge_storage] : []
+    for_each = var.bridge_storage != "" && var.bridge_storage != null ? [var.bridge_storage] : []
     content {
       bridge = network_device.value
     }
@@ -80,7 +83,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   agent {
     enabled = true
-    timeout = "2m"
+    timeout = "5m"
   }
 
   initialization {
@@ -104,7 +107,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
     }
 
     dynamic "ip_config" {
-      for_each = var.storage_ipv4_address != null ? [var.storage_ipv4_address] : []
+      for_each = var.storage_ipv4_address != "" && var.storage_ipv4_address != null ? [var.storage_ipv4_address] : []
       content {
         ipv4 {
           address = ip_config.value

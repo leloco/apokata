@@ -1,0 +1,1 @@
+../core/shared.variables.tf

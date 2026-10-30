@@ -1,0 +1,94 @@
+name: "CI"
+env:
+  OPENTOFU_WORKING_DIR: "./opentofu/infra"
+  ANSIBLE_WORKING_DIR: "./ansible"
+on:
+  pull_request:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  changes:
+    name: "Detect functional changes in repo"
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # whitelisting
+          filters: |
+            code:
+              - 'opentofu/**'
+              - 'ansible/**'
+              - 'scripts/**'
+              - '.github/actions/**'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/cd.yml'
+              - '.github/workflows/upgrade.yml'
+              - '.github/workflows/backup.yml'
+              - '*.sops.env'
+              - '*.tf'
+  validate_prod:
+    needs: changes
+    if: ${{ needs.changes.outputs.code == 'true' }}
+    environment: prod
+    name: "Validate changes on prod"
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 10
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_tofu_state_passphrase: ${{ secrets.TF_VAR_TOFU_STATE_PASSPHRASE }}
+      TF_VAR_cloudflare_account_id: ${{ secrets.TF_VAR_CLOUDFLARE_ACCOUNT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Load full history
+
+      - name: Install environment
+        uses: ./.github/actions/install
+        with:
+          ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          env: "prod"
+
+      - name: Extract Git Metadata (PR)
+        shell: bash
+        run: |
+            echo "BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+            # first parent: main, second parent: the feature branch
+            echo "COMMIT_MSG=$(git log -1 --pretty=format:'%s' HEAD^2)" >> $GITHUB_ENV
+            echo "SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+
+      - name: Decrypt Secrets
+        uses: ./.github/actions/decrypt-secrets
+        with:
+          sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
+          env: "prod"
+
+      - name: Lint Ansible
+        run: "make ansible:lint"
+
+      - name: OpenTofu Init
+        run: "make tofu:init:infra:prod"
+
+      - name: OpenTofu Plan
+        run: "make tofu:plan:infra:prod OUT=tfplan"
+
+      - name: Notify Rocket.Chat
+        if: always()
+        uses: ./.github/actions/rocketchat-notify
+        with:
+          webhook-url: ${{ secrets.ROCKETCHAT_WEBHOOK_URL }}
+          channel: ${{ env.ROCKETCHAT_CHANNEL }}
+          job-status: ${{ job.status }}

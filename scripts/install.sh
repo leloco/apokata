@@ -20,6 +20,7 @@ VENV_DIR=".venv"
 VENV_BIN_DIR="${VENV_DIR}/bin"
 SOPS_VERSION="v3.9.0"
 TOFU_VERSION="v1.10.7"
+PACKER_VERSION="1.11.2"
 
 echo "=================================================="
 echo " Setting up unified development & GitOps environment"
@@ -76,6 +77,19 @@ if [ ! -f "${VENV_BIN_DIR}/tofu" ]; then
     echo "==> OpenTofu successfully installed in ${VENV_BIN_DIR}!"
 else
     echo "==> OpenTofu is already installed in ${VENV_BIN_DIR}."
+fi
+
+# Install packer binary
+if [ ! -f "${VENV_BIN_DIR}/packer" ]; then
+    echo "==> Downloading Packer v${PACKER_VERSION}..."
+    DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_${OS}_${ARCH}.zip"
+    curl -sL --fail "$DOWNLOAD_URL" -o /tmp/packer.zip
+    unzip -q /tmp/packer.zip -d "${VENV_BIN_DIR}"
+    rm /tmp/packer.zip
+    chmod +x "${VENV_BIN_DIR}/packer"
+    echo "==> Packer successfully installed in ${VENV_BIN_DIR}!"
+else
+    echo "==> Packer is already installed in ${VENV_BIN_DIR}."
 fi
 
 # Initialize and install pre-commit git hooks

@@ -1,18 +1,21 @@
 name: "Rocket.Chat Notification"
-description: "Send status notification to Rocket.Chat incoming webhook"
+description: "Send status notification to Rocket.Chat incoming webhook."
 inputs:
   webhook-url:
-    description: "Rocket.Chat Webhook URL"
+    description: "Rocket.Chat Webhook URL."
+    required: true
+  channel:
+    description: "The channel where the message should be send to."
     required: true
   job-status:
-    description: "Status of the calling job"
+    description: "Status of the calling job."
     required: true
   branch:
-    description: "Git Branch"
+    description: "Git Branch."
     required: false
     default: ""
   commit-msg:
-    description: "Commit Message"
+    description: "Commit Message."
     required: false
     default: ""
 
@@ -23,6 +26,7 @@ runs:
       shell: bash
       env:
         ROCKETCHAT_WEBHOOK_URL: ${{ inputs.webhook-url }}
+        ROCKETCHAT_CHANNEL: ${{ inputs.channel }}
         JOB_STATUS: ${{ inputs.job-status }}
         INPUT_BRANCH: ${{ inputs.branch }}
         INPUT_COMMIT_MSG: ${{ inputs.commit-msg }}
@@ -75,6 +79,7 @@ runs:
         {
           "attachments": [
             {
+              "channel": "#${ROCKETCHAT_CHANNEL}"
               "title": "$STATUS_EMOJI $WORKFLOW_NAME $JOB_STATUS: $REPO",
               "title_link": "$RUN_URL",
               "color": "$COLOR",

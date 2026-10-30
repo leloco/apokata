@@ -5,8 +5,8 @@
 # - VPN connection necessary: Active connection to reach tang server.
 # - SAFE: Fully idempotent (checks for existing LUKS/ZFS).
 ################################################################################
-- name: Setup sentinel (Proxmox BS)
-  hosts: proxmox_bs
+- name: Setup Proxmox Backup Servers
+  hosts: proxmox_backup_servers
   become: true
   roles:
     - { role: duckdns, tags: ['duckdns'] }
