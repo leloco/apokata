@@ -1,16 +1,13 @@
 name: "CI"
-
 env:
   OPENTOFU_WORKING_DIR: "./opentofu/infra"
   ANSIBLE_WORKING_DIR: "./ansible"
-
 on:
   pull_request:
     branches: [main]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
-
 jobs:
   changes:
     name: "Detect functional changes in repo"
