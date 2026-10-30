@@ -42,7 +42,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.code == 'true' }}
     environment: prod
-    name: "Validate changes on (prod)"
+    name: "Validate changes on prod"
     runs-on: [self-hosted, linux]
     timeout-minutes: 10
     env:
