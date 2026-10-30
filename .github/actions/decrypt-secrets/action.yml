@@ -3,21 +3,16 @@ description: 'Decrypt secrets (everything outside of gitops/)'
 
 inputs:
   sops-age-key:
-    description: 'The private Age key content'
+    description: 'The private Age key'
     required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Setup Age Key
-      shell: bash
-      run: |
-        # Create a temporary key file from the GitHub secret input
-        echo "${{ inputs.sops-age-key }}" > /tmp/sops-age-key.txt
-        echo "SOPS_AGE_KEY_FILE=/tmp/sops-age-key.txt" >> $GITHUB_ENV
-
     - name: Decrypt secrets
       shell: bash
+      env:
+        SOPS_AGE_KEY: ${{ inputs.sops-age-key }}
       run: |
         echo "==> Starting decryption of secrets..."
 
@@ -34,10 +29,3 @@ runs:
         fi
 
         echo "==> Decryption completed successfully!"
-
-    - name: Cleanup Age Key
-      if: always()
-      shell: bash
-      run: |
-        # Securely remove the private key file from the runner workspace
-        rm -f /tmp/sops-age-key.txt
