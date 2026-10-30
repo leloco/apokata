@@ -62,6 +62,7 @@ jobs:
         uses: ./.github/actions/decrypt-secrets
         with:
           sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
+          env: "staging"
 
       - name: Lint Ansible
         run:  "make ansible:lint:infra"
@@ -122,12 +123,13 @@ jobs:
         with:
           ansible_vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
-          env: "prod:"
+          env: "prod"
 
       - name: Decrypt Secrets
         uses: ./.github/actions/decrypt-secrets
         with:
           sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
+          env: "prod"
 
       - name: Extract Git Metadata (PUSH)
         shell: bash

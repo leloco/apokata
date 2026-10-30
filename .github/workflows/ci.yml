@@ -74,6 +74,7 @@ jobs:
         uses: ./.github/actions/decrypt-secrets
         with:
           sops-age-key: ${{ secrets.SOPS_AGE_KEY }}
+          env: "prod"
 
       - name: Lint Ansible
         run: "make ansible:lint"

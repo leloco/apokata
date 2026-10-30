@@ -5,6 +5,8 @@ inputs:
   sops-age-key:
     description: 'The private Age key'
     required: true
+  env:
+    required: true
 
 runs:
   using: "composite"
@@ -17,7 +19,7 @@ runs:
         echo "==> Starting decryption of secrets..."
 
         # Decrypt OpenTofu sops.env files
-        ENV_FILES=$(find . -name "*.sops.env")
+        ENV_FILES=$(find opentofu/ -type f -name "*${{ inputs.env }}*.sops.env")
         if [ -n "$ENV_FILES" ]; then
           for f in $ENV_FILES; do
             output_file="${f//.sops/}"
